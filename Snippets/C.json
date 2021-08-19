@@ -1,0 +1,7 @@
+{
+    "Debug Macro": {
+        "prefix": "DM",
+        "body": ["DEBUG ((DEBUG_INFO|DEBUG_ERROR, \"${2:^Cat^ Debug count : 0x%X }\\n\", ${1:Count}));"],
+        "description": "Debug Marro that use in UEFI architecture."
+    }
+}

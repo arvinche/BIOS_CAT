@@ -1,0 +1,7 @@
+{
+    "Deoptimize": {
+        "prefix": "OD",
+        "body": ["[BuildOptions] \n  MSFT:*_*_*_CC_FLAGS  = /Od"],
+        "description": "Add build command to deoptimize code"
+    }
+}
