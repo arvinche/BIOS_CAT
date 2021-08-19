@@ -1,25 +1,105 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+/* eslint-disable @typescript-eslint/naming-convention */
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+import * as vscode  from 'vscode';
+import * as FileSys from 'fs';
+import * as RLSys   from 'readline';
+//
+// Global variable.
+//
+const Terminal  = vscode.window.createTerminal({name: "Cat Build code ENV !!"});
+const WorkSpace = vscode.workspace.rootPath + "/";
+const Buildlog  = WorkSpace + "BuildLog.log";
+const BuildPath = WorkSpace + vscode.workspace.getConfiguration().get("BuildPath");
+//const BuildCommand = vscode.workspace.getConfiguration().get("BuildCmd").replace(/&/, "> "+Buildlog+" 2>&1 &") + " > "+ Buildlog + " 2>&1";
+const BuildCommand = "(" + vscode.workspace.getConfiguration().get("BuildCmd") + ") > "+ Buildlog + " 2>&1";
+const CleanCommand = "" + vscode.workspace.getConfiguration().get("CleanCmd");
+
 export function activate(context: vscode.ExtensionContext) {
-	
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
+
 	console.log('Congratulations, your extension "BIOS-CAT" is now active!');
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('BIOS-CAT.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from BIOS-CAT!');
+	//
+	// Start to build code
+	//
+	vscode.commands.registerCommand('BIOS-CAT.CMD01', function () {
+		Terminal.sendText("chcp 437 & cd " + BuildPath);
+		if (!Terminal.name.indexOf("powershell")) {
+			vscode.window.showInformationMessage('Plase exchange your terminal into command prompt. (cmd.exe)');
+			return;
+		}
+		vscode.window.showInformationMessage('Start to build code.');
+		if (!FileSys.existsSync(Buildlog)) {
+			FileSys.writeFile(Buildlog, "Creat File\n", 'utf-8',(err)=>{});
+		}
+		Terminal.sendText(BuildCommand);
+		Terminal.show(true);
+		const options = {
+			selection: new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 0)),
+			preview: true,
+			viewColumn: vscode.ViewColumn.One
+		};
+		vscode.window.showTextDocument(vscode.Uri.file(Buildlog), options);
 	});
 
-	context.subscriptions.push(disposable);
+	//
+	//  Clean up work space
+	//
+	vscode.commands.registerCommand('BIOS-CAT.CMD02', function () {
+		Terminal.sendText("chcp 437 & cd " + BuildPath);
+		if (!Terminal.name.indexOf("powershell")) {
+			vscode.window.showInformationMessage('Plase exchange your terminal into command prompt. (cmd.exe)');
+			return;
+		}
+		vscode.window.showInformationMessage('Start to clean up your work spase.');
+		FileSys.unlink(Buildlog,(err)=>{});
+		Terminal.sendText(CleanCommand);
+		Terminal.show(true);
+	});
+
+	//
+	// Check build log & show build error (if it have)
+	//
+	vscode.commands.registerCommand('BIOS-CAT.CMD03', function () {
+		var LineCount  = 0;
+		var ErrorCount = 0;
+		if (!FileSys.existsSync(Buildlog)) {
+			vscode.window.showInformationMessage('There have no build log to analyze.');
+			return;
+		}
+		vscode.window.showInformationMessage('Checking build log ......... ');
+		//
+		// If there have error, open the file and jump to the error line.
+		//
+		RLSys.createInterface({ input: FileSys.createReadStream(Buildlog) }).on('line', function(Line) {
+			LineCount++;
+			if ( (/: error +\w+:/g.test(Line)) === true ) {
+				ErrorCount++;
+				//
+				//  Open build log in vscode.
+				//
+				const options = {
+					selection: new vscode.Range(new vscode.Position(LineCount-1, 0), new vscode.Position(LineCount, 0)),
+					preview: true,
+					viewColumn: vscode.ViewColumn.One
+				};
+				vscode.window.showTextDocument(vscode.Uri.file(Buildlog), options);
+				if (Line.indexOf(":\\")) {
+					Line.split(" ").forEach (function(Units) {
+						if ( Units.indexOf(":\\") === 1) {
+							var Unit = Units.split("(");
+							var LineNumber = 0;
+							if (Unit[1]) { LineNumber = parseInt(Unit[1].replace(")", ""))-1; }
+							const options = {
+								selection: new vscode.Range(new vscode.Position(LineNumber, 0), new vscode.Position(LineNumber, 0)),
+								preview: false,
+								viewColumn: vscode.ViewColumn.One
+							}; vscode.window.showTextDocument(vscode.Uri.file(Unit[0]), options);
+						}
+					});
+				}
+			}
+		}).on('close', ()=>{ vscode.window.showInformationMessage('There have ['+ ErrorCount + "] error in your code."); });
+	});
 }
 
 // this method is called when your extension is deactivated

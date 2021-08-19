@@ -1,8 +1,8 @@
 {
-  "name": "BIOS-CAT",
+  "name": "bios-cat",
     "version": "0.0.1",
     "engines": { "vscode": "^1.59.0" },
-	"displayName": "BIOS CAT",
+	"displayName": "BIOS-CAT",
 	"description": "A coding cat can support you development BIOS code!",
 	"categories": ["Other"],
 	"activationEvents": ["*"],
