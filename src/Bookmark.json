@@ -1,0 +1,17 @@
+[
+	{
+		"Group": "TBT",
+		"FileAndPath" :[
+			{"Tag": "01", "Path" :"D:/ADL/Intel/AlderLakeSvRestrictedPkg/AlderLakeSvRestrictedPkg.dec", "Start":"10.31", "End": "11.10"},
+			{"Tag": "02", "Path" :"D:/ADL/Intel/AlderLakeSvRestrictedPkg/AlderLakeSvRestrictedPkg.dec", "Start":"8.9", "End": "10.20"}
+		]
+	},
+	{
+		"Group": "BootGuard",
+		"FileAndPath" :[
+			{"Tag": "A", "Path" :"D:/ADL/Intel/AlderLakeSvRestrictedPkg/AlderLakeSvRestrictedPkg.dec", "Start":"10.11", "End": "12.13"},
+			{"Tag": "B", "Path" :"D:/ADL/Intel/AlderLakeSvRestrictedPkg/AlderLakeSvRestrictedPkg.dec", "Start":"5.8", "End": "6.7"}
+		]
+	}
+]
+

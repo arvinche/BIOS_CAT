@@ -1,7 +1,7 @@
 {
-  "name": "bios-cat",
-    "version": "0.0.1",
-    "engines": { "vscode": "^1.59.0" },
+	"name": "bios-cat",
+	"version": "0.0.1",
+	"engines": { "vscode": "^1.59.0" },
 	"displayName": "BIOS-CAT",
 	"description": "A coding cat can support you development BIOS code!",
 	"categories": ["Other"],
@@ -43,27 +43,39 @@
 			{"command": "BIOS-CAT.CMD02", "title": "02_Clean"},
 			{"command": "BIOS-CAT.CMD03", "title": "03_Jump to error"},
 			{"command": "BIOS-CAT.CMD04", "title": "Command 04"},
-			{"command": "BIOS-CAT.CMD05", "title": "Command 05"}
+			{"command": "BIOS-CAT.L01AddMark", "title": "Add BookMark"    , "icon": "./Images/L01_Add.png"},
+			{"command": "BIOS-CAT.L01Reflash", "title": "Reflash BookMark", "icon": "./Images/L01_Reflash.png"},
+			{"command": "BIOS-CAT.L01Edit"   , "title": "Edit BookMark"   , "icon": "./Images/L01_Edit.png"},
+			{"command": "BIOS-CAT.L01Delete" , "title": "Delete BookMark" , "icon": "./Images/L01_Delete.png"}
 		],
 		"keybindings": [
 			{"command": "BIOS-CAT.CMD01", "key": "ctrl+f6", "when": "editorTextFocus"},
 			{"command": "BIOS-CAT.CMD02", "key": "ctrl+f7", "when": "editorTextFocus"},
 			{"command": "BIOS-CAT.CMD03", "key": "ctrl+f8", "when": "editorTextFocus"},
-			{"command": "BIOS-CAT.CMD04", "key": "ctrl+f9", "when": "editorTextFocus", "mac": "cmd+f19"}
+			{"command": "BIOS-CAT.L01AddMark", "key": "ctrl+m", "when": "editorTextFocus", "mac": "cmd+m"}
 		],
 		"menus": {
+			"view/title": [
+				{ "command": "BIOS-CAT.L01Reflash", "when": "view == L01", "group": "navigation" },
+				{ "command": "BIOS-CAT.L01AddMark", "when": "view == L01", "group": "navigation" }
+			],
+			"view/item/context": [
+				{ "command": "BIOS-CAT.L01Edit", "when": "view == L01", "group": "inline" },
+				{ "command": "BIOS-CAT.L01Delete", "when": "view == L01", "group": "inline" },
+				{ "command": "BIOS-CAT.L01AddMark", "when": "view == L01  && viewItem == Depn" }
+			],
 			"editor/context": [
 				{ "when": "editorFocus", "command": "BIOS-CAT.CMD01", "group": "navigation" },
 				{ "when": "editorFocus", "command": "BIOS-CAT.CMD02", "group": "navigation" },
 				{ "when": "editorFocus", "command": "BIOS-CAT.CMD03", "group": "navigation" },
-				{ "when": "editorFocus", "command": "BIOS-CAT.CMD04", "group": "navigation" }
+				{ "when": "editorFocus", "command": "BIOS-CAT.L01AddMark", "group": "navigation" }
 			]
 		},
 		"viewsContainers": {"activitybar": [{ "id": "CatMaster", "title": "BIOS-CAT", "icon": "./Images/00_CatIcon.png" }]},
 		"views": {
 			"CatMaster": [
-				{"id": "L01", "name": "Test view 01"},
-				{"id": "L02", "name": "Test view 02"}
+				{"id": "L01", "name": "　Bookmark ~"},
+				{"id": "L02", "name": "　Test view 02"}
 			]
 		},
 		"languages": [
