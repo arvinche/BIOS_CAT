@@ -1,73 +1,73 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import * as vscode  from 'vscode';
 import * as FileSys from 'fs';
 import * as Path	from 'path';
 
 export class NodeDependenciesProvider implements vscode.TreeDataProvider<Dependency> {
+
+	constructor (private WorkspaceRoot: string) { }
     //
     //  Reflash area.
     //
 	private _onDidChangeTreeData: vscode.EventEmitter<Dependency | undefined | null | void> = new vscode.EventEmitter<Dependency | undefined | null | void>();
 	readonly onDidChangeTreeData: vscode.Event<Dependency | undefined | null | void> = this._onDidChangeTreeData.event;
-	refresh(): void { this._onDidChangeTreeData.fire(); }
+	Refresh(): void { this._onDidChangeTreeData.fire(); }
+	//
+	// Check Path function.
+	//
+	private PathExists (Path: string): boolean {
+		try { FileSys.accessSync (Path);
+		} catch (err) { return false;
+		} return true;
+	}
 
-	constructor (private workspaceRoot: string) { }
-	getTreeItem (element: Dependency): vscode.TreeItem { return element; }
+	getTreeItem (Element: Dependency): vscode.TreeItem { return Element; }
 
-	getChildren (element: Dependency): Thenable<Dependency[]> {
-		if (!this.workspaceRoot) {
+	getChildren (Element: Dependency): Thenable<Dependency[]> {
+		if (!this.WorkspaceRoot) {
 			vscode.window.showInformationMessage('Please assign a wrokspace first.');
 			return Promise.resolve([]);
 		}
 		//
 		// Check book mark file.
 		//
-		const bookMarkPath = Path.join (this.workspaceRoot, 'Bookmark.json');
-		if (this.pathExists (bookMarkPath)) {
-			return Promise.resolve (this.getBookMarkJson (bookMarkPath, element));
+		const BookMarkPath = Path.join (this.WorkspaceRoot, 'Bookmark.json');
+		if (this.PathExists (BookMarkPath)) {
+			return Promise.resolve (this.getBookMarkJson (BookMarkPath, Element));
 		} else {
 			vscode.window.showInformationMessage ('You don\' have bookmark.');
 			return Promise.resolve ([]);
 		}
 	}
 
-	private getBookMarkJson (bookMarkPath: string, element: Dependency): Dependency[] {
-		let bookMark = [];
-		const depBookmarkJson = JSON.parse (FileSys.readFileSync(bookMarkPath, 'utf-8'));
-		for (let i=0; i<depBookmarkJson.length; i++) {
-			if (element) {
-				if (i === element.index) {
-					for (let i2=0; i2<depBookmarkJson[i].FileAndPath.length; i2++) {
-						bookMark.push(new Dependency (depBookmarkJson[i].FileAndPath[i2].Tag, i2, depBookmarkJson[i].FileAndPath[i2].Path, vscode.TreeItemCollapsibleState.None));
+	private getBookMarkJson (BookMarkPath: string, Element: Dependency): Dependency[] {
+		let Content = [];
+		const BookmarkJson = JSON.parse (FileSys.readFileSync(BookMarkPath, 'utf-8'));
+		for (let i=0; i<BookmarkJson.length; i++) {
+			if (Element) {
+				if (i === Element.groupIndex) {
+					for (let i2=0; i2<BookmarkJson[i].FileAndPath.length; i2++) {
+						Content.push(new Dependency (BookmarkJson[i].FileAndPath[i2].Tag, i, BookmarkJson[i].FileAndPath[i2].Path, vscode.TreeItemCollapsibleState.None));
 					}
 				}
 			} else {
-				bookMark.push(new Dependency (depBookmarkJson[i].Group, i, "", vscode.TreeItemCollapsibleState.Collapsed));
+				Content.push(new Dependency (BookmarkJson[i].Group, i, "", vscode.TreeItemCollapsibleState.Collapsed));
 			}
 		}
-		return bookMark;
-	}
-
-	private pathExists (p: string): boolean {
-		try {
-			FileSys.accessSync (p);
-		} catch (err) {
-			return false;
-		}
-		return true;
+		return Content;
 	}
 }
 
 export class Dependency extends vscode.TreeItem {
 	constructor (
 		public readonly markTitle: string,
-		public index: Number,
+		public groupIndex: Number,
 		public markPath: string,
 		public readonly collapsibleState: vscode.TreeItemCollapsibleState
 	) {
 		super (markTitle, collapsibleState);
 		this.tooltip = `${this.markPath}`;
 		this.description = this.markPath.split("/").pop();
-		//this.command = "BIOS-CAT.L01AddMark";
 		this.iconPath = collapsibleState ? {
 			light: Path.join (__filename, '../..', './Images/L01_GroupRoot.png'),
 			dark: Path.join (__filename, '../..', './Images/L01_GroupRoot.png')
@@ -76,5 +76,121 @@ export class Dependency extends vscode.TreeItem {
 			dark: Path.join (__filename, '../..', './Images/00_CatIcon.png')
 		};
 	}
-	contextValue = 'Depn';
+	contextValue = this.collapsibleState?'Depn_G':'Depn_M';
+}
+
+//
+//  Function of Edit book mark element.
+//
+export function AddBookMarkElement (BookmarkPath: string, TreeL01: NodeDependenciesProvider) {
+	let GroupArray = ["✏️Create New One."];
+	let BM = JSON.parse (FileSys.readFileSync(BookmarkPath, 'utf-8'));
+	for (let i=0; i<BM.length; i++) {
+		GroupArray.push (BM[i].Group);
+	}
+	vscode.window.showQuickPick (
+		GroupArray, 
+		{canPickMany:false, placeHolder:'Select or input the Group that you want:'})
+	.then( function (SelectMsg) {
+		if (SelectMsg === "✏️Create New One.") {
+			vscode.window.showInputBox({
+				ignoreFocusOut:true,
+				placeHolder:'Please enter the bookmark group.'})
+			.then (function (Msg) {
+				if (Msg) {
+					vscode.window.showInputBox({
+						ignoreFocusOut:true,
+						placeHolder:'Please enter the tag name.'})
+					.then (function (Msg2) {
+						if (Msg2) {
+							console.log (Msg+' '+Msg2);
+						}
+					});
+				}
+			});
+		} else {
+			vscode.window.showInputBox({
+				ignoreFocusOut:true,
+				placeHolder:'Please enter the tag name.'})
+			.then (function (Msg2) {
+				if (Msg2) {
+					console.log (SelectMsg+' '+Msg2);
+				}
+			});
+		} TreeL01.Refresh();
+	});
+}
+
+//
+//  Function of Edit book mark element.
+//
+export function EditBookMarkElement (BookmarkPath: string, Item: Dependency, TreeL01: NodeDependenciesProvider) {
+	let UnitType = Item.collapsibleState? "Group":"Tag";
+	vscode.window.showInputBox({
+		ignoreFocusOut:true,
+		placeHolder:'Please edit your '+ UnitType +' name.'})
+	.then (function (Message) {
+		if (Message) {
+			var BM = JSON.parse (FileSys.readFileSync(BookmarkPath, 'utf-8'));
+			var i  = Item.groupIndex.valueOf();
+			if ( Item.collapsibleState ) {
+				if (BM[i].Group === Item.markTitle) {
+					BM[i].Group = Message;
+				}
+			} else {
+				for (let i2=0; i2<BM[i].FileAndPath.length; i2++) {
+					if (BM[i].FileAndPath[i2].Tag === Message) {
+						vscode.window.showInformationMessage (' The bookmark in same group must gave different name ~ ');
+						return;
+					} else if (BM[i].FileAndPath[i2].Tag === Item.markTitle) {
+						BM[i].FileAndPath[i2].Tag = Message;
+					}
+				}
+			}
+			FileSys.writeFile (BookmarkPath, JSON.stringify(BM), 'utf-8', (err) =>{});
+			TreeL01.Refresh();
+		}
+	});
+}
+
+//
+//  Function of delete book mark element.
+//
+export function DelBookMarkElement (BookmarkPath: string, Item: Dependency, TreeL01: NodeDependenciesProvider) {
+	vscode.window.showInformationMessage (
+		"You sure you want to delete this ("+ Item.markTitle +") bookmark ?",
+		'Yes I do !!',
+		'No Thanks ~')
+	.then (function (Select) {
+		if (Select === 'Yes I do !!') {
+			var BM = JSON.parse (FileSys.readFileSync(BookmarkPath, 'utf-8'));
+			var i  = Item.groupIndex.valueOf();
+			if ( Item.collapsibleState ) {
+				if (BM[i].Group === Item.markTitle) {
+					delete BM[i];
+					let BookmarkString = JSON.stringify(BM).replace("null,","").replace(",null","").replace("null","");
+					if (BookmarkString === "[]") {
+						FileSys.unlink (BookmarkPath,(err)=>{});
+					} else {
+						FileSys.writeFile (BookmarkPath, BookmarkString, 'utf-8', (err) =>{});
+					}
+				}
+			} else {
+				for (let i2=0; i2<BM[i].FileAndPath.length; i2++) {
+					if (BM[i].FileAndPath[i2].Tag === Item.markTitle) {
+						delete BM[i].FileAndPath[i2];
+						let BookmarkString = JSON.stringify(BM).replace("null,","").replace(",null","").replace("null","");
+						FileSys.writeFile (BookmarkPath, BookmarkString, 'utf-8', (err) =>{});
+					}
+				}
+			} TreeL01.Refresh();
+		}
+	});
+}
+
+//
+//  Function jump to bookmark point.
+//
+export function JumpInToBookMark (BookmarkPath: string, Item: Dependency) {
+	console.log ('01');
 }

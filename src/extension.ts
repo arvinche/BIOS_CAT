@@ -5,9 +5,16 @@ import * as FileSys from 'fs';
 import * as RLSys   from 'readline';
 
 //
-// Loco define class file.
+// Local define class file.
 //
-import { NodeDependenciesProvider, Dependency } from './L01_SideBarTreeView';
+import { 
+	NodeDependenciesProvider, 
+	Dependency,
+	AddBookMarkElement,
+	EditBookMarkElement, 
+	DelBookMarkElement,
+	JumpInToBookMark
+} from './L01_SideBarTreeView';
 
 //
 // Global variable.
@@ -19,7 +26,7 @@ const BuildPath = WorkSpace + vscode.workspace.getConfiguration().get("BuildPath
 //const BuildCommand = vscode.workspace.getConfiguration().get("BuildCmd").replace(/&/, "> "+Buildlog+" 2>&1 &") + " > "+ Buildlog + " 2>&1";
 const BuildCommand = "(" + vscode.workspace.getConfiguration().get("BuildCmd") + ") > "+ Buildlog + " 2>&1";
 const CleanCommand = "" + vscode.workspace.getConfiguration().get("CleanCmd");
-
+const BookmarkPath = WorkSpace + "Bookmark.json";
 
 export function activate (context: vscode.ExtensionContext) {
 
@@ -117,18 +124,20 @@ export function activate (context: vscode.ExtensionContext) {
 	//
 	//  Sidebar 01 (Bookmark) command area.
 	//
-	vscode.commands.registerCommand ('BIOS-CAT.L01AddMark', (Item: Dependency) => {
-		console.log ('01');
+	vscode.commands.registerCommand ('BIOS-CAT.L01AddMark', function () {
+		AddBookMarkElement (BookmarkPath, TreeL01);
+	});
+	vscode.commands.registerCommand ('BIOS-CAT.L01Edit', (Item: Dependency) => {
+		EditBookMarkElement (BookmarkPath, Item, TreeL01);
+	});
+	vscode.commands.registerCommand ('BIOS-CAT.L01Delete', (Item: Dependency) => {
+		DelBookMarkElement (BookmarkPath, Item, TreeL01);
 	});
 	vscode.commands.registerCommand ('BIOS-CAT.L01Reflash', function () {
-		console.log ('02');
-		TreeL01.refresh();
+		TreeL01.Refresh();
 	});
-	vscode.commands.registerCommand ('BIOS-CAT.L01Edit', function () {
-		console.log ('03');
-	});
-	vscode.commands.registerCommand ('BIOS-CAT.L01Delete', function () {
-		console.log ('04');
+	vscode.commands.registerCommand ('BIOS-CAT.L01JumpToFile', (Item: Dependency) => {
+		JumpInToBookMark (BookmarkPath, Item);
 	});
 }
 
