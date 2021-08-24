@@ -26,7 +26,7 @@ const BuildPath = WorkSpace + vscode.workspace.getConfiguration().get("BuildPath
 //const BuildCommand = vscode.workspace.getConfiguration().get("BuildCmd").replace(/&/, "> "+Buildlog+" 2>&1 &") + " > "+ Buildlog + " 2>&1";
 const BuildCommand = "(" + vscode.workspace.getConfiguration().get("BuildCmd") + ") > "+ Buildlog + " 2>&1";
 const CleanCommand = "" + vscode.workspace.getConfiguration().get("CleanCmd");
-const BookmarkPath = WorkSpace + "Bookmark.json";
+const BookmarkPath = WorkSpace + ".vscode/Bookmark.json";
 
 export function activate (context: vscode.ExtensionContext) {
 

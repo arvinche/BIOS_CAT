@@ -31,11 +31,20 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 		//
 		// Check book mark file.
 		//
-		const BookMarkPath = Path.join (this.WorkspaceRoot, 'Bookmark.json');
+		const BookMarkPath = Path.join (this.WorkspaceRoot, '.vscode/Bookmark.json');
 		if (this.PathExists (BookMarkPath)) {
 			return Promise.resolve (this.getBookMarkJson (BookMarkPath, Element));
 		} else {
 			vscode.window.showInformationMessage ('You don\' have bookmark.');
+			try { 
+				FileSys.accessSync (BookMarkPath);
+			} catch (err) {
+				FileSys.writeFile (
+					BookMarkPath,
+					'[{"Group":"This is a sampel~","FileAndPath":[{"Tag":"Welcome use bookmark","Path":"","Start":"0.0","End":"0.0"}]}]',
+					'utf-8',(err)=>{}
+				);
+			}
 			return Promise.resolve ([]);
 		}
 	}
@@ -83,27 +92,45 @@ export class Dependency extends vscode.TreeItem {
 //  Function of Edit book mark element.
 //
 export function AddBookMarkElement (BookmarkPath: string, TreeL01: NodeDependenciesProvider) {
-	let GroupArray = ["✏️Create New One."];
+	let GroupArray = ["Create New One. ✒️"];
 	let BM = JSON.parse (FileSys.readFileSync(BookmarkPath, 'utf-8'));
+	const Editor = vscode.window.activeTextEditor;
+
 	for (let i=0; i<BM.length; i++) {
+		if (BM[i].Group === "This is a sampel~") {continue;}
 		GroupArray.push (BM[i].Group);
 	}
 	vscode.window.showQuickPick (
 		GroupArray, 
-		{canPickMany:false, placeHolder:'Select or input the Group that you want:'})
+		{canPickMany:false, placeHolder:' 👇 Select or input the Group that you want:'})
 	.then( function (SelectMsg) {
-		if (SelectMsg === "✏️Create New One.") {
+		if (SelectMsg === "Create New One. ✒️") {
 			vscode.window.showInputBox({
 				ignoreFocusOut:true,
-				placeHolder:'Please enter the bookmark group.'})
+				placeHolder:' 🔖 Please enter the bookmark group.'})
 			.then (function (Msg) {
+				for (let i=0; i<BM.length; i++) {
+					if (BM[i].Group === Msg) {
+						vscode.window.showInformationMessage (' Grope name ['+Msg+'] is exist in your bookmark.');
+						return;
+					}
+				}
 				if (Msg) {
 					vscode.window.showInputBox({
 						ignoreFocusOut:true,
-						placeHolder:'Please enter the tag name.'})
+						placeHolder:' 🔖 Please enter the tag name.'})
 					.then (function (Msg2) {
 						if (Msg2) {
-							console.log (Msg+' '+Msg2);
+							let NewGroup = Object.assign({}, BM[0]);
+							NewGroup.Group = Msg;
+							NewGroup.FileAndPath = [Object.assign({}, BM[0].FileAndPath[0])];
+							NewGroup.FileAndPath[0].Tag   = Msg2;
+							NewGroup.FileAndPath[0].Path  = Editor?.document.fileName;
+							NewGroup.FileAndPath[0].Start = Editor?.selection.anchor.line+"."+Editor?.selection.anchor.character;
+							NewGroup.FileAndPath[0].End   = Editor?.selection.active.line+"."+Editor?.selection.active.character;
+							BM.push(NewGroup);
+							FileSys.writeFile (BookmarkPath, JSON.stringify(BM), 'utf-8', (err) =>{});
+							TreeL01.Refresh();
 						}
 					});
 				}
@@ -111,13 +138,24 @@ export function AddBookMarkElement (BookmarkPath: string, TreeL01: NodeDependenc
 		} else {
 			vscode.window.showInputBox({
 				ignoreFocusOut:true,
-				placeHolder:'Please enter the tag name.'})
+				placeHolder:' 🔖 Please enter the tag name.'})
 			.then (function (Msg2) {
 				if (Msg2) {
-					console.log (SelectMsg+' '+Msg2);
+					for (let i=0; i<BM.length; i++) {
+						if (BM[i].Group === SelectMsg) {
+							let NewTag = Object.assign({}, BM[i].FileAndPath[0]);
+							NewTag.Tag   = Msg2;
+							NewTag.Path  = Editor?.document.fileName;
+							NewTag.Start = Editor?.selection.anchor.line+"."+Editor?.selection.anchor.character;
+							NewTag.End   = Editor?.selection.active.line+"."+Editor?.selection.active.character;
+							BM[i].FileAndPath.push(NewTag);
+							FileSys.writeFile (BookmarkPath, JSON.stringify(BM), 'utf-8', (err) =>{});
+							TreeL01.Refresh();
+						}
+					}
 				}
 			});
-		} TreeL01.Refresh();
+		}
 	});
 }
 
@@ -132,18 +170,24 @@ export function EditBookMarkElement (BookmarkPath: string, Item: Dependency, Tre
 	.then (function (Message) {
 		if (Message) {
 			var BM = JSON.parse (FileSys.readFileSync(BookmarkPath, 'utf-8'));
-			var i  = Item.groupIndex.valueOf();
+			var GI  = Item.groupIndex.valueOf();
 			if ( Item.collapsibleState ) {
-				if (BM[i].Group === Item.markTitle) {
-					BM[i].Group = Message;
+				if (BM[GI].Group === Item.markTitle) {
+					BM[GI].Group = Message;
+				}
+				for (let i=0; i<BM.length; i++) {
+					if (BM[i].Group === Message && i !== GI) {
+						vscode.window.showInformationMessage (' Grope name ['+Message+'] is exist in your bookmark.');
+						return;
+					}
 				}
 			} else {
-				for (let i2=0; i2<BM[i].FileAndPath.length; i2++) {
-					if (BM[i].FileAndPath[i2].Tag === Message) {
+				for (let i2=0; i2<BM[GI].FileAndPath.length; i2++) {
+					if (BM[GI].FileAndPath[i2].Tag === Message) {
 						vscode.window.showInformationMessage (' The bookmark in same group must gave different name ~ ');
 						return;
-					} else if (BM[i].FileAndPath[i2].Tag === Item.markTitle) {
-						BM[i].FileAndPath[i2].Tag = Message;
+					} else if (BM[GI].FileAndPath[i2].Tag === Item.markTitle) {
+						BM[GI].FileAndPath[i2].Tag = Message;
 					}
 				}
 			}
@@ -192,5 +236,29 @@ export function DelBookMarkElement (BookmarkPath: string, Item: Dependency, Tree
 //  Function jump to bookmark point.
 //
 export function JumpInToBookMark (BookmarkPath: string, Item: Dependency) {
-	console.log ('01');
+	var BM = JSON.parse (FileSys.readFileSync (BookmarkPath, 'utf-8'));
+	var GI = Item.groupIndex.valueOf();
+	var SelectBookmark;
+	for (let i=0; i<BM[GI].FileAndPath.length; i++) {
+		if ( BM[GI].FileAndPath[i].Tag === Item.markTitle) {
+			SelectBookmark = BM[GI].FileAndPath[i];
+			try { 
+				FileSys.accessSync (SelectBookmark.Path);
+			} catch (err) {
+				vscode.window.showInformationMessage (' File may be remove, please check it in your workspace. ');
+				return;
+			} break;
+		}
+	}
+	let Start = SelectBookmark.Start.split(".");
+	let End   = SelectBookmark.End.split(".");
+	const options = {
+		selection: new vscode.Range (
+			new vscode.Position (parseInt(Start[0]), parseInt(Start[1])),
+			new vscode.Position (parseInt(End[0]), parseInt(End[1]))
+		),
+		preview: true,
+		viewColumn: vscode.ViewColumn.One
+	};
+	vscode.window.showTextDocument (vscode.Uri.file(SelectBookmark.Path), options);
 }
