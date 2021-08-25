@@ -16,10 +16,16 @@ import {
 	JumpInToBookMark
 } from './L01_SideBarTreeView';
 
+import { 
+
+} from './L02_SideBarRecordLog';
+
 //
 // Global variable.
 //
-const Terminal  = vscode.window.createTerminal ({name: "Cat Build code ENV !!"});
+const Terminal  = (vscode.window.activeTerminal?.name !== "Cat Build code ENV !!") ? 
+				vscode.window.createTerminal ({name: "Cat Build code ENV !!"}) :
+				vscode.window.activeTerminal;
 const WorkSpace = vscode.workspace.rootPath + "/";
 const Buildlog  = WorkSpace + "BuildLog.log";
 const BuildPath = WorkSpace + vscode.workspace.getConfiguration().get("BuildPath");
@@ -122,7 +128,7 @@ export function activate (context: vscode.ExtensionContext) {
 	});
 
 	//
-	//  Sidebar 01 (Bookmark) command area.
+	//  Sidebar L01 (Bookmark) command area.
 	//
 	vscode.commands.registerCommand ('BIOS-CAT.L01AddMark', function () {
 		AddBookMarkElement (BookmarkPath, TreeL01);
@@ -138,6 +144,12 @@ export function activate (context: vscode.ExtensionContext) {
 	});
 	vscode.commands.registerCommand ('BIOS-CAT.L01JumpToFile', (Item: Dependency) => {
 		JumpInToBookMark (BookmarkPath, Item);
+	});
+	//
+	//  Sidebar L02 (Record log) command area.
+	//
+	vscode.commands.registerCommand ('BIOS-CAT.L02StartRecord!!', function () {
+		
 	});
 }
 

@@ -47,18 +47,20 @@
 			{"command": "BIOS-CAT.L01Reflash"    , "title": "Reflash BookMark 📒", "icon": "./Images/L01_Reflash.png"},
 			{"command": "BIOS-CAT.L01Edit"       , "title": "Edit BookMark 📒"   , "icon": "./Images/L01_Edit.png"},
 			{"command": "BIOS-CAT.L01Delete"     , "title": "Delete BookMark 📒" , "icon": "./Images/L01_Delete.png"},
-			{"command": "BIOS-CAT.L01JumpToFile" , "title": "Jump to file 📒"    , "icon": "./Images/L01_Jump.png"}
+			{"command": "BIOS-CAT.L01JumpToFile" , "title": "Jump to file 📒"    , "icon": "./Images/L01_Jump.png"},
+			{"command": "BIOS-CAT.L02StartRecord", "title": "Start/Stop record log", "icon": "./Images/L01_Jump.png"}
 		],
 		"keybindings": [
 			{"command": "BIOS-CAT.CMD01", "key": "ctrl+f6", "when": "editorTextFocus"},
 			{"command": "BIOS-CAT.CMD02", "key": "ctrl+f7", "when": "editorTextFocus"},
 			{"command": "BIOS-CAT.CMD03", "key": "ctrl+f8", "when": "editorTextFocus"},
-			{"command": "BIOS-CAT.L01AddMark", "key": "ctrl+m", "when": "editorTextFocus", "mac": "cmd+m"}
+			{"command": "BIOS-CAT.L01AddMark", "key": "ctrl+m", "when": "editorTextFocus", "mac": "cmd+m"},
+			{"command": "BIOS-CAT.L02StartRecord", "key": "alt+r", "when": "editorTextFocus"}
 		],
 		"menus": {
 			"view/title": [
-				{ "command": "BIOS-CAT.L01Reflash", "when": "view == L01", "group": "navigation" },
-				{ "command": "BIOS-CAT.L01AddMark", "when": "view == L01", "group": "navigation" }
+				{ "command": "BIOS-CAT.L01AddMark", "when": "view == L01", "group": "navigation" },
+				{ "command": "BIOS-CAT.L01Reflash", "when": "view == L01", "group": "navigation" }
 			],
 			"view/item/context": [
 				{ "command": "BIOS-CAT.L01Edit", "when": "view == L01", "group": "inline" },
@@ -76,7 +78,8 @@
 		"views": {
 			"CatMaster": [
 				{"id": "L01", "name": "　📒 Bookmark ~"},
-				{"id": "L02", "name": "　Test view 02"}
+				{"id": "L02", "name": "　💻 Record Log"},
+				{"id": "L03", "name": "　View port 03"}
 			]
 		},
 		"languages": [

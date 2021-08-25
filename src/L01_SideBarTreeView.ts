@@ -76,7 +76,7 @@ export class Dependency extends vscode.TreeItem {
 	) {
 		super (markTitle, collapsibleState);
 		this.tooltip = `${this.markPath}`;
-		this.description = this.markPath.split("/").pop();
+		this.description = this.markPath.split("/").pop()?.split("\\").pop();
 		this.iconPath = collapsibleState ? {
 			light: Path.join (__filename, '../..', './Images/L01_GroupRoot.png'),
 			dark: Path.join (__filename, '../..', './Images/L01_GroupRoot.png')
