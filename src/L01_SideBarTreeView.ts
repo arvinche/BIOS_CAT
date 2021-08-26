@@ -3,6 +3,8 @@ import * as vscode  from 'vscode';
 import * as FileSys from 'fs';
 import * as Path	from 'path';
 
+const WorkSpace = (vscode.workspace.rootPath + "/").replace('\\\\',"/");
+const BookmarkPath = WorkSpace + ".vscode/Bookmark.json";
 export class NodeDependenciesProvider implements vscode.TreeDataProvider<Dependency> {
 
 	constructor (private WorkspaceRoot: string) { }
@@ -39,9 +41,12 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 			try { 
 				FileSys.accessSync (BookMarkPath);
 			} catch (err) {
+				if (!FileSys.existsSync(this.WorkspaceRoot+"/.vscode")) {
+					FileSys.mkdirSync(this.WorkspaceRoot+"/.vscode");
+				}
 				FileSys.writeFile (
 					BookMarkPath,
-					'[{"Group":"This is a sampel~","FileAndPath":[{"Tag":"Welcome use bookmark","Path":"","Start":"0.0","End":"0.0"}]}]',
+					'[{"Group":"This is a sampel~","Time":"","FileAndPath":[{"Tag":"Welcome use bookmark","Path":"","Start":"0.0","End":"0.0","Time":""}]}]',
 					'utf-8',(err)=>{}
 				);
 			}
@@ -56,11 +61,22 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 			if (Element) {
 				if (i === Element.groupIndex) {
 					for (let i2=0; i2<BookmarkJson[i].FileAndPath.length; i2++) {
-						Content.push(new Dependency (BookmarkJson[i].FileAndPath[i2].Tag, i, BookmarkJson[i].FileAndPath[i2].Path, vscode.TreeItemCollapsibleState.None));
+						Content.push(new Dependency (
+							i,
+							BookmarkJson[i].FileAndPath[i2].Tag,
+							BookmarkJson[i].FileAndPath[i2].Path,
+							BookmarkJson[i].FileAndPath[i2].Time,
+							vscode.TreeItemCollapsibleState.None));
 					}
 				}
 			} else {
-				Content.push(new Dependency (BookmarkJson[i].Group, i, "", vscode.TreeItemCollapsibleState.Collapsed));
+				if (BookmarkJson[i].Group === "This is a sampel~") { continue; }
+				Content.push(new Dependency (
+					i,
+					BookmarkJson[i].Group,
+					"",
+					BookmarkJson[i].Time,
+					vscode.TreeItemCollapsibleState.Collapsed));
 			}
 		}
 		return Content;
@@ -69,14 +85,15 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 
 export class Dependency extends vscode.TreeItem {
 	constructor (
-		public readonly markTitle: string,
 		public groupIndex: Number,
+		public readonly markTitle: string,
 		public markPath: string,
+		public time: string,
 		public readonly collapsibleState: vscode.TreeItemCollapsibleState
 	) {
 		super (markTitle, collapsibleState);
 		this.tooltip = `${this.markPath}`;
-		this.description = this.markPath.split("/").pop()?.split("\\").pop();
+		this.description = this.markPath.split("/").pop()?.split("\\").pop()+"  ["+this.time+"]";
 		this.iconPath = collapsibleState ? {
 			light: Path.join (__filename, '../..', './Images/L01_GroupRoot.png'),
 			dark: Path.join (__filename, '../..', './Images/L01_GroupRoot.png')
@@ -91,7 +108,7 @@ export class Dependency extends vscode.TreeItem {
 //
 //  Function of Edit book mark element.
 //
-export function AddBookMarkElement (BookmarkPath: string, TreeL01: NodeDependenciesProvider) {
+export function AddBookMarkElement (TreeL01: NodeDependenciesProvider) {
 	let GroupArray = ["Create New One. ✒️"];
 	let BM = JSON.parse (FileSys.readFileSync(BookmarkPath, 'utf-8'));
 	const Editor = vscode.window.activeTextEditor;
@@ -104,6 +121,8 @@ export function AddBookMarkElement (BookmarkPath: string, TreeL01: NodeDependenc
 		GroupArray, 
 		{canPickMany:false, placeHolder:' 👇 Select or input the Group that you want:'})
 	.then( function (SelectMsg) {
+		var Now = new Date();
+		var Time = (Now.getMonth()+1)+'/'+ Now.getDate()+'-'+Now.getHours()+':'+Now.getMinutes();
 		if (SelectMsg === "Create New One. ✒️") {
 			vscode.window.showInputBox({
 				ignoreFocusOut:true,
@@ -123,11 +142,13 @@ export function AddBookMarkElement (BookmarkPath: string, TreeL01: NodeDependenc
 						if (Msg2) {
 							let NewGroup = Object.assign({}, BM[0]);
 							NewGroup.Group = Msg;
+							NewGroup.Time  = Time;
 							NewGroup.FileAndPath = [Object.assign({}, BM[0].FileAndPath[0])];
 							NewGroup.FileAndPath[0].Tag   = Msg2;
 							NewGroup.FileAndPath[0].Path  = Editor?.document.fileName;
 							NewGroup.FileAndPath[0].Start = Editor?.selection.anchor.line+"."+Editor?.selection.anchor.character;
 							NewGroup.FileAndPath[0].End   = Editor?.selection.active.line+"."+Editor?.selection.active.character;
+							NewGroup.FileAndPath[0].Time  = Time;
 							BM.push(NewGroup);
 							FileSys.writeFile (BookmarkPath, JSON.stringify(BM), 'utf-8', (err) =>{});
 							TreeL01.Refresh();
@@ -148,6 +169,7 @@ export function AddBookMarkElement (BookmarkPath: string, TreeL01: NodeDependenc
 							NewTag.Path  = Editor?.document.fileName;
 							NewTag.Start = Editor?.selection.anchor.line+"."+Editor?.selection.anchor.character;
 							NewTag.End   = Editor?.selection.active.line+"."+Editor?.selection.active.character;
+							NewTag.Time  = Time;
 							BM[i].FileAndPath.push(NewTag);
 							FileSys.writeFile (BookmarkPath, JSON.stringify(BM), 'utf-8', (err) =>{});
 							TreeL01.Refresh();
@@ -162,7 +184,7 @@ export function AddBookMarkElement (BookmarkPath: string, TreeL01: NodeDependenc
 //
 //  Function of Edit book mark element.
 //
-export function EditBookMarkElement (BookmarkPath: string, Item: Dependency, TreeL01: NodeDependenciesProvider) {
+export function EditBookMarkElement (TreeL01: NodeDependenciesProvider, Item: Dependency) {
 	let UnitType = Item.collapsibleState? "Group":"Tag";
 	vscode.window.showInputBox({
 		ignoreFocusOut:true,
@@ -200,7 +222,7 @@ export function EditBookMarkElement (BookmarkPath: string, Item: Dependency, Tre
 //
 //  Function of delete book mark element.
 //
-export function DelBookMarkElement (BookmarkPath: string, Item: Dependency, TreeL01: NodeDependenciesProvider) {
+export function DelBookMarkElement (TreeL01: NodeDependenciesProvider, Item: Dependency) {
 	vscode.window.showInformationMessage (
 		"You sure you want to delete this ("+ Item.markTitle +") bookmark ?",
 		'Yes I do !!',
@@ -235,7 +257,7 @@ export function DelBookMarkElement (BookmarkPath: string, Item: Dependency, Tree
 //
 //  Function jump to bookmark point.
 //
-export function JumpInToBookMark (BookmarkPath: string, Item: Dependency) {
+export function JumpInToBookMark (Item: Dependency) {
 	var BM = JSON.parse (FileSys.readFileSync (BookmarkPath, 'utf-8'));
 	var GI = Item.groupIndex.valueOf();
 	var SelectBookmark;
