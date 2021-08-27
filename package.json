@@ -1,5 +1,7 @@
 {
 	"name": "bios-cat",
+	"publisher": "CatMaster",
+	"icon": "Images/01_CatIcon.png",
 	"version": "0.0.1",
 	"engines": { "vscode": "^1.59.0" },
 	"displayName": "BIOS-CAT",
@@ -9,7 +11,7 @@
 	"main": "./out/extension.js",
 	"contributes": {
 		"configuration": {
-			"title": "Welcome to use BIOS-CAT ~",
+			"title": "BIOS-CAT ~",
 			"properties": {
 				"BuildPath": {
 					"type": "string",
@@ -93,6 +95,10 @@
 			{"language": "c", "path": "./Snippets/C.json"},
 			{"language": "Inf", "path": "./Snippets/Inf.json"}
 		]
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://gitlab.com/CatMasterDB/bios-cat.git"
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

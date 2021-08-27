@@ -1,16 +1,18 @@
 # BIOS-CAT README
 
-This is the README for your extension "BIOS-CAT". After writing up a brief description, we recommend including the following sections.
+This is a extension Can make BIOS engineer more convenient.
+Of course some functions are good to use even if you are not a BIOS engineer :)
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+1. Build series.
+  a. One click build code.
+  b. One click clear work space.
+  c. One click catch & jump to build error.
+  d. One click build single module.
 
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+2. Bookmark.
+  
 
 ## Requirements
 
