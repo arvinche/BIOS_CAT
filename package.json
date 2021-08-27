@@ -51,10 +51,10 @@
 			{"command": "BIOS-CAT.L02StartRecord", "title": "Start/Stop record log", "icon": "./Images/L01_Jump.png"}
 		],
 		"keybindings": [
-			{"command": "BIOS-CAT.CMD01", "key": "ctrl+f6", "when": "editorTextFocus"},
-			{"command": "BIOS-CAT.CMD02", "key": "ctrl+f7", "when": "editorTextFocus"},
-			{"command": "BIOS-CAT.CMD03", "key": "ctrl+f8", "when": "editorTextFocus"},
-			{"command": "BIOS-CAT.CMD04", "key": "ctrl+f9", "when": "editorTextFocus"},
+			{"command": "BIOS-CAT.CMD01", "key": "alt+'", "when": "editorTextFocus"},
+			{"command": "BIOS-CAT.CMD02", "key": "alt+;", "when": "editorTextFocus"},
+			{"command": "BIOS-CAT.CMD03", "key": "alt+/", "when": "editorTextFocus"},
+			{"command": "BIOS-CAT.CMD04", "key": "alt+.", "when": "editorTextFocus"},
 			{"command": "BIOS-CAT.L01AddMark", "key": "ctrl+m", "when": "editorTextFocus", "mac": "cmd+m"},
 			{"command": "BIOS-CAT.L02StartRecord", "key": "alt+r", "when": "editorTextFocus"}
 		],

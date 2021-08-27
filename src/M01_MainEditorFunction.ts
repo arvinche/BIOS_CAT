@@ -4,7 +4,7 @@ import * as vscode  from 'vscode';
 import * as FileSys from 'fs';
 import * as RLSys   from 'readline';
 
-const WorkSpace = (vscode.workspace.rootPath + "/").replace('\\\\',"/");
+const WorkSpace = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
 const BuilFolder= WorkSpace + "Build";
 const Buildlog  = WorkSpace + "BuildLog.log";
 const BuildPath = WorkSpace + vscode.workspace.getConfiguration().get("BuildPath");
@@ -27,13 +27,16 @@ function CheckTerminalAndChangeEncoding (Terminal: vscode.Terminal) {
 }
 
 //
-//  Find the file with sub file name. (from the outside in)
+//  Find the file with sub file name. (from inside out)
 //
-function FindModuleName (Root:string, SearchContent:string, SubName:string, Excluded:string):string[] {
-    let Modules:string[] = [];
+function FindModuleName (Root:string, SearchContent:string, SubName:string, Excluded:string):string {
+    Root = Root.replace(/\\/g,"/");
+    let Filefolder = Root.split("/");
+    let ModuleName = "";
+
     function Deepfine (Root:string, SearchContent:string, SubName:string, Excluded:string) {
         FileSys.readdirSync(Root).forEach ( function (item) {
-            let FilePath = require('path').join (Root,item).replace("\\\\","/");
+            let FilePath = require('path').join (Root,item);
             if ( FileSys.statSync(FilePath).isDirectory() === true && 
                 FilePath.indexOf (Excluded) === -1) {
                     //
@@ -47,10 +50,7 @@ function FindModuleName (Root:string, SearchContent:string, SubName:string, Excl
                         let Line = FileContent.split ("\n");
                         for (let i=0; i<Line.length; i++) {
                             if (Line[i].indexOf ("BASE_NAME") !== -1) {
-                                let ModuleName = Line[i].split(" ").pop()?.replace("\r","")+"";
-                                if (Modules.indexOf (ModuleName) === -1) {
-                                    Modules.push (ModuleName);
-                                }
+                                ModuleName = Line[i].split(" ").pop()?.replace("\r","")+"";
                             }
                         }
                     }
@@ -58,8 +58,12 @@ function FindModuleName (Root:string, SearchContent:string, SubName:string, Excl
             }
         });
     }
-    Deepfine (Root, SearchContent, SubName, Excluded);
-    return Modules;
+    for (let i=Filefolder.length ; i!==0 && ModuleName === ""; i--){
+        Root = Root.replace ("/"+Filefolder[i-1], "");
+        if (Root+"/" === WorkSpace) {return "";}
+        Deepfine (Root, SearchContent, SubName, Excluded);
+    }
+    return ModuleName;
 }
 
 //
@@ -69,7 +73,7 @@ function SearchBuildFolder (Root:string, FolderName:string):string[] {
     let ModulesFolder:string[] = [];
     function Deepfine (Root:string, FolderName:string) {
         FileSys.readdirSync(Root).forEach ( function (item) {
-            let FilePath = require('path').join (Root,item).replace("\\\\","/");
+            let FilePath = require('path').join (Root,item);
             if ( FileSys.statSync(FilePath).isDirectory() === true) {
                 if (FilePath.endsWith (FolderName)) {
                     ModulesFolder.push(FilePath+"/"+FolderName+"/Makefile");
@@ -90,8 +94,10 @@ function SearchBuildFolder (Root:string, FolderName:string):string[] {
 //
 // Start to build code
 //
-export function CreatEnvAndBuildCode (Terminal: vscode.Terminal) {
-
+export function CreatEnvAndBuildCode () {
+    const Terminal  =  (vscode.window.activeTerminal?.name !== "Cat Build code ENV !!") ? 
+                        vscode.window.createTerminal ({name: "Cat Build code ENV !!"}) :
+                        vscode.window.activeTerminal;
     if (!CheckTerminalAndChangeEncoding (Terminal)) { return; }
 
     vscode.window.showInformationMessage ('Start to build code.');
@@ -111,8 +117,10 @@ export function CreatEnvAndBuildCode (Terminal: vscode.Terminal) {
 //
 //  Clean up work space
 //
-export function CleanUpWorkSpace (Terminal: vscode.Terminal) {
-
+export function CleanUpWorkSpace () {
+    const Terminal  =  (vscode.window.activeTerminal?.name !== "Cat Build code ENV !!") ? 
+                        vscode.window.createTerminal ({name: "Cat Build code ENV !!"}) :
+                        vscode.window.activeTerminal;
     if (!CheckTerminalAndChangeEncoding (Terminal)) { return; }
 
     vscode.window.showInformationMessage ('Start to clean up your work spase.');
@@ -169,44 +177,45 @@ export function ChecBuildLogAndJump2Error () {
 //
 //  Build individual module
 //
-export function BuildSingleModule (Terminal: vscode.Terminal) {
-
+export function BuildSingleModule () {
+    const Terminal  =  (vscode.window.activeTerminal?.name !== "Cat Build code ENV !!") ? 
+                        vscode.window.createTerminal ({name: "Cat Build code ENV !!"}) :
+                        vscode.window.activeTerminal;
     if (!CheckTerminalAndChangeEncoding (Terminal)) { return; }
     //
     // Check terminal environment.
     //
-    Terminal.sendText ("nmake > "+ EnvCheck);
-    if (!FileSys.existsSync (BuilFolder) || FileSys.readFileSync (EnvCheck, 'utf-8').indexOf("not recognized") !== -1) {
+    FileSys.unlink (EnvCheck,(err)=>{});
+    Terminal.sendText ("(nmake > "+ EnvCheck + " 2>&1)");
+    let CheckFile = FileSys.readFileSync (EnvCheck, 'utf-8');
+    if (!FileSys.existsSync (BuilFolder) || CheckFile.indexOf("not recognized") !== -1) {
         vscode.window.showInformationMessage (
             "BIOS-Cat need your build environment, please build at least one time and keep terminal.\
              Do you want to build it now?",
             'Yes I do !!',
             'No Thanks ~')
-        .then (function (Select) { if (Select === 'Yes I do !!') { CreatEnvAndBuildCode(Terminal);} });
+        .then (function (Select) { if (Select === 'Yes I do !!') { CreatEnvAndBuildCode();} });
         return;
     }
     //
     //  Start find current file in inf and module path in build folder.
     //
-    let FileName = vscode.window.activeTextEditor?.document.fileName.split("/").pop()?.split("\\").pop()+"";
-    let ModuleName = FindModuleName (WorkSpace, FileName, ".inf", BuilFolder);
-    if (!ModuleName.length) {
+    let FileName = vscode.window.activeTextEditor?.document.fileName.replace(/\\/g,"/").split("/").pop()+"";
+    let ModuleName = FindModuleName (vscode.window.activeTextEditor?.document.fileName+"", FileName, ".inf", BuilFolder);
+    if (ModuleName === "") {
          vscode.window.showInformationMessage ("Can\'t find [ "+FileName+" ] in inf file, please check it and rebuild again.");
          return;
     }
-    let MakeFilePath = [];
-    for (let i=0; i<ModuleName.length; i++) { MakeFilePath.push (SearchBuildFolder (BuilFolder, ModuleName[i])); }
+    let MakeFilePath = SearchBuildFolder (BuilFolder, ModuleName);
     if (!MakeFilePath.length) {
         vscode.window.showInformationMessage ("Can\'t find [ "+ModuleName+" ] in Build folder, please make sure this module will been build.");
         return;
     }
     vscode.window.showInformationMessage ('Start to build module [ '+ModuleName+' ].');
+    Terminal.show (true);
     let BuildCommand = "";
-    for (let i=0; i<ModuleName.length; i++) {
-        for (let i2=0; i2<MakeFilePath[i].length; i2++) {
-            BuildCommand = BuildCommand+"nmake "+MakeFilePath[i][i2]+"&";
-        }
+    for (let i=0; i<MakeFilePath.length; i++) {
+        BuildCommand = BuildCommand+"nmake "+MakeFilePath[i]+"&";
     }
     Terminal.sendText (BuildCommand);
-    Terminal.show (true);
 }

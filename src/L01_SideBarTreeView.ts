@@ -3,7 +3,7 @@ import * as vscode  from 'vscode';
 import * as FileSys from 'fs';
 import * as Path	from 'path';
 
-const WorkSpace = (vscode.workspace.rootPath + "/").replace('\\\\',"/");
+const WorkSpace = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
 const BookmarkPath = WorkSpace + ".vscode/Bookmark.json";
 export class NodeDependenciesProvider implements vscode.TreeDataProvider<Dependency> {
 

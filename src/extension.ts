@@ -31,28 +31,22 @@ import {
 //  Function Entry ~
 //
 export function activate (context: vscode.ExtensionContext) {
-
-	console.log ('Congratulations, your extension "BIOS-CAT" is now active!');
-	
 	//
 	// Init Variable that we need ~
 	//
-	const Terminal  =  (vscode.window.activeTerminal?.name !== "Cat Build code ENV !!") ? 
-						vscode.window.createTerminal ({name: "Cat Build code ENV !!"}) :
-						vscode.window.activeTerminal;
-	const WorkSpace = (vscode.workspace.rootPath + "/").replace('\\\\',"/");
+	const WorkSpace = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
 	const TreeL01   = new NodeDependenciesProvider(WorkSpace);
-	vscode.window.registerTreeDataProvider ( 'L01',  TreeL01);
-
+	vscode.window.registerTreeDataProvider ('L01', TreeL01);
+	console.log ('Great~ "BIOS-CAT" is now active!');
 	//
 	// Start to build code
 	//
-	vscode.commands.registerCommand ('BIOS-CAT.CMD01', ()=> { CreatEnvAndBuildCode (Terminal); });
+	vscode.commands.registerCommand ('BIOS-CAT.CMD01', ()=> { CreatEnvAndBuildCode (); });
 
 	//
 	//  Clean up work space
 	//
-	vscode.commands.registerCommand ('BIOS-CAT.CMD02', ()=>{ CleanUpWorkSpace (Terminal); });
+	vscode.commands.registerCommand ('BIOS-CAT.CMD02', ()=>{ CleanUpWorkSpace (); });
 
 	//
 	// Check build log & show build error (if it have)
@@ -62,7 +56,7 @@ export function activate (context: vscode.ExtensionContext) {
 	//
 	//  Build individual module
 	//
-	vscode.commands.registerCommand ('BIOS-CAT.CMD04', ()=>{ BuildSingleModule (Terminal); });	
+	vscode.commands.registerCommand ('BIOS-CAT.CMD04', ()=>{ BuildSingleModule (); });	
 
 	//
 	//  Sidebar L01 (Bookmark) command area.
