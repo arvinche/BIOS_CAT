@@ -123,7 +123,7 @@ export function AddBookMarkElement (TreeL01: NodeDependenciesProvider) {
 	.then( function (SelectMsg) {
 		var Now = new Date();
 		var Time = (Now.getMonth()+1)+'/'+ Now.getDate()+'-'+Now.getHours()+':'+Now.getMinutes();
-		if (SelectMsg === "Create New One. ✒️") {
+		if (SelectMsg === "Create New One. ✒️" || SelectMsg === "") {
 			vscode.window.showInputBox({
 				ignoreFocusOut:true,
 				placeHolder:' 🔖 Please enter the bookmark group.'})
