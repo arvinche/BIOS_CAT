@@ -20,7 +20,7 @@ const EnvCheck     = WorkSpace+".vscode/EnvCheck";
 function CheckTerminalAndChangeEncoding (Terminal: vscode.Terminal) {
     Terminal.sendText ("chcp 437 & cd " + BuildPath);
     if (!Terminal.name.indexOf("powershell")) {
-        vscode.window.showInformationMessage ('Plase exchange your terminal into command prompt. (cmd.exe)');
+        vscode.window.showInformationMessage (' ❗️❗️ Plase exchange your terminal into command prompt. (cmd.exe)');
         return false;
     }
     return true;
@@ -100,7 +100,7 @@ export function CreatEnvAndBuildCode () {
                         vscode.window.activeTerminal;
     if (!CheckTerminalAndChangeEncoding (Terminal)) { return; }
 
-    vscode.window.showInformationMessage ('Start to build code.');
+    vscode.window.showInformationMessage (' 🔩 Start to build code.');
     if (!FileSys.existsSync (Buildlog)) {
         FileSys.writeFile (Buildlog, "Creat File\n", 'utf-8',(err)=>{});
     }
@@ -123,7 +123,7 @@ export function CleanUpWorkSpace () {
                         vscode.window.activeTerminal;
     if (!CheckTerminalAndChangeEncoding (Terminal)) { return; }
 
-    vscode.window.showInformationMessage ('Start to clean up your work spase.');
+    vscode.window.showInformationMessage (' 🔩 Start to clean up your work spase.');
     FileSys.unlink (Buildlog,(err)=>{});
     Terminal.sendText (CleanCommand);
     Terminal.show (true);
@@ -136,10 +136,10 @@ export function ChecBuildLogAndJump2Error () {
     var LineCount  = 0;
     var ErrorCount = 0;
     if (!FileSys.existsSync (Buildlog)) {
-        vscode.window.showInformationMessage ('There have no build log to analyze.');
+        vscode.window.showInformationMessage (' ❗️❗️ There have no build log to analyze.');
         return;
     }
-    vscode.window.showInformationMessage ('Checking build log ......... ');
+    vscode.window.showInformationMessage (' 🔍 Checking build log ......... ');
     //
     // If there have error, open the file and jump to the error line.
     //
@@ -171,7 +171,7 @@ export function ChecBuildLogAndJump2Error () {
                 });
             }
         }
-    }).on ('close', ()=>{ vscode.window.showInformationMessage ('There have ['+ ErrorCount + "] error in your code."); });
+    }).on ('close', ()=>{ vscode.window.showInformationMessage (' ❗️ There have ['+ ErrorCount + "] error in your code."); });
 }
 
 //
@@ -190,7 +190,7 @@ export function BuildSingleModule () {
     let CheckFile = FileSys.readFileSync (EnvCheck, 'utf-8');
     if (!FileSys.existsSync (BuilFolder) || CheckFile.indexOf("not recognized") !== -1) {
         vscode.window.showInformationMessage (
-            "BIOS-Cat need your build environment, please build at least one time and keep terminal.\
+            " ❗️❗️ BIOS-Cat need your build environment, please build at least one time and keep terminal.\
              Do you want to build it now?",
             'Yes I do !!',
             'No Thanks ~')
@@ -203,15 +203,15 @@ export function BuildSingleModule () {
     let FileName = vscode.window.activeTextEditor?.document.fileName.replace(/\\/g,"/").split("/").pop()+"";
     let ModuleName = FindModuleName (vscode.window.activeTextEditor?.document.fileName+"", FileName, ".inf", BuilFolder);
     if (ModuleName === "") {
-         vscode.window.showInformationMessage ("Can\'t find [ "+FileName+" ] in inf file, please check it and rebuild again.");
+         vscode.window.showInformationMessage (" ❗️❗️ Can\'t find [ "+FileName+" ] in inf file, please check it and rebuild again.");
          return;
     }
     let MakeFilePath = SearchBuildFolder (BuilFolder, ModuleName);
     if (!MakeFilePath.length) {
-        vscode.window.showInformationMessage ("Can\'t find [ "+ModuleName+" ] in Build folder, please make sure this module will been build.");
+        vscode.window.showInformationMessage (" ❗️❗️ Can\'t find [ "+ModuleName+" ] in Build folder, please make sure this module will been build.");
         return;
     }
-    vscode.window.showInformationMessage ('Start to build module [ '+ModuleName+' ].');
+    vscode.window.showInformationMessage (' 🤖 Start to build module [ '+ModuleName+' ].');
     Terminal.show (true);
     let BuildCommand = "";
     for (let i=0; i<MakeFilePath.length; i++) {

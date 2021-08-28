@@ -27,7 +27,7 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 
 	getChildren (Element: Dependency): Thenable<Dependency[]> {
 		if (!this.WorkspaceRoot) {
-			vscode.window.showInformationMessage('Please assign a wrokspace first.');
+			vscode.window.showInformationMessage(' ❗️❗️ Please assign a wrokspace first.');
 			return Promise.resolve([]);
 		}
 		//
@@ -37,7 +37,7 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 		if (this.PathExists (BookMarkPath)) {
 			return Promise.resolve (this.getBookMarkJson (BookMarkPath, Element));
 		} else {
-			vscode.window.showInformationMessage ('You don\' have bookmark.');
+			vscode.window.showInformationMessage (' ❗️❗️ You don\' have bookmark.');
 			try { 
 				FileSys.accessSync (BookMarkPath);
 			} catch (err) {
@@ -130,7 +130,7 @@ export function AddBookMarkElement (TreeL01: NodeDependenciesProvider) {
 			.then (function (Msg) {
 				for (let i=0; i<BM.length; i++) {
 					if (BM[i].Group === Msg) {
-						vscode.window.showInformationMessage (' Grope name ['+Msg+'] is exist in your bookmark.');
+						vscode.window.showInformationMessage (' ❗️❗️ Grope name ['+Msg+'] is exist in your bookmark.');
 						return;
 					}
 				}
@@ -163,6 +163,12 @@ export function AddBookMarkElement (TreeL01: NodeDependenciesProvider) {
 			.then (function (Msg2) {
 				if (Msg2) {
 					for (let i=0; i<BM.length; i++) {
+						for (let i2=0; i2<BM[i].FileAndPath.length; i2++) {
+							if (BM[i].FileAndPath[i2].Tag === Msg2) {
+								vscode.window.showInformationMessage (' ❗️❗️ The bookmark in same group must gave different name ~ ');
+								return;
+							}
+						}
 						if (BM[i].Group === SelectMsg) {
 							let NewTag = Object.assign({}, BM[i].FileAndPath[0]);
 							NewTag.Tag   = Msg2;
@@ -199,14 +205,14 @@ export function EditBookMarkElement (TreeL01: NodeDependenciesProvider, Item: De
 				}
 				for (let i=0; i<BM.length; i++) {
 					if (BM[i].Group === Message && i !== GI) {
-						vscode.window.showInformationMessage (' Grope name ['+Message+'] is exist in your bookmark.');
+						vscode.window.showInformationMessage (' ❗️❗️ Grope name ['+Message+'] is exist in your bookmark.');
 						return;
 					}
 				}
 			} else {
 				for (let i2=0; i2<BM[GI].FileAndPath.length; i2++) {
 					if (BM[GI].FileAndPath[i2].Tag === Message) {
-						vscode.window.showInformationMessage (' The bookmark in same group must gave different name ~ ');
+						vscode.window.showInformationMessage (' ❗️❗️ The bookmark in same group must gave different name ~ ');
 						return;
 					} else if (BM[GI].FileAndPath[i2].Tag === Item.markTitle) {
 						BM[GI].FileAndPath[i2].Tag = Message;
@@ -224,7 +230,7 @@ export function EditBookMarkElement (TreeL01: NodeDependenciesProvider, Item: De
 //
 export function DelBookMarkElement (TreeL01: NodeDependenciesProvider, Item: Dependency) {
 	vscode.window.showInformationMessage (
-		"You sure you want to delete this ("+ Item.markTitle +") bookmark ?",
+		" ❗️❗️ You sure you want to delete this ("+ Item.markTitle +") bookmark ?",
 		'Yes I do !!',
 		'No Thanks ~')
 	.then (function (Select) {
@@ -267,7 +273,7 @@ export function JumpInToBookMark (Item: Dependency) {
 			try { 
 				FileSys.accessSync (SelectBookmark.Path);
 			} catch (err) {
-				vscode.window.showInformationMessage (' File may be remove, please check it in your workspace. ');
+				vscode.window.showInformationMessage (' ❗️❗️ File may be remove, please check it in your workspace. ');
 				return;
 			} break;
 		}
