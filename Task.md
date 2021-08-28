@@ -12,6 +12,7 @@
 |             7 | Hot Key build code (Build)                    | T.B.D             | T.B.D         | Feature   |
 |             8 | Hot Key build code (Pre Build hook)           | T.B.D             | T.B.D         | Feature   |
 |             9 | Hot Key build code (post Build hook)          | T.B.D             | T.B.D         | Feature   |
+|            10 | Bookmark Feature                              | T.B.D             | T.B.D         | Feature   |
 
 ## Bug/Enhance List
 | Index | Feature Index | Task                                          | Status            | Author        | Attribute |
