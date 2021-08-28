@@ -7,7 +7,21 @@ const WorkSpace = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
 const BookmarkPath = WorkSpace + ".vscode/Bookmark.json";
 export class NodeDependenciesProvider implements vscode.TreeDataProvider<Dependency> {
 
-	constructor (private WorkspaceRoot: string) { }
+	constructor (private WorkspaceRoot: string) {
+		const BookMarkPath = Path.join (this.WorkspaceRoot, '.vscode/Bookmark.json');
+		try { 
+			FileSys.accessSync (BookMarkPath);
+		} catch (err) {
+			if (!FileSys.existsSync(this.WorkspaceRoot+"/.vscode")) {
+				FileSys.mkdirSync(this.WorkspaceRoot+"/.vscode");
+			}
+			FileSys.writeFile (
+				BookMarkPath,
+				'[{"Group":"This is a sampel~","Time":"","FileAndPath":[{"Tag":"Welcome use bookmark","Path":"","Start":"0.0","End":"0.0","Time":""}]}]',
+				'utf-8',(err)=>{}
+			);
+		}
+	}
     //
     //  Reflash area.
     //
