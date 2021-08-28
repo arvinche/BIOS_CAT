@@ -4,26 +4,27 @@ import * as vscode  from 'vscode';
 import * as FileSys from 'fs';
 import * as RLSys   from 'readline';
 
-const WorkSpace = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
-const BuilFolder= WorkSpace + "Build";
-const Buildlog  = WorkSpace + "BuildLog.log";
-const BuildPath = WorkSpace + vscode.workspace.getConfiguration().get("BuildPath");
-//const BuildCommand = vscode.workspace.getConfiguration().get("BuildCmd").replace(/&/, "> "+Buildlog+" 2>&1 &") + " > "+ Buildlog + " 2>&1";
-const BuildCommand = "(" + vscode.workspace.getConfiguration().get("BuildCmd") + ") > "+ Buildlog + " 2>&1";
-const CleanCommand = "" + vscode.workspace.getConfiguration().get("CleanCmd");
-const EnvCheck     = WorkSpace+".vscode/EnvCheck";
+const WorkSpace     = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
+const BuilFolder    = WorkSpace + "Build";
+const Buildlog      = WorkSpace + "BuildLog.log";
+const BuildPath     = WorkSpace + vscode.workspace.getConfiguration().get("BuildPath");
+const BuildCommand  = "(" + vscode.workspace.getConfiguration().get("BuildCmd") + ") > "+ Buildlog + " 2>&1";
+const CleanCommand  = "" + vscode.workspace.getConfiguration().get("CleanCmd");
+const EnvCheck      = WorkSpace+".vscode/EnvCheck";
+
+//
+//  Change encode into 437
+//    cmd /C to compatible between MS cmd and MS Powershell
+//
+const GlobalCommand = "cmd /C \"chcp 437 & cd " + BuildPath + " & "
+
 
 //============= Local Function =============//
-//
-//  Change encod into 437 and make sure it's not power shell.
-//
-function CheckTerminalAndChangeEncoding (Terminal: vscode.Terminal) {
-    Terminal.sendText ("chcp 437 & cd " + BuildPath);
-    if (!Terminal.name.indexOf("powershell")) {
-        vscode.window.showInformationMessage (' ❗️❗️ Plase exchange your terminal into command prompt. (cmd.exe)');
-        return false;
-    }
-    return true;
+function GetTerminal () {
+    let Terminal = (vscode.window.activeTerminal?.name !== "Cat Build code ENV !!") ?
+                    vscode.window.createTerminal ({name: "Cat Build code ENV !!"}) :
+                    vscode.window.activeTerminal;
+    return Terminal;
 }
 
 //
@@ -37,7 +38,7 @@ function FindModuleName (Root:string, SearchContent:string, SubName:string, Excl
     function Deepfine (Root:string, SearchContent:string, SubName:string, Excluded:string) {
         FileSys.readdirSync(Root).forEach ( function (item) {
             let FilePath = require('path').join (Root,item);
-            if ( FileSys.statSync(FilePath).isDirectory() === true && 
+            if ( FileSys.statSync(FilePath).isDirectory() === true &&
                 FilePath.indexOf (Excluded) === -1) {
                     //
                     //  Recursive to findout.
@@ -95,16 +96,13 @@ function SearchBuildFolder (Root:string, FolderName:string):string[] {
 // Start to build code
 //
 export function CreatEnvAndBuildCode () {
-    const Terminal  =  (vscode.window.activeTerminal?.name !== "Cat Build code ENV !!") ? 
-                        vscode.window.createTerminal ({name: "Cat Build code ENV !!"}) :
-                        vscode.window.activeTerminal;
-    if (!CheckTerminalAndChangeEncoding (Terminal)) { return; }
+    const Terminal  =  GetTerminal ();
 
     vscode.window.showInformationMessage (' 🔩 Start to build code.');
     if (!FileSys.existsSync (Buildlog)) {
         FileSys.writeFile (Buildlog, "Creat File\n", 'utf-8',(err)=>{});
     }
-    Terminal.sendText (BuildCommand);
+    Terminal.sendText (GlobalCommand + BuildCommand + "\"");
     Terminal.show (true);
     const options = {
         selection: new vscode.Range (new vscode.Position(0, 0), new vscode.Position(0, 0)),
@@ -118,14 +116,11 @@ export function CreatEnvAndBuildCode () {
 //  Clean up work space
 //
 export function CleanUpWorkSpace () {
-    const Terminal  =  (vscode.window.activeTerminal?.name !== "Cat Build code ENV !!") ? 
-                        vscode.window.createTerminal ({name: "Cat Build code ENV !!"}) :
-                        vscode.window.activeTerminal;
-    if (!CheckTerminalAndChangeEncoding (Terminal)) { return; }
+    const Terminal  =  GetTerminal ();
 
     vscode.window.showInformationMessage (' 🔩 Start to clean up your work spase.');
     FileSys.unlink (Buildlog,(err)=>{});
-    Terminal.sendText (CleanCommand);
+    Terminal.sendText (GlobalCommand + CleanCommand + "\"");
     Terminal.show (true);
 }
 
@@ -178,15 +173,13 @@ export function ChecBuildLogAndJump2Error () {
 //  Build individual module
 //
 export function BuildSingleModule () {
-    const Terminal  =  (vscode.window.activeTerminal?.name !== "Cat Build code ENV !!") ? 
-                        vscode.window.createTerminal ({name: "Cat Build code ENV !!"}) :
-                        vscode.window.activeTerminal;
-    if (!CheckTerminalAndChangeEncoding (Terminal)) { return; }
+    const Terminal  =  GetTerminal ();
+
     //
     // Check terminal environment.
     //
     FileSys.unlink (EnvCheck,(err)=>{});
-    Terminal.sendText ("(nmake > "+ EnvCheck + " 2>&1)");
+    Terminal.sendText (GlobalCommand + "(nmake > "+ EnvCheck + " 2>&1)" + "\"");
     let CheckFile = FileSys.readFileSync (EnvCheck, 'utf-8');
     if (!FileSys.existsSync (BuilFolder) || CheckFile.indexOf("not recognized") !== -1) {
         vscode.window.showInformationMessage (
@@ -217,5 +210,5 @@ export function BuildSingleModule () {
     for (let i=0; i<MakeFilePath.length; i++) {
         BuildCommand = BuildCommand+"nmake "+MakeFilePath[i]+"&";
     }
-    Terminal.sendText (BuildCommand);
+    Terminal.sendText (GlobalCommand + BuildCommand + "\"");
 }
