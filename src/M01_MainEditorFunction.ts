@@ -16,14 +16,15 @@ const EnvCheck      = WorkSpace+".vscode/EnvCheck";
 //  Change encode into 437
 //    cmd /C to compatible between MS cmd and MS Powershell
 //
-const GlobalCommand = "cmd /C \"chcp 437 & cd " + BuildPath + " & "
+const GlobalCommand = "cmd /C \"chcp 437 & cd " + BuildPath + " & ";
 
 
 //============= Local Function =============//
-function GetTerminal () {
+function GetTerminal (Message:string) {
     let Terminal = (vscode.window.activeTerminal?.name !== "Cat Build code ENV !!") ?
                     vscode.window.createTerminal ({name: "Cat Build code ENV !!"}) :
                     vscode.window.activeTerminal;
+    if (Message !== "") { vscode.window.showInformationMessage (Message); }
     return Terminal;
 }
 
@@ -96,9 +97,11 @@ function SearchBuildFolder (Root:string, FolderName:string):string[] {
 // Start to build code
 //
 export function CreatEnvAndBuildCode () {
-    const Terminal  =  GetTerminal ();
 
-    vscode.window.showInformationMessage (' 🔩 Start to build code.');
+    const Terminal  =  GetTerminal (" 🐈 Start to build code.");
+    //
+    //  Check buildlog file exists to make sure "showTextDocument" can works will.
+    //
     if (!FileSys.existsSync (Buildlog)) {
         FileSys.writeFile (Buildlog, "Creat File\n", 'utf-8',(err)=>{});
     }
@@ -116,9 +119,11 @@ export function CreatEnvAndBuildCode () {
 //  Clean up work space
 //
 export function CleanUpWorkSpace () {
-    const Terminal  =  GetTerminal ();
 
-    vscode.window.showInformationMessage (' 🔩 Start to clean up your work spase.');
+    const Terminal  =  GetTerminal (" 🧹 Start to clean up your work spase.");
+    //
+    // Delete Build log and clean workspace.
+    //
     FileSys.unlink (Buildlog,(err)=>{});
     Terminal.sendText (GlobalCommand + CleanCommand + "\"");
     Terminal.show (true);
@@ -173,8 +178,8 @@ export function ChecBuildLogAndJump2Error () {
 //  Build individual module
 //
 export function BuildSingleModule () {
-    const Terminal  =  GetTerminal ();
 
+    const Terminal  =  GetTerminal (' 🔍 Checking build environment..... ');
     //
     // Check terminal environment.
     //
@@ -204,7 +209,7 @@ export function BuildSingleModule () {
         vscode.window.showInformationMessage (" ❗️❗️ Can\'t find [ "+ModuleName+" ] in Build folder, please make sure this module will been build.");
         return;
     }
-    vscode.window.showInformationMessage (' 🤖 Start to build module [ '+ModuleName+' ].');
+    vscode.window.showInformationMessage (' 🐈 Start to build module [ '+ModuleName+' ].');
     Terminal.show (true);
     let BuildCommand = "";
     for (let i=0; i<MakeFilePath.length; i++) {

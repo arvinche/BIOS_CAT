@@ -6,7 +6,7 @@
 |             1 | FDF/DEC/INF/VFR/HFR Parser                    | T.B.D             | T.B.D         | Feature   |
 |             2 | Copyright Update when saving file             | T.B.D             | T.B.D         | Feature   |
 |             3 | ASL build time debug (jump)                   | T.B.D             | Arvin         | Feature   |
-|             4 | Putty integrate                               | T.B.D             | Arvin         | Feature   |
+|             4 | Putty integrate                               | On-Going          | Arvin         | Feature   |
 |             5 | C build time debug (jump)                     | Done              | Arvin         | Feature   |
 |             6 | Hot Key build code (Clean)                    | Done              | Arvin         | Feature   |
 |             7 | Hot Key build code (Build)                    | Done              | Arvin         | Feature   |
@@ -24,4 +24,5 @@
 |     2 |            11 | Let feature can work when WS have been move   | Done              | Arvin         | Enhance   |
 |     3 |             7 | Add powershell for build code support         | Done              | Gua           | Enhance   |
 |     4 |            11 | Remove redundant Bookmark.json                | Done              | Gua           | Enhance   |
+|     5 |             8 | It can't get "nmake" so it will always filed  | T.B.D             | T.B.D         | Bug       |
 

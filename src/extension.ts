@@ -24,7 +24,7 @@ import {
 } from './L01_SideBarTreeView';
 
 import { 
-
+	StarOrStoptRecordLog
 } from './L02_SideBarRecordLog';
 
 //
@@ -70,9 +70,7 @@ export function activate (context: vscode.ExtensionContext) {
 	//
 	//  Sidebar L02 (Record log) command area.
 	//
-	vscode.commands.registerCommand ('BIOS-CAT.L02StartRecord!!', function () {
-		
-	});
+	vscode.commands.registerCommand ('BIOS-CAT.L02StartRecord!!', function () { StarOrStoptRecordLog (); });
 }
 
 // this method is called when your extension is deactivated

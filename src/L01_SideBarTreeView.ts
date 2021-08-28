@@ -6,6 +6,7 @@ import * as Path	from 'path';
 const WorkSpace = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
 const BookmarkPath = WorkSpace + ".vscode/Bookmark.json";
 const WsIndex = 0;
+
 export class NodeDependenciesProvider implements vscode.TreeDataProvider<Dependency> {
 
 	constructor (private WorkspaceRoot: string) {
