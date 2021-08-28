@@ -10,6 +10,43 @@
 	"activationEvents": ["*"],
 	"main": "./out/extension.js",
 	"contributes": {
+		"grammars": [
+			{
+				"language": "edk2_dsc",
+				"scopeName": "source.edk2_dsc",
+				"path": "./syntaxes/edk2_dsc.tmLanguage.json"
+			},
+			{
+				"language": "edk2_dec",
+				"scopeName": "source.edk2_dec",
+				"path": "./syntaxes/edk2_dec.tmLanguage.json"
+			},
+			{
+				"language": "edk2_fdf",
+				"scopeName": "source.edk2_fdf",
+				"path": "./syntaxes/edk2_fdf.tmLanguage.json"
+			},
+			{
+				"language": "edk2_inf",
+				"scopeName": "source.edk2_inf",
+				"path": "./syntaxes/edk2_inf.tmLanguage.json"
+			},
+			{
+				"language": "edk2_uni",
+				"scopeName": "source.edk2_uni",
+				"path": "./syntaxes/edk2_uni.tmLanguage.json"
+			},
+			{
+				"language": "edk2_vfr",
+				"scopeName": "source.edk2_vfr",
+				"path": "./syntaxes/edk2_vfr.tmLanguage.json"
+			},
+			{
+				"language": "edk2_asl",
+				"scopeName": "source.edk2_asl",
+				"path": "./syntaxes/edk2_asl.tmLanguage.json"
+			}
+		],
 		"configuration": {
 			"title": "BIOS-CAT ~",
 			"properties": {
@@ -41,10 +78,10 @@
 			}
 		},
 		"commands": [
-			{"command": "BIOS-CAT.CMD01", "title": "01_Build code"},
-			{"command": "BIOS-CAT.CMD02", "title": "02_Clean"},
-			{"command": "BIOS-CAT.CMD03", "title": "03_Jump to error"},
-			{"command": "BIOS-CAT.CMD04", "title": "04_BuildThisModule"},
+			{"command": "BIOS-CAT.CMD01"         , "title": "01_Build code"},
+			{"command": "BIOS-CAT.CMD02"         , "title": "02_Clean"},
+			{"command": "BIOS-CAT.CMD03"         , "title": "03_Jump to error"},
+			{"command": "BIOS-CAT.CMD04"         , "title": "04_BuildThisModule"},
 			{"command": "BIOS-CAT.L01AddMark"    , "title": "Add BookMark 📒"    , "icon": "./Images/L01_Add.png"},
 			{"command": "BIOS-CAT.L01Reflash"    , "title": "Reflash BookMark 📒", "icon": "./Images/L01_Reflash.png"},
 			{"command": "BIOS-CAT.L01Edit"       , "title": "Edit BookMark 📒"   , "icon": "./Images/L01_Edit.png"},
@@ -53,12 +90,12 @@
 			{"command": "BIOS-CAT.L02StartRecord", "title": "Start/Stop record log", "icon": "./Images/L01_Jump.png"}
 		],
 		"keybindings": [
-			{"command": "BIOS-CAT.CMD01", "key": "alt+'", "when": "editorTextFocus"},
-			{"command": "BIOS-CAT.CMD02", "key": "alt+;", "when": "editorTextFocus"},
-			{"command": "BIOS-CAT.CMD03", "key": "alt+/", "when": "editorTextFocus"},
-			{"command": "BIOS-CAT.CMD04", "key": "alt+.", "when": "editorTextFocus"},
-			{"command": "BIOS-CAT.L01AddMark", "key": "ctrl+m", "when": "editorTextFocus", "mac": "cmd+m"},
-			{"command": "BIOS-CAT.L02StartRecord", "key": "alt+r", "when": "editorTextFocus"}
+			{"command": "BIOS-CAT.CMD01",          "key": "alt+'",  "when": "editorTextFocus"},
+			{"command": "BIOS-CAT.CMD02",          "key": "alt+;",  "when": "editorTextFocus"},
+			{"command": "BIOS-CAT.CMD03",          "key": "alt+/",  "when": "editorTextFocus"},
+			{"command": "BIOS-CAT.CMD04",          "key": "alt+.",  "when": "editorTextFocus"},
+			{"command": "BIOS-CAT.L01AddMark",     "key": "ctrl+m", "when": "editorTextFocus", "mac": "cmd+m"},
+			{"command": "BIOS-CAT.L02StartRecord", "key": "alt+r",  "when": "editorTextFocus"}
 		],
 		"menus": {
 			"view/title": [
@@ -87,13 +124,66 @@
 			]
 		},
 		"languages": [
-			{"id": "Inf", "extensions": [".inf"], "aliases": ["Inf", "inf"]},
-			{"id": "Asl", "extensions": [".asl", ".asi"], "aliases": ["Inf", "inf"]},
-			{"id": "Dec", "extensions": [".dec", ".dsc"], "aliases": ["EDK Platform Description"]}
+			{
+				"id": "edk2_dsc",
+				"extensions": [
+					".dsc"
+				],
+				"configuration": "./confs/edk2_dsc.conf.json"
+			},
+			{
+				"id": "edk2_dec",
+				"extensions": [
+					".dec"
+				],
+				"configuration": "./confs/edk2_dec.conf.json"
+			},
+			{
+				"id": "edk2_fdf",
+				"extensions": [
+					".fdf"
+				],
+				"configuration": "./confs/edk2_fdf.conf.json"
+			},
+			{
+				"id": "edk2_inf",
+				"extensions": [
+					".inf"
+				],
+				"configuration": "./confs/edk2_inf.conf.json",
+				"aliases": ["Inf", "inf"]
+			},
+			{
+				"id": "edk2_uni",
+				"extensions": [
+					".uni"
+				],
+				"configuration": "./confs/edk2_uni.conf.json"
+			},
+			{
+				"id": "edk2_vfr",
+				"extensions": [
+					".vfr",
+					".Vfr",
+					".hfr",
+					".Hfr"
+				],
+				"configuration": "./confs/edk2_vfr.conf.json"
+			},
+			{
+				"id": "edk2_asl",
+				"extensions": [
+					".asl",
+					".asi",
+					".ASL",
+					".ASI"
+			  ],
+			  "configuration": "./confs/edk2_asl.conf.json"
+			}
 		],
 		"snippets": [
 			{"language": "c", "path": "./Snippets/C.json"},
-			{"language": "Inf", "path": "./Snippets/Inf.json"}
+			{"language": "edk2_inf", "path": "./Snippets/Inf.json"}
 		]
 	},
 	"repository": {

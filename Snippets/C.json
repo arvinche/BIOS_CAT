@@ -1,7 +1,179 @@
 {
-    "Debug Macro": {
-        "prefix": "DM",
-        "body": ["DEBUG ((DEBUG_INFO|DEBUG_ERROR, \"${2:^Cat^ Debug count : 0x%X }\\n\", ${1:Count}));"],
-        "description": "Debug Marro that use in UEFI architecture."
-    }
+  "Debug Macro": {
+    "prefix": "DM",
+    "body": ["DEBUG ((DEBUG_INFO|DEBUG_ERROR, \"${2:^Cat^ Debug count : 0x%X }\\n\", ${1:Count}));"],
+    "description": "Debug Marro that use in UEFI architecture."
+  },
+  "C Function Template": {
+    "prefix": "cfun",
+    "body": [
+      "/**",
+      "  Brief description of this function's purpose.",
+      "",
+      "  Follow it immediately with the detailed description.",
+      "",
+      "  @param[in]        Arg1  Description of Arg1.",
+      "  @param[in]        Arg2  Description of Arg2 This is complicated and requires",
+      "                          multiple lines to describe.",
+      "  @param[out]       Arg3  Description of Arg3.",
+      "  @param[in, out]   Arg4  Description of Arg4.",
+      "",
+      "  @retval VAL_ONE   Description of what VAL_ONE signifies.",
+      "  @retval OTHER     This is the only other return value. If there were other",
+      "                    return values, they would be listed.",
+      "",
+      "**/",
+      "EFI_STATUS",
+      "EFIAPI",
+      "$1MyFunction (",
+      "  IN     UINTN  Arg1,",
+      "  IN     UINTN  Arg2, OPTIONAL",
+      "     OUT UINTN  *Arg3,",
+      "  IN OUT UINTN  *Arg4",
+      "  )",
+      "{",
+      "  EFI_STATUS Status;",
+      "",
+      "  DEBUG ((DEBUG_INFO, \"$1MyFunction Start\\n\"));",
+      "",
+      "  DEBUG ((DEBUG_INFO, \"$1MyFunction Success, Status: %r\\n\", Status));",
+      "  goto End;",
+      "",
+      "Error:",
+      "  DEBUG ((DEBUG_ERROR, \"$1MyFunction Failed, Status: %r\\n\", Status));",
+      "",
+      "End:",
+      "  DEBUG ((DEBUG_INFO, \"$1MyFunction End\\n\"));",
+      "  return Status;",
+      "}"
+    ],
+    "description": "C Function Template"
+  },
+  "C For Template": {
+    "prefix": "cfor",
+    "body": [
+      "for (Index = $1; Index < $2; Index++) {",
+      "  ...",
+      "}"
+    ],
+    "description": "C For Template"
+  },
+  "C Switch Template": {
+    "prefix": "cswitch",
+    "body": [
+      "switch ($1MyId) {",
+      "case $2ID_1:",
+      "case $3ID_2:",
+      "  break;",
+      "",
+      "case $4ID_3:",
+      "  break;",
+      "",
+      "default:",
+      "}"
+    ],
+    "description": "C Switch Template"
+  },
+  "C DEBUG Template": {
+    "prefix": "cdebug",
+    "body": [
+      "DEBUG ((DEBUG_INFO, \"%a(%d):%a -> <Ian Debug Message>\\n\", __FILE__, __LINE__, __FUNCTION__));"
+    ],
+    "description": "C DEBUG Template"
+  },
+  "C STRUCTURE Template": {
+    "prefix": "cstruct",
+    "body": [
+      "typedef struct _STRUCTURE_NAME$1 {",
+      "  UINT8  Data8;",
+      "  UINT16 Data16;",
+      "} STRUCTURE_NAME$1;"
+    ],
+    "description": "C STRUCTURE Template"
+  },
+  "C ENUM Template": {
+    "prefix": "cenum",
+    "body": [
+      "typedef enum _ENUM_NAME$1 {",
+      "  EnumName1 = 0,",
+      "  EnumName2,",
+      "  EnumNameMaximum",
+      "} ENUM_NAME$1;"
+    ],
+    "description": "C ENUM Template"
+  },
+  "EDK PEI Entry Template": {
+    "prefix": "cpei",
+    "body": [
+      "/**",
+      "  <$1Breif Description>",
+      "",
+      "  @param[in]  FileHandle           Handle of the file being invoked.",
+      "  @param[in]  PeiServices          Describes the list of possible PEI Services.",
+      "",
+      "  @retval     EFI_SUCCESS          Operation performed successfully.",
+      "  @retval     EFI_OUT_OF_RESOURCES Not enough memory to allocate.",
+      "",
+      "**/",
+      "EFI_STATUS",
+      "EFIAPI",
+      "$2PeimEntry (",
+      "  IN EFI_PEI_FILE_HANDLE        FileHandle,",
+      "  IN CONST EFI_PEI_SERVICES     **PeiServices",
+      "  )",
+      "{",
+      "  EFI_STATUS Status;",
+      "",
+      "  DEBUG ((DEBUG_INFO, \"$1MyFunction Start\\n\"));",
+      "",
+      "  DEBUG ((DEBUG_INFO, \"$1MyFunction Success, Status: %r\\n\", Status));",
+      "  goto End;",
+      "",
+      "Error:",
+      "  DEBUG ((DEBUG_ERROR, \"$1MyFunction Failed, Status: %r\\n\", Status));",
+      "",
+      "End:",
+      "  DEBUG ((DEBUG_INFO, \"$1MyFunction End\\n\"));",
+      "  return Status;",
+      "}"
+    ],
+    "description": "EDK PEI Entry Template"
+  },
+  "EDK DXE Entry Template": {
+    "prefix": "cdxe",
+    "body": [
+      "/**",
+      "  <$1Breif Description>",
+      "",
+      "  @param[in] ImageHandle    The firmware allocated handle for the EFI image.",
+      "  @param[in] SystemTable    A pointer to the EFI System Table.",
+      "",
+      "  @retval EFI_SUCCESS       The entry point is executed successfully.",
+      "  @retval other             Some error occurs when executing this entry point.",
+      "",
+      "**/",
+      "EFI_STATUS",
+      "EFIAPI",
+      "$2DxeEntry(",
+      "  IN EFI_HANDLE           ImageHandle,",
+      "  IN EFI_SYSTEM_TABLE     *SystemTable",
+      "  )",
+      "{",
+      "  EFI_STATUS Status;",
+      "",
+      "  DEBUG ((DEBUG_INFO, \"$1MyFunction Start\\n\"));",
+      "",
+      "  DEBUG ((DEBUG_INFO, \"$1MyFunction Success, Status: %r\\n\", Status));",
+      "  goto End;",
+      "",
+      "Error:",
+      "  DEBUG ((DEBUG_ERROR, \"$1MyFunction Failed, Status: %r\\n\", Status));",
+      "",
+      "End:",
+      "  DEBUG ((DEBUG_INFO, \"$1MyFunction End\\n\"));",
+      "  return Status;",
+      "}"
+    ],
+    "description": "EDK DXE Entry Template"
+  }
 }

@@ -3,7 +3,7 @@
 ## Feature List
 | Feature Index | Task                                          | Status            | Author        | Attribute |
 | ------------- | --------------------------------------------- | ----------------- | ------------- | --------- |
-|             1 | FDF/DEC/INF/VFR/HFR Parser                    | T.B.D             | T.B.D         | Feature   |
+|             1 | FDF/DEC/INF/VFR/HFR Parser                    | Done              | Gua           | Feature   |
 |             2 | Copyright Update when saving file             | T.B.D             | T.B.D         | Feature   |
 |             3 | ASL build time debug (jump)                   | T.B.D             | Arvin         | Feature   |
 |             4 | Putty integrate                               | On-Going          | Arvin         | Feature   |
