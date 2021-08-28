@@ -23,4 +23,5 @@
 |     1 |             8 | Need click twice time toexecutive function.   | T.B.D             | T.B.D         | Bug       |
 |     2 |            11 | Let feature can work when WS have been move   | Done              | Arvin         | Enhance   |
 |     3 |             7 | Add powershell for build code support         | Done              | Gua           | Enhance   |
+|     4 |            11 | Remove redundant Bookmark.json                | Done              | Gua           | Enhance   |
 
