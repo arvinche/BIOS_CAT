@@ -21,5 +21,5 @@
 | Index | Feature Index | Task                                          | Status            | Author        | Attribute |
 | ----- | ------------- | --------------------------------------------- | ----------------- | ------------- | --------- |
 |     1 |             8 | Need click twice time toexecutive function.   | T.B.D             | T.B.D         | Bug       |
-|     2 |               | To Be filled                                  | T.B.D             | T.B.D         | Enhance   |
+|     2 |            11 | Let feature can work when WS have been move   | Done              | Arvin         | Enhance   |
 

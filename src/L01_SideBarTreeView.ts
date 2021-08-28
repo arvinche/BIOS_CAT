@@ -5,6 +5,7 @@ import * as Path	from 'path';
 
 const WorkSpace = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
 const BookmarkPath = WorkSpace + ".vscode/Bookmark.json";
+const WsIndex = 0;
 export class NodeDependenciesProvider implements vscode.TreeDataProvider<Dependency> {
 
 	constructor (private WorkspaceRoot: string) {
@@ -78,7 +79,7 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 						Content.push(new Dependency (
 							i,
 							BookmarkJson[i].FileAndPath[i2].Tag,
-							BookmarkJson[i].FileAndPath[i2].Path,
+							BookmarkJson[i].FileAndPath[i2].Path.replace("{WorkSpace["+WsIndex+"]}", WorkSpace),
 							BookmarkJson[i].FileAndPath[i2].Time,
 							vscode.TreeItemCollapsibleState.None));
 					}
@@ -159,7 +160,7 @@ export function AddBookMarkElement (TreeL01: NodeDependenciesProvider) {
 							NewGroup.Time  = Time;
 							NewGroup.FileAndPath = [Object.assign({}, BM[0].FileAndPath[0])];
 							NewGroup.FileAndPath[0].Tag   = Msg2;
-							NewGroup.FileAndPath[0].Path  = Editor?.document.fileName;
+							NewGroup.FileAndPath[0].Path  = Editor?.document.fileName.replace(/\\/g,"/").replace(WorkSpace, "{WorkSpace["+WsIndex+"]}");
 							NewGroup.FileAndPath[0].Start = Editor?.selection.anchor.line+"."+Editor?.selection.anchor.character;
 							NewGroup.FileAndPath[0].End   = Editor?.selection.active.line+"."+Editor?.selection.active.character;
 							NewGroup.FileAndPath[0].Time  = Time;
@@ -186,7 +187,7 @@ export function AddBookMarkElement (TreeL01: NodeDependenciesProvider) {
 						if (BM[i].Group === SelectMsg) {
 							let NewTag = Object.assign({}, BM[i].FileAndPath[0]);
 							NewTag.Tag   = Msg2;
-							NewTag.Path  = Editor?.document.fileName;
+							NewTag.Path  = Editor?.document.fileName.replace(/\\/g,"/").replace(WorkSpace, "{WorkSpace["+WsIndex+"]}");
 							NewTag.Start = Editor?.selection.anchor.line+"."+Editor?.selection.anchor.character;
 							NewTag.End   = Editor?.selection.active.line+"."+Editor?.selection.active.character;
 							NewTag.Time  = Time;
@@ -281,11 +282,13 @@ export function JumpInToBookMark (Item: Dependency) {
 	var BM = JSON.parse (FileSys.readFileSync (BookmarkPath, 'utf-8'));
 	var GI = Item.groupIndex.valueOf();
 	var SelectBookmark;
+	var SelectMarkPath;
 	for (let i=0; i<BM[GI].FileAndPath.length; i++) {
 		if ( BM[GI].FileAndPath[i].Tag === Item.markTitle) {
 			SelectBookmark = BM[GI].FileAndPath[i];
+			SelectMarkPath = SelectBookmark.Path.replace("{WorkSpace["+WsIndex+"]}", WorkSpace);
 			try { 
-				FileSys.accessSync (SelectBookmark.Path);
+				FileSys.accessSync (SelectMarkPath);
 			} catch (err) {
 				vscode.window.showInformationMessage (' ❗️❗️ File may be remove, please check it in your workspace. ');
 				return;
@@ -302,5 +305,6 @@ export function JumpInToBookMark (Item: Dependency) {
 		preview: true,
 		viewColumn: vscode.ViewColumn.One
 	};
-	vscode.window.showTextDocument (vscode.Uri.file(SelectBookmark.Path), options);
+	console.log ();
+	vscode.window.showTextDocument (vscode.Uri.file (SelectMarkPath), options);
 }
