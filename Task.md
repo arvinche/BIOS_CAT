@@ -11,7 +11,7 @@
 |             6 | Hot Key build code (Clean)                    | Done              | Arvin         | Feature   |
 |             7 | Hot Key build code (Build)                    | Done              | Arvin         | Feature   |
 |             8 | Hot Key build code (Single module)            | Done              | Arvin         | Feature   |
-|             9 | Hot Key build code (Pre Build hook)           | T.B.D             | T.B.D         | Feature   |
+|             9 | Hot Key build code (Pre Build hook)           | Done              | Arvin         | Feature   |
 |            10 | Hot Key build code (post Build hook)          | T.B.D             | T.B.D         | Feature   |
 |            11 | Bookmark Feature                              | Done              | Arvin         | Feature   |
 |            12 | Sync PDF document with codebase               | T.B.D             | T.B.D         | Feature   |
@@ -20,9 +20,9 @@
 ## Bug/Enhance List
 | Index | Feature Index | Task                                          | Status            | Author        | Attribute |
 | ----- | ------------- | --------------------------------------------- | ----------------- | ------------- | --------- |
-|     1 |             8 | Need click twice time toexecutive function.   | T.B.D             | T.B.D         | Bug       |
+|     1 |             8 | Need click twice time toexecutive function.   | Done              | Arvin         | Bug       |
 |     2 |            11 | Let feature can work when WS have been move   | Done              | Arvin         | Enhance   |
 |     3 |             7 | Add powershell for build code support         | Done              | Gua           | Enhance   |
 |     4 |            11 | Remove redundant Bookmark.json                | Done              | Gua           | Enhance   |
-|     5 |             8 | It can't get "nmake" so it will always filed  | T.B.D             | T.B.D         | Bug       |
+|     5 |             8 | It can't get "nmake" so it will always filed  | Done              | Arvin         | Bug       |
 

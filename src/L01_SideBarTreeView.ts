@@ -3,9 +3,10 @@ import * as vscode  from 'vscode';
 import * as FileSys from 'fs';
 import * as Path	from 'path';
 
-const WorkSpace = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
-const BookmarkPath = WorkSpace + ".vscode/Bookmark.json";
-const WsIndex = 0;
+const WorkSpace     = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
+const BookmarkPath  = WorkSpace + ".vscode/Bookmark.json";
+const WsIndex       = 0;
+var   NeedtoShowTip = 1;
 
 export class NodeDependenciesProvider implements vscode.TreeDataProvider<Dependency> {
 
@@ -245,35 +246,59 @@ export function EditBookMarkElement (TreeL01: NodeDependenciesProvider, Item: De
 //  Function of delete book mark element.
 //
 export function DelBookMarkElement (TreeL01: NodeDependenciesProvider, Item: Dependency) {
-	vscode.window.showInformationMessage (
-		" ❗️❗️ You sure you want to delete this ("+ Item.markTitle +") bookmark ?",
-		'Yes I do !!',
-		'No Thanks ~')
-	.then (function (Select) {
-		if (Select === 'Yes I do !!') {
-			var BM = JSON.parse (FileSys.readFileSync(BookmarkPath, 'utf-8'));
-			var i  = Item.groupIndex.valueOf();
-			if ( Item.collapsibleState ) {
-				if (BM[i].Group === Item.markTitle) {
-					delete BM[i];
-					let BookmarkString = JSON.stringify(BM).replace("null,","").replace(",null","").replace("null","");
-					if (BookmarkString === "[]") {
-						FileSys.unlink (BookmarkPath,(err)=>{});
-					} else {
-						FileSys.writeFile (BookmarkPath, BookmarkString, 'utf-8', (err) =>{});
-					}
-				}
-			} else {
-				for (let i2=0; i2<BM[i].FileAndPath.length; i2++) {
-					if (BM[i].FileAndPath[i2].Tag === Item.markTitle) {
-						delete BM[i].FileAndPath[i2];
+	var BM = JSON.parse (FileSys.readFileSync(BookmarkPath, 'utf-8'));
+	var i  = Item.groupIndex.valueOf();
+	if (NeedtoShowTip) {
+		vscode.window.showInformationMessage (
+			" ❗️❗️ You sure you want to delete this ("+ Item.markTitle +") bookmark ?",
+			'Yes I do !!',
+			'No Thanks ~',
+			'Don\'t show again.')
+		.then (function (Select) {
+			if (Select !== 'No Thanks ~') {
+				if (Select === 'Don\'t show again.') { NeedtoShowTip = 0; }
+				if ( Item.collapsibleState ) {
+					if (BM[i].Group === Item.markTitle) {
+						delete BM[i];
 						let BookmarkString = JSON.stringify(BM).replace("null,","").replace(",null","").replace("null","");
-						FileSys.writeFile (BookmarkPath, BookmarkString, 'utf-8', (err) =>{});
+						if (BookmarkString === "[]") {
+							FileSys.unlink (BookmarkPath,(err)=>{});
+						} else {
+							FileSys.writeFile (BookmarkPath, BookmarkString, 'utf-8', (err) =>{});
+						}
+					}
+				} else {
+					for (let i2=0; i2<BM[i].FileAndPath.length; i2++) {
+						if (BM[i].FileAndPath[i2].Tag === Item.markTitle) {
+							delete BM[i].FileAndPath[i2];
+							let BookmarkString = JSON.stringify(BM).replace("null,","").replace(",null","").replace("null","");
+							FileSys.writeFile (BookmarkPath, BookmarkString, 'utf-8', (err) =>{});
+						}
 					}
 				}
-			} TreeL01.Refresh();
+			}
+		});
+	} else {
+		if ( Item.collapsibleState ) {
+			if (BM[i].Group === Item.markTitle) {
+				delete BM[i];
+				let BookmarkString = JSON.stringify(BM).replace("null,","").replace(",null","").replace("null","");
+				if (BookmarkString === "[]") {
+					FileSys.unlink (BookmarkPath,(err)=>{});
+				} else {
+					FileSys.writeFile (BookmarkPath, BookmarkString, 'utf-8', (err) =>{});
+				}
+			}
+		} else {
+			for (let i2=0; i2<BM[i].FileAndPath.length; i2++) {
+				if (BM[i].FileAndPath[i2].Tag === Item.markTitle) {
+					delete BM[i].FileAndPath[i2];
+					let BookmarkString = JSON.stringify(BM).replace("null,","").replace(",null","").replace("null","");
+					FileSys.writeFile (BookmarkPath, BookmarkString, 'utf-8', (err) =>{});
+				}
+			}
 		}
-	});
+	} TreeL01.Refresh();
 }
 
 //

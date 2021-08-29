@@ -2,12 +2,8 @@
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
   "name": "source.edk2_asl",
   "patterns": [
-    {
-      "include": "#edk2_asl_color"
-    },
-    {
-      "include": "source.c"
-    }
+    {"include": "#edk2_asl_color"},
+    {"include": "source.c"}
   ],
   "repository": {
     "edk2_asl_color": {

@@ -7,10 +7,15 @@ import * as RLSys   from 'readline';
 const WorkSpace     = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
 const BuilFolder    = WorkSpace + "Build";
 const Buildlog      = WorkSpace + "BuildLog.log";
-const BuildPath     = WorkSpace + vscode.workspace.getConfiguration().get("BuildPath");
-const BuildCommand  = "(" + vscode.workspace.getConfiguration().get("BuildCmd") + ") > "+ Buildlog + " 2>&1";
-const CleanCommand  = "" + vscode.workspace.getConfiguration().get("CleanCmd");
-const EnvCheck      = WorkSpace+".vscode/EnvCheck";
+const EnvCheck      = WorkSpace + ".vscode/EnvCheck";
+var   BuildPath     = WorkSpace + vscode.workspace.getConfiguration().get("BuildPath");
+var   BuildCommand  = "(" + vscode.workspace.getConfiguration().get("BuildCmd") + ") > "+ Buildlog + " 2>&1";
+var   PreBuildCmd   = vscode.workspace.getConfiguration().get("PreBuildCmd") + "&";
+var   CleanCommand  = "" + vscode.workspace.getConfiguration().get("CleanCmd");
+//
+// Clear Env file when project start.
+//
+FileSys.unlink (EnvCheck,(err)=>{});
 
 //
 //  Change encode into 437
@@ -20,13 +25,33 @@ const GlobalCommand = "cmd /C \"chcp 437 & cd " + BuildPath + " & ";
 
 
 //============= Local Function =============//
+//
+// Get terminal and something that need to predo.
+//
 function GetTerminal (Message:string) {
+    //
+    // Re get all varlable, because user may change it any time.
+    //
+    BuildPath     = WorkSpace + vscode.workspace.getConfiguration().get("BuildPath");
+    BuildCommand  = "(" + vscode.workspace.getConfiguration().get("BuildCmd") + ") > "+ Buildlog + " 2>&1";
+    PreBuildCmd   = vscode.workspace.getConfiguration().get("PreBuildCmd")+"&" !== PreBuildCmd ?
+                    vscode.workspace.getConfiguration().get("PreBuildCmd")+"&"+ DelEnvCheck() :
+                    PreBuildCmd;
+    CleanCommand  = "" + vscode.workspace.getConfiguration().get("CleanCmd");
+    //
+    // Create Terminal.
+    //
     let Terminal = (vscode.window.activeTerminal?.name !== "Cat Build code ENV !!") ?
                     vscode.window.createTerminal ({name: "Cat Build code ENV !!"}) :
                     vscode.window.activeTerminal;
     if (Message !== "") { vscode.window.showInformationMessage (Message); }
     return Terminal;
 }
+
+//
+// Clear Env Function.
+//
+function DelEnvCheck():string {FileSys.unlink (EnvCheck,(err)=>{}); return "";}
 
 //
 //  Find the file with sub file name. (from inside out)
@@ -91,6 +116,15 @@ function SearchBuildFolder (Root:string, FolderName:string):string[] {
     Deepfine (Root, FolderName);
     return ModulesFolder;
 }
+
+//
+// Delay function for use.
+//
+function Delay (Sec :number){
+    return new Promise (function (Resolve,Reject){
+     setTimeout (Resolve,Sec); 
+    });
+};
 
 //============= External Function =============//
 //
@@ -177,19 +211,28 @@ export function ChecBuildLogAndJump2Error () {
 //
 //  Build individual module
 //
-export function BuildSingleModule () {
+export async function BuildSingleModule () {
 
     const Terminal  =  GetTerminal (' 🔍 Checking build environment..... ');
     //
     // Check terminal environment.
     //
-    FileSys.unlink (EnvCheck,(err)=>{});
-    Terminal.sendText (GlobalCommand + "(nmake > "+ EnvCheck + " 2>&1)" + "\"");
+    if (!FileSys.existsSync(EnvCheck)) {
+        Terminal.sendText (GlobalCommand + "("+ PreBuildCmd +"nmake > "+ EnvCheck + " 2>&1)" + "\"");
+        await Delay(1000);
+        do {/* Wait for EnvCheck create */} while (!FileSys.existsSync(EnvCheck));
+    }
     let CheckFile = FileSys.readFileSync (EnvCheck, 'utf-8');
-    if (!FileSys.existsSync (BuilFolder) || CheckFile.indexOf("not recognized") !== -1) {
+    console.log (CheckFile.indexOf ("not recognized"));
+    if (CheckFile.indexOf ("not recognized") !== -1) {
+        FileSys.unlink (EnvCheck,(err)=>{});
+        vscode.window.showInformationMessage (" ❗️❗️ Please help BIOS-Cat to check prebuild command too create environment~");
+        return;
+    } else if (!FileSys.existsSync (BuilFolder) && 1) {
+        FileSys.unlink (EnvCheck,(err)=>{});
         vscode.window.showInformationMessage (
-            " ❗️❗️ BIOS-Cat need your build environment, please build at least one time and keep terminal.\
-             Do you want to build it now?",
+            " ❗️❗️ BIOS-Cat need your makefile environment, please build at lest once time to create it.\
+            Do you want to do full build now?",
             'Yes I do !!',
             'No Thanks ~')
         .then (function (Select) { if (Select === 'Yes I do !!') { CreatEnvAndBuildCode();} });
@@ -201,8 +244,8 @@ export function BuildSingleModule () {
     let FileName = vscode.window.activeTextEditor?.document.fileName.replace(/\\/g,"/").split("/").pop()+"";
     let ModuleName = FindModuleName (vscode.window.activeTextEditor?.document.fileName+"", FileName, ".inf", BuilFolder);
     if (ModuleName === "") {
-         vscode.window.showInformationMessage (" ❗️❗️ Can\'t find [ "+FileName+" ] in inf file, please check it and rebuild again.");
-         return;
+        vscode.window.showInformationMessage (" ❗️❗️ Can\'t find [ "+FileName+" ] in inf file, please check it and rebuild again.");
+        return;
     }
     let MakeFilePath = SearchBuildFolder (BuilFolder, ModuleName);
     if (!MakeFilePath.length) {
@@ -210,10 +253,10 @@ export function BuildSingleModule () {
         return;
     }
     vscode.window.showInformationMessage (' 🐈 Start to build module [ '+ModuleName+' ].');
-    Terminal.show (true);
     let BuildCommand = "";
     for (let i=0; i<MakeFilePath.length; i++) {
-        BuildCommand = BuildCommand+"nmake "+MakeFilePath[i]+"&";
+        BuildCommand = BuildCommand+ PreBuildCmd +"nmake "+MakeFilePath[i]+"&";
     }
+    Terminal.show (true);
     Terminal.sendText (GlobalCommand + BuildCommand + "\"");
 }

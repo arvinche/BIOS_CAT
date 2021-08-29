@@ -11,41 +11,13 @@
 	"main": "./out/extension.js",
 	"contributes": {
 		"grammars": [
-			{
-				"language": "edk2_dsc",
-				"scopeName": "source.edk2_dsc",
-				"path": "./syntaxes/edk2_dsc.tmLanguage.json"
-			},
-			{
-				"language": "edk2_dec",
-				"scopeName": "source.edk2_dec",
-				"path": "./syntaxes/edk2_dec.tmLanguage.json"
-			},
-			{
-				"language": "edk2_fdf",
-				"scopeName": "source.edk2_fdf",
-				"path": "./syntaxes/edk2_fdf.tmLanguage.json"
-			},
-			{
-				"language": "edk2_inf",
-				"scopeName": "source.edk2_inf",
-				"path": "./syntaxes/edk2_inf.tmLanguage.json"
-			},
-			{
-				"language": "edk2_uni",
-				"scopeName": "source.edk2_uni",
-				"path": "./syntaxes/edk2_uni.tmLanguage.json"
-			},
-			{
-				"language": "edk2_vfr",
-				"scopeName": "source.edk2_vfr",
-				"path": "./syntaxes/edk2_vfr.tmLanguage.json"
-			},
-			{
-				"language": "edk2_asl",
-				"scopeName": "source.edk2_asl",
-				"path": "./syntaxes/edk2_asl.tmLanguage.json"
-			}
+			{"language": "edk2_dsc", "scopeName": "source.edk2_dsc", "path": "./syntaxes/edk2_dsc.tmLanguage.json"},
+			{"language": "edk2_dec", "scopeName": "source.edk2_dec", "path": "./syntaxes/edk2_dec.tmLanguage.json"},
+			{"language": "edk2_fdf", "scopeName": "source.edk2_fdf", "path": "./syntaxes/edk2_fdf.tmLanguage.json"},
+			{"language": "edk2_inf", "scopeName": "source.edk2_inf", "path": "./syntaxes/edk2_inf.tmLanguage.json"},
+			{"language": "edk2_uni", "scopeName": "source.edk2_uni", "path": "./syntaxes/edk2_uni.tmLanguage.json"},
+			{"language": "edk2_vfr", "scopeName": "source.edk2_vfr", "path": "./syntaxes/edk2_vfr.tmLanguage.json"},
+			{"language": "edk2_asl", "scopeName": "source.edk2_asl", "path": "./syntaxes/edk2_asl.tmLanguage.json"}
 		],
 		"configuration": {
 			"title": "BIOS-CAT ~",
@@ -54,6 +26,11 @@
 					"type": "string",
 					"default" : "Intel/AlderLakeBoardPkg",
 					"description": "The path that command can execution"
+				},
+				"PreBuildCmd": {
+					"type": "string",
+					"default" : "prep",
+					"description": "Pre build command."
 				},
 				"BuildCmd": {
 					"type": "string",
@@ -64,11 +41,6 @@
 					"type": "string",
 					"default" : "cln",
 					"description": "Clean command"
-				},
-				"AddCmd01": {
-					"type": "string",
-					"default" : "echo \" Please input your command \"",
-					"description": "Other command 01"
 				},
 				"ShowTip": {
 					"type": "boolean",
@@ -124,62 +96,13 @@
 			]
 		},
 		"languages": [
-			{
-				"id": "edk2_dsc",
-				"extensions": [
-					".dsc"
-				],
-				"configuration": "./confs/edk2_dsc.conf.json"
-			},
-			{
-				"id": "edk2_dec",
-				"extensions": [
-					".dec"
-				],
-				"configuration": "./confs/edk2_dec.conf.json"
-			},
-			{
-				"id": "edk2_fdf",
-				"extensions": [
-					".fdf"
-				],
-				"configuration": "./confs/edk2_fdf.conf.json"
-			},
-			{
-				"id": "edk2_inf",
-				"extensions": [
-					".inf"
-				],
-				"configuration": "./confs/edk2_inf.conf.json",
-				"aliases": ["Inf", "inf"]
-			},
-			{
-				"id": "edk2_uni",
-				"extensions": [
-					".uni"
-				],
-				"configuration": "./confs/edk2_uni.conf.json"
-			},
-			{
-				"id": "edk2_vfr",
-				"extensions": [
-					".vfr",
-					".Vfr",
-					".hfr",
-					".Hfr"
-				],
-				"configuration": "./confs/edk2_vfr.conf.json"
-			},
-			{
-				"id": "edk2_asl",
-				"extensions": [
-					".asl",
-					".asi",
-					".ASL",
-					".ASI"
-			  ],
-			  "configuration": "./confs/edk2_asl.conf.json"
-			}
+			{"id": "edk2_dsc", "extensions": [".dsc"], "configuration": "./confs/edk2_dsc.conf.json"},
+			{"id": "edk2_dec", "extensions": [".dec"], "configuration": "./confs/edk2_dec.conf.json"},
+			{"id": "edk2_fdf", "extensions": [".fdf"], "configuration": "./confs/edk2_fdf.conf.json"},
+			{"id": "edk2_inf", "extensions": [".inf"], "configuration": "./confs/edk2_inf.conf.json","aliases": ["Inf", "inf"]},
+			{"id": "edk2_uni", "extensions": [".uni"], "configuration": "./confs/edk2_uni.conf.json"},
+			{"id": "edk2_vfr", "extensions": [".vfr",".Vfr",".hfr",".Hfr"], "configuration": "./confs/edk2_vfr.conf.json"},
+			{"id": "edk2_asl", "extensions": [".asl",".asi",".ASL",".ASI"], "configuration": "./confs/edk2_asl.conf.json"}
 		],
 		"snippets": [
 			{"language": "c", "path": "./Snippets/C.json"},
