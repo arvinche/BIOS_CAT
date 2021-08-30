@@ -21,7 +21,7 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 			FileSys.writeFile (
 				BookMarkPath,
 				'[{"Group":"This is a sampel~","Time":"","FileAndPath":[{"Tag":"Welcome use bookmark","Path":"","Start":"0.0","End":"0.0","Time":""}]}]',
-				'utf-8',(err)=>{}
+				'utf-8', (_err)=>{}
 			);
 		}
 	}
@@ -36,7 +36,7 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 	//
 	private PathExists (Path: string): boolean {
 		try { FileSys.accessSync (Path);
-		} catch (err) { return false;
+		} catch (_err) { return false;
 		} return true;
 	}
 
@@ -57,14 +57,14 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 			vscode.window.showInformationMessage (' ❗️❗️ You don\' have bookmark.');
 			try { 
 				FileSys.accessSync (BookMarkPath);
-			} catch (err) {
+			} catch (_err) {
 				if (!FileSys.existsSync(this.WorkspaceRoot+"/.vscode")) {
 					FileSys.mkdirSync(this.WorkspaceRoot+"/.vscode");
 				}
 				FileSys.writeFile (
 					BookMarkPath,
 					'[{"Group":"This is a sampel~","Time":"","FileAndPath":[{"Tag":"Welcome use bookmark","Path":"","Start":"0.0","End":"0.0","Time":""}]}]',
-					'utf-8',(err)=>{}
+					'utf-8',(_err)=>{}
 				);
 			}
 			return Promise.resolve ([]);
@@ -167,7 +167,7 @@ export function AddBookMarkElement (TreeL01: NodeDependenciesProvider) {
 							NewGroup.FileAndPath[0].End   = Editor?.selection.active.line+"."+Editor?.selection.active.character;
 							NewGroup.FileAndPath[0].Time  = Time;
 							BM.push(NewGroup);
-							FileSys.writeFile (BookmarkPath, JSON.stringify(BM), 'utf-8', (err) =>{});
+							FileSys.writeFile (BookmarkPath, JSON.stringify(BM), 'utf-8', (_err) =>{});
 							TreeL01.Refresh();
 						}
 					});
@@ -194,7 +194,7 @@ export function AddBookMarkElement (TreeL01: NodeDependenciesProvider) {
 							NewTag.End   = Editor?.selection.active.line+"."+Editor?.selection.active.character;
 							NewTag.Time  = Time;
 							BM[i].FileAndPath.push(NewTag);
-							FileSys.writeFile (BookmarkPath, JSON.stringify(BM), 'utf-8', (err) =>{});
+							FileSys.writeFile (BookmarkPath, JSON.stringify(BM), 'utf-8', (_err) =>{});
 							TreeL01.Refresh();
 						}
 					}
@@ -236,7 +236,7 @@ export function EditBookMarkElement (TreeL01: NodeDependenciesProvider, Item: De
 					}
 				}
 			}
-			FileSys.writeFile (BookmarkPath, JSON.stringify(BM), 'utf-8', (err) =>{});
+			FileSys.writeFile (BookmarkPath, JSON.stringify(BM), 'utf-8', (_err) =>{});
 			TreeL01.Refresh();
 		}
 	});
@@ -262,9 +262,9 @@ export function DelBookMarkElement (TreeL01: NodeDependenciesProvider, Item: Dep
 						delete BM[i];
 						let BookmarkString = JSON.stringify(BM).replace("null,","").replace(",null","").replace("null","");
 						if (BookmarkString === "[]") {
-							FileSys.unlink (BookmarkPath,(err)=>{});
+							FileSys.unlink (BookmarkPath,(_err)=>{});
 						} else {
-							FileSys.writeFile (BookmarkPath, BookmarkString, 'utf-8', (err) =>{});
+							FileSys.writeFile (BookmarkPath, BookmarkString, 'utf-8', (_err) =>{});
 						}
 					}
 				} else {
@@ -272,10 +272,10 @@ export function DelBookMarkElement (TreeL01: NodeDependenciesProvider, Item: Dep
 						if (BM[i].FileAndPath[i2].Tag === Item.markTitle) {
 							delete BM[i].FileAndPath[i2];
 							let BookmarkString = JSON.stringify(BM).replace("null,","").replace(",null","").replace("null","");
-							FileSys.writeFile (BookmarkPath, BookmarkString, 'utf-8', (err) =>{});
+							FileSys.writeFile (BookmarkPath, BookmarkString, 'utf-8', (_err) =>{});
 						}
 					}
-				}
+				} TreeL01.Refresh();
 			}
 		});
 	} else {
@@ -284,9 +284,9 @@ export function DelBookMarkElement (TreeL01: NodeDependenciesProvider, Item: Dep
 				delete BM[i];
 				let BookmarkString = JSON.stringify(BM).replace("null,","").replace(",null","").replace("null","");
 				if (BookmarkString === "[]") {
-					FileSys.unlink (BookmarkPath,(err)=>{});
+					FileSys.unlink (BookmarkPath,(_err)=>{});
 				} else {
-					FileSys.writeFile (BookmarkPath, BookmarkString, 'utf-8', (err) =>{});
+					FileSys.writeFile (BookmarkPath, BookmarkString, 'utf-8', (_err) =>{});
 				}
 			}
 		} else {
@@ -294,11 +294,11 @@ export function DelBookMarkElement (TreeL01: NodeDependenciesProvider, Item: Dep
 				if (BM[i].FileAndPath[i2].Tag === Item.markTitle) {
 					delete BM[i].FileAndPath[i2];
 					let BookmarkString = JSON.stringify(BM).replace("null,","").replace(",null","").replace("null","");
-					FileSys.writeFile (BookmarkPath, BookmarkString, 'utf-8', (err) =>{});
+					FileSys.writeFile (BookmarkPath, BookmarkString, 'utf-8', (_err) =>{});
 				}
 			}
-		}
-	} TreeL01.Refresh();
+		} TreeL01.Refresh();
+	}
 }
 
 //
@@ -315,7 +315,7 @@ export function JumpInToBookMark (Item: Dependency) {
 			SelectMarkPath = SelectBookmark.Path.replace("{WorkSpace["+WsIndex+"]}", WorkSpace);
 			try { 
 				FileSys.accessSync (SelectMarkPath);
-			} catch (err) {
+			} catch (_err) {
 				vscode.window.showInformationMessage (' ❗️❗️ File may be remove, please check it in your workspace. ');
 				return;
 			} break;
