@@ -22,27 +22,46 @@
 		"configuration": {
 			"title": "BIOS-CAT ~",
 			"properties": {
-				"BuildPath": {
+				"CAT.BuildPath": {
 					"type": "string",
 					"default" : "Intel/AlderLakeBoardPkg",
 					"description": "The path that command can execution"
 				},
-				"PreBuildCmd": {
+				"CAT.PreBuildCmd": {
 					"type": "string",
 					"default" : "prep",
 					"description": "Pre build command."
 				},
-				"BuildCmd": {
+				"CAT.BuildCmd01": {
 					"type": "string",
-					"default" : "prep & bld",
-					"description": "Build command"
+					"default" : "bld",
+					"description": "Build command setting 01 ex. Full build .etc"
 				},
-				"CleanCmd": {
+				"CAT.BuildCmd02": {
+					"type": "string",
+					"default" : "",
+					"description": "Build command setting 02 ex. Debug build .etc"
+				},
+				"CAT.BuildCmd03": {
+					"type": "string",
+					"default" : "",
+					"description": "Build command setting 03 ex. Soruce level debug .etc"
+				},
+				"CAT.CleanCmd": {
 					"type": "string",
 					"default" : "cln",
 					"description": "Clean command"
 				},
-				"ShowTip": {
+				"X.test": {
+					"type": "string",
+					"default": "right",
+					"enum": ["left", "right"],
+					"enumDescriptions": [
+					  "Adds a heatmap indicator on the left edge of the gutter blame annotations",
+					  "Adds a heatmap indicator on the right edge of the gutter blame annotations"
+					]
+				},
+				"X.ShowTip": {
 					"type": "boolean",
 					"default": true,
 					"description": "Show this page next time ??"

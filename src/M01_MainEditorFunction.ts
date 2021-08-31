@@ -9,8 +9,10 @@ const BuilFolder    = WorkSpace + "Build";
 const Buildlog      = WorkSpace + "BuildLog.log";
 const EnvCheck      = WorkSpace + ".vscode/EnvCheck";
 var   BuildPath     = "";
-var   PreBuildCmd   = "";
-var   BuildCommand  = "";
+var   PreBuildCmd   = "&";
+var   BuildCmd01    = "";
+var   BuildCmd02    = "";
+var   BuildCmd03    = "";
 var   CleanCommand  = "";
 //
 //  Change encode into 437
@@ -30,16 +32,21 @@ FileSys.unlink (EnvCheck,(_err)=>{});
 //
 function GetTerminal (Message:string) {
     //
-    // Re get all varlable, because user may change it any time.
+    // Reacquire all varlable, because user may change it any time.
     //
-    BuildPath     = (vscode.workspace.getConfiguration().get("BuildPath")+"").replace(/\\/g, "/").indexOf (":/") === -1?
-                    WorkSpace + vscode.workspace.getConfiguration().get("BuildPath"):
-                    vscode.workspace.getConfiguration().get("BuildPath")+"";
-    PreBuildCmd   = vscode.workspace.getConfiguration().get("PreBuildCmd")+"&" !== PreBuildCmd ?
-                    vscode.workspace.getConfiguration().get("PreBuildCmd")+"&"+ DelEnvCheck() :
+    BuildPath     = (vscode.workspace.getConfiguration().get("CAT.BuildPath")+"").replace(/\\/g, "/").indexOf (":/") === -1?
+                    WorkSpace + vscode.workspace.getConfiguration().get("CAT.BuildPath"):
+                    vscode.workspace.getConfiguration().get("CAT.BuildPath")+"";
+    PreBuildCmd   = vscode.workspace.getConfiguration().get("CAT.PreBuildCmd")+"&" !== PreBuildCmd ?
+                    vscode.workspace.getConfiguration().get("CAT.PreBuildCmd")+"&"+ DelEnvCheck() :
                     PreBuildCmd;
-    BuildCommand  = "(" + PreBuildCmd + vscode.workspace.getConfiguration().get("BuildCmd") + ") > "+ Buildlog + " 2>&1";
-    CleanCommand  = "" + vscode.workspace.getConfiguration().get("CleanCmd");
+    BuildCmd01    = vscode.workspace.getConfiguration().get("CAT.BuildCmd01") !== "" ?
+                    "(" + PreBuildCmd + vscode.workspace.getConfiguration().get("CAT.BuildCmd01") + ") > "+ Buildlog + " 2>&1" : "";
+    BuildCmd02    = vscode.workspace.getConfiguration().get("CAT.BuildCmd02") !== "" ?
+                    "(" + PreBuildCmd + vscode.workspace.getConfiguration().get("CAT.BuildCmd02") + ") > "+ Buildlog + " 2>&1" : "";
+    BuildCmd03    = vscode.workspace.getConfiguration().get("CAT.BuildCmd03") !== "" ?
+                    "(" + PreBuildCmd + vscode.workspace.getConfiguration().get("CAT.BuildCmd03") + ") > "+ Buildlog + " 2>&1" : "";
+    CleanCommand  = "" + vscode.workspace.getConfiguration().get("CAT.CleanCmd");
     GlobalCommand = "cmd /C \"chcp 437 & cd " + BuildPath + " & ";
     //
     // Create Terminal.
@@ -138,16 +145,43 @@ function Delay (Sec :number){
 //
 // Start to build code
 //
-export function CreatEnvAndBuildCode () {
+export async function CreatEnvAndBuildCode () {
 
-    const Terminal  =  GetTerminal (" 🐈 Start to build code.");
+    const Terminal  =  GetTerminal (' 🔍 Checking build environment..... ');
     //
-    //  Check buildlog file exists to make sure "showTextDocument" can works will.
+    // Check Build commands.
     //
-    if (!FileSys.existsSync (Buildlog)) {
-        FileSys.writeFile (Buildlog, "Creat File\n", 'utf-8',(_err)=>{});
+    if (BuildCmd01 === "") { 
+        vscode.window.showInformationMessage (' ❗️❗️ Please unless set [CAT.BuildCmd01]');
+        return;
+    } else if (PreBuildCmd === "&") { 
+        vscode.window.showInformationMessage (' ❗️❗️ Please set [CAT.PreBuildCmd] before you use this function.');
+        return;
     }
-    Terminal.sendText (GlobalCommand + BuildCommand + "\"");
+    //
+    // Check if there have 02 or 03 command.
+    //
+    if (BuildCmd02 !== "" || BuildCmd03 !== "") {
+        await vscode.window.showInformationMessage (
+            " 🤔 Chouse time !! select the command that you want to execute",
+            "1⃣️  "+vscode.workspace.getConfiguration().get("CAT.BuildCmd01"),
+            "2⃣️  "+vscode.workspace.getConfiguration().get("CAT.BuildCmd02"),
+            "3⃣️  "+vscode.workspace.getConfiguration().get("CAT.BuildCmd03"))
+        .then (function (Select) {
+            let Build = Select?.indexOf("1⃣️  ") !== -1 ? 
+                        BuildCmd01 : Select?.indexOf("2⃣️  ") !== -1 ?
+                        BuildCmd02 : BuildCmd03;
+            if (!Select || Build === "") {
+                vscode.window.showInformationMessage (' ❗️❗️ Cancel execution.');
+                return;
+            }
+            Terminal.sendText (GlobalCommand + Build + "\"");
+        });
+    } else {
+        Terminal.sendText (GlobalCommand + BuildCmd01 + "\"");
+        await Delay(100);
+    }
+    vscode.window.showInformationMessage (" 🐈 Start to build code.");
     Terminal.show (true);
     const options = {
         selection: new vscode.Range (new vscode.Position(0, 0), new vscode.Position(0, 0)),
@@ -163,6 +197,13 @@ export function CreatEnvAndBuildCode () {
 export function CleanUpWorkSpace () {
 
     const Terminal  =  GetTerminal (" 🧹 Start to clean up your work spase.");
+    //
+    // Check Clena command.
+    //
+    if (CleanCommand === "") { 
+        vscode.window.showInformationMessage (' ❗️❗️ Please set [CAT.CleanCmd] before you use it.');
+        return;
+    }
     //
     // Delete Build log and clean workspace.
     //
@@ -223,6 +264,13 @@ export async function BuildSingleModule () {
 
     const Terminal  =  GetTerminal (' 🔍 Checking build environment..... ');
     //
+    // Check prebuild command.
+    //
+    if (PreBuildCmd === "&") { 
+        vscode.window.showInformationMessage (' ❗️❗️ Please set [CAT.PreBuildCmd] before you use this function.');
+        return;
+    }
+    //
     // Check terminal environment.
     //
     if (!FileSys.existsSync(EnvCheck)) {
@@ -258,14 +306,14 @@ export async function BuildSingleModule () {
     }
     let MakeFilePath = SearchBuildFolder (BuilFolder, ModuleName);
     if (!MakeFilePath.length) {
-        vscode.window.showInformationMessage (" ❗️❗️ Can\'t find [ "+ModuleName+" ] in Build folder, please make sure this module will been build.");
+        vscode.window.showInformationMessage (" ❗️❗️ Can\'t find [ "+ModuleName+" ] in Build folder, please unliess full build once time or make sure this module will been build.");
         return;
     }
     vscode.window.showInformationMessage (' 🐈 Start to build module [ '+ModuleName+' ].');
-    let BuildCommand = "";
+    let ModuleBuildCmd = "";
     for (let i=0; i<MakeFilePath.length; i++) {
-        BuildCommand = BuildCommand+ PreBuildCmd +"nmake -f "+MakeFilePath[i]+"&";
+        ModuleBuildCmd = ModuleBuildCmd+ PreBuildCmd +"nmake -f "+MakeFilePath[i]+"&";
     }
     Terminal.show (true);
-    Terminal.sendText (GlobalCommand + BuildCommand + "\"");
+    Terminal.sendText (GlobalCommand + ModuleBuildCmd + "\"");
 }

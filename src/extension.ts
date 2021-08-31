@@ -71,6 +71,7 @@ export function activate (context: vscode.ExtensionContext) {
 	//  Sidebar L02 (Record log) command area.
 	//
 	vscode.commands.registerCommand ('BIOS-CAT.L02StartRecord!!', function () { StarOrStoptRecordLog (); });
+	//vscode.workspace.getConfiguration().update('', true);
 }
 
 // this method is called when your extension is deactivated
