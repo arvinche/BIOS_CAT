@@ -9,7 +9,7 @@ const BuilFolder    = WorkSpace + "Build";
 const Buildlog      = WorkSpace + "BuildLog.log";
 const EnvCheck      = WorkSpace + ".vscode/CatEnvCheck.cat";
 const StatusFile    = WorkSpace + ".vscode/CatStatus.cat";
-const GlobalCmd_E   = "& (echo 0 > "+StatusFile+")\"";
+const GlobalCmd_E   = "\"& (echo 0 > "+StatusFile+")";
 var   BuildPath     = "";
 var   PreBuildCmd   = "&";
 var   BuildCommand  = "";
@@ -23,6 +23,7 @@ var   CleanCommand  = "";
 //  2 : Clean up work space.
 //  3 : Building single module.
 //
+FileSys.writeFile (StatusFile, "0", 'utf-8', (_err) =>{});
 var   BuildStatus   = "0";
 
 //  Change encode into 437 :: cmd /C to compatible between MS cmd and MS Powershell
@@ -37,12 +38,14 @@ FileSys.unlink (EnvCheck,(_err)=>{});
 //
 // Get terminal and something that need to pre do.
 //
-function GetTerminalAndCheckEnvironment (Message:string) {
+function GetTerminalAndCheckEnvironment (Message:string):vscode.Terminal|null {
 
     //
     // Check / Create StatusFile to make shure the file is exists.
     //
-    if (!FileSys.existsSync(StatusFile)) { FileSys.writeFile (StatusFile, "0", 'utf-8', (_err) =>{}); }
+    if (!FileSys.existsSync(StatusFile) || (vscode.window.activeTerminal?.name !== "Cat Build code ENV !!")) {
+        FileSys.writeFileSync (StatusFile, "0");
+    }
     //
     // Check BIOS-CAT is doing something else or not.
     //
@@ -198,6 +201,7 @@ export async function CreatEnvAndBuildCode () {
     //
     // Check if there have 02 or 03 command.
     //
+    FileSys.writeFileSync (StatusFile, "Building");
     if (Parameter01 !== "" || Parameter02 !== "") {
         await vscode.window.showInformationMessage (
             " 🤔 Chouse time !! select one command to execute ~~",
@@ -212,13 +216,14 @@ export async function CreatEnvAndBuildCode () {
                 vscode.window.showInformationMessage (' ❗️❗️ Cancel execution.');
                 return;
             }
-            FileSys.writeFile (StatusFile, "Building", 'utf-8', (_err) =>{});
-            Terminal.sendText (GlobalCmd_S + Build + GlobalCmd_E);
-            vscode.window.showInformationMessage (" 🐈 Start to build code.");
-        });
+            if (FileSys.readFileSync (StatusFile, 'utf-8').indexOf("Building") === -1 ||
+                FileSys.readFileSync (StatusFile, 'utf-8').indexOf("0") === -1) {
+                Terminal.sendText (GlobalCmd_S + Build + GlobalCmd_E);
+                vscode.window.showInformationMessage (" 🐈 Start to build code.");
+            }
+        }).then(function () {FileSys.writeFileSync (StatusFile, "0");});
     } else {
         await Delay(1000);
-        FileSys.writeFile (StatusFile, "Building", 'utf-8', (_err) =>{});
         Terminal.sendText (GlobalCmd_S + BuildCommand + GlobalCmd_E);
         vscode.window.showInformationMessage (" 🐈 Start to build code.");
     }
@@ -248,8 +253,8 @@ export async function CleanUpWorkSpace () {
     //
     // Delete Build log and clean workspace.
     //
+    FileSys.writeFileSync (StatusFile, "Cleaning");
     FileSys.unlink (Buildlog,(_err)=>{});
-    FileSys.writeFile (StatusFile, "Cleaning", 'utf-8', (_err) =>{});
     Terminal.sendText (GlobalCmd_S + PreBuildCmd + CleanCommand + GlobalCmd_E);
     Terminal.show (true);
 }
@@ -317,8 +322,9 @@ export async function BuildSingleModule () {
     // Check terminal environment.
     //
     if (!FileSys.existsSync(EnvCheck)) {
+        FileSys.writeFileSync (StatusFile, "Checking environment");
         vscode.window.showInformationMessage (' 🔬 Check prebuild command can work or not.... ');
-        Terminal.sendText (GlobalCmd_S + "("+ PreBuildCmd +"nmake -t > "+ EnvCheck + " 2>&1)" + "\"");
+        Terminal.sendText (GlobalCmd_S + "("+ PreBuildCmd +"nmake -t > "+ EnvCheck + " 2>&1)" + GlobalCmd_E);
         await Delay(500);
         do {/* Wait for EnvCheck create */} while (!FileSys.existsSync(EnvCheck));
     }
@@ -330,7 +336,7 @@ export async function BuildSingleModule () {
     } else if (!FileSys.existsSync (BuilFolder) && 1) {
         FileSys.unlink (EnvCheck,(_err)=>{});
         vscode.window.showInformationMessage (
-            " ❗️❗️ BIOS-Cat need your makefile environment, please build at lest once time to create it.\
+            " ❗️❗️ BIOS-Cat need your \"Makefile\" environment, please build at lest once time to create it.\
             Do you want to do full build now?",
             'Yes I do !!',
             'No Thanks ~')
@@ -340,15 +346,18 @@ export async function BuildSingleModule () {
     //
     //  Start find current file in inf and module path in build folder.
     //
+    FileSys.writeFileSync (StatusFile, "Analyze the build environment");
     let FileName = vscode.window.activeTextEditor?.document.fileName.replace(/\\/g,"/").split("/").pop()+"";
     let ModuleName = FindModuleName (vscode.window.activeTextEditor?.document.fileName+"", FileName, ".inf", BuilFolder);
     if (ModuleName === "") {
         vscode.window.showInformationMessage (" ❗️❗️ Can\'t find [ "+FileName+" ] in inf file, please check it and rebuild again.");
+        FileSys.writeFileSync (StatusFile, "0");
         return;
     }
     let MakeFilePath = SearchBuildFolder (BuilFolder, ModuleName);
     if (!MakeFilePath.length) {
         vscode.window.showInformationMessage (" ❗️❗️ Can\'t find [ "+ModuleName+" ] in Build folder, please unliess full build once time or make sure this module will been build.");
+        FileSys.writeFileSync (StatusFile, "0");
         return;
     }
     vscode.window.showInformationMessage (' 🐈 Start to build module =>[ '+ModuleName+' ].');
@@ -357,6 +366,6 @@ export async function BuildSingleModule () {
         ModuleBuildCmd = ModuleBuildCmd+ PreBuildCmd +"nmake -f "+MakeFilePath[i]+"&";
     }
     Terminal.show (true);
-    FileSys.writeFile (StatusFile, "Building module", 'utf-8', (_err) =>{});
+    FileSys.writeFileSync (StatusFile, "Building module");
     Terminal.sendText (GlobalCmd_S + ModuleBuildCmd + GlobalCmd_E);
 }
