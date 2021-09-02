@@ -25,5 +25,5 @@
 |     3 |             7 | Add powershell for build code support         | Done              | Gua           | Enhance   |
 |     4 |            11 | Remove redundant Bookmark.json                | Done              | Gua           | Enhance   |
 |     5 |             8 | It can't get "nmake" so it will always filed  | Done              | Arvin         | Bug       |
-|     6 |             8 | Once Pop-up window not be ckeck will caust build function failed| T.B.D | Arvin   | Bug       |
+|     6 |             8 | Once Pop-up window not be ckeck will caust build function failed| Done  | Arvin   | Bug       |
 

@@ -4,6 +4,7 @@ import * as vscode  from 'vscode';
 import * as FileSys from 'fs';
 import * as RLSys   from 'readline';
 
+const NOT_FOUND     = -1;
 const WorkSpace     = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
 const BuilFolder    = WorkSpace + "Build";
 const Buildlog      = WorkSpace + "BuildLog.log";
@@ -50,7 +51,7 @@ function GetTerminalAndCheckEnvironment (Message:string):vscode.Terminal|null {
     // Check BIOS-CAT is doing something else or not.
     //
     BuildStatus = FileSys.readFileSync (StatusFile, 'utf-8');
-    if (BuildStatus.indexOf("0") === -1) {
+    if (BuildStatus.indexOf("0") === NOT_FOUND) {
         vscode.window.showInformationMessage (" ❗️❗️ BIOS-CAT is now  ["+BuildStatus+"] !!.");
         return null;
     }
@@ -61,7 +62,7 @@ function GetTerminalAndCheckEnvironment (Message:string):vscode.Terminal|null {
     //
     // Check build path is exist or not.
     //
-    BuildPath     = (GetConfig.get("CAT.00_BuildPath")+"").replace(/\\/g, "/").indexOf (":/") === -1?
+    BuildPath     = (GetConfig.get("CAT.00_BuildPath")+"").replace(/\\/g, "/").indexOf (":/") === NOT_FOUND?
                     WorkSpace + GetConfig.get("CAT.00_BuildPath") : GetConfig.get("CAT.00_BuildPath")+"";
     if (!FileSys.existsSync(BuildPath) && !FileSys.existsSync(WorkSpace+BuildPath)) {
         vscode.window.showInformationMessage (" ❗️❗️ File path  ["+BuildPath+"]  seems not exist.");
@@ -114,7 +115,7 @@ function FindModuleName (Root:string, SearchContent:string, SubName:string, Excl
         FileSys.readdirSync(Root).forEach ( function (item) {
             let FilePath = require('path').join (Root,item);
             if ( FileSys.statSync(FilePath).isDirectory() === true &&
-                FilePath.indexOf (Excluded) === -1) {
+                FilePath.indexOf (Excluded) === NOT_FOUND) {
                     //
                     //  Recursive to findout.
                     //
@@ -122,10 +123,10 @@ function FindModuleName (Root:string, SearchContent:string, SubName:string, Excl
             } else {
                 if (FilePath.endsWith (SubName)) {
                     let FileContent = FileSys.readFileSync (FilePath, 'utf-8');
-                    if (FileContent.indexOf (SearchContent) !== -1) {
+                    if (FileContent.indexOf (SearchContent) !== NOT_FOUND) {
                         let Line = FileContent.split ("\n");
                         for (let i=0; i<Line.length; i++) {
-                            if (Line[i].indexOf ("BASE_NAME") !== -1) {
+                            if (Line[i].indexOf ("BASE_NAME") !== NOT_FOUND) {
                                 ModuleName = Line[i].split(" ").pop()?.replace("\r","")+"";
                             }
                         }
@@ -201,7 +202,6 @@ export async function CreatEnvAndBuildCode () {
     //
     // Check if there have 02 or 03 command.
     //
-    FileSys.writeFileSync (StatusFile, "Building");
     if (Parameter01 !== "" || Parameter02 !== "") {
         await vscode.window.showInformationMessage (
             " 🤔 Chouse time !! select one command to execute ~~",
@@ -209,21 +209,25 @@ export async function CreatEnvAndBuildCode () {
             "2⃣️  With ["+GetConfig.get("CAT.Parameter01")+"]",
             "3⃣️  With ["+GetConfig.get("CAT.Parameter02")+"]")
         .then (function (Select) {
-            let Build = Select?.indexOf("1⃣️  ") !== -1 ? 
-                        BuildCommand : Select?.indexOf("2⃣️  ") !== -1 ?
+            let Build = Select?.indexOf("1⃣️  ") !== NOT_FOUND ? 
+                        BuildCommand : Select?.indexOf("2⃣️  ") !== NOT_FOUND ?
                         Parameter01  : Parameter02;
             if (!Select || Build === "") {
                 vscode.window.showInformationMessage (' ❗️❗️ Cancel execution.');
                 return;
             }
-            if (FileSys.readFileSync (StatusFile, 'utf-8').indexOf("Building") === -1 ||
-                FileSys.readFileSync (StatusFile, 'utf-8').indexOf("0") === -1) {
+            let BuildStatus = FileSys.readFileSync (StatusFile, 'utf-8');
+            if (BuildStatus.indexOf("0") !== NOT_FOUND) {
+                FileSys.writeFileSync (StatusFile, "Building");
                 Terminal.sendText (GlobalCmd_S + Build + GlobalCmd_E);
                 vscode.window.showInformationMessage (" 🐈 Start to build code.");
+            } else {
+                vscode.window.showInformationMessage (" ❗️❗️ BIOS-CAT is now  ["+BuildStatus+"] !!.");
             }
-        }).then(function () {FileSys.writeFileSync (StatusFile, "0");});
+        });
     } else {
         await Delay(1000);
+        FileSys.writeFileSync (StatusFile, "Building");
         Terminal.sendText (GlobalCmd_S + BuildCommand + GlobalCmd_E);
         vscode.window.showInformationMessage (" 🐈 Start to build code.");
     }
@@ -329,7 +333,7 @@ export async function BuildSingleModule () {
         do {/* Wait for EnvCheck create */} while (!FileSys.existsSync(EnvCheck));
     }
     let CheckFile = FileSys.readFileSync (EnvCheck, 'utf-8');
-    if (CheckFile.indexOf ("not recognized") !== -1) {
+    if (CheckFile.indexOf ("not recognized") !== NOT_FOUND) {
         FileSys.unlink (EnvCheck,(_err)=>{});
         vscode.window.showInformationMessage (" ❗️❗️ Please help BIOS-Cat to check prebuild command too create environment~");
         return;

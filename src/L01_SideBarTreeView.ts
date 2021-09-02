@@ -15,14 +15,18 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 		try { 
 			FileSys.accessSync (BookMarkPath);
 		} catch (err) {
-			if (!FileSys.existsSync(this.WorkspaceRoot+"/.vscode")) {
-				FileSys.mkdirSync(this.WorkspaceRoot+"/.vscode");
+			if (this.WorkspaceRoot !== "") {
+				if (!FileSys.existsSync(this.WorkspaceRoot+"/.vscode")) {
+					FileSys.mkdirSync(this.WorkspaceRoot+"/.vscode");
+				}
+				FileSys.writeFile (
+					BookMarkPath,
+					'[{"Group":"This is a sampel~","Time":"","FileAndPath":[{"Tag":"Welcome use bookmark","Path":"","Start":"0.0","End":"0.0","Time":""}]}]',
+					'utf-8', (_err)=>{}
+				);
+			} else {
+				vscode.window.showInformationMessage (" ❗️❗️ BIOS-CAT need a 🏠home to work!!. (Please assign work space)");
 			}
-			FileSys.writeFile (
-				BookMarkPath,
-				'[{"Group":"This is a sampel~","Time":"","FileAndPath":[{"Tag":"Welcome use bookmark","Path":"","Start":"0.0","End":"0.0","Time":""}]}]',
-				'utf-8', (_err)=>{}
-			);
 		}
 	}
     //
