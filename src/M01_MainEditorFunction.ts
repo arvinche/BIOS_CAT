@@ -3,6 +3,7 @@
 import * as vscode  from 'vscode';
 import * as FileSys from 'fs';
 import * as RLSys   from 'readline';
+import { SendCommand } from './RunCommand';
 
 const NOT_FOUND     = -1;
 const WorkSpace     = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
@@ -10,8 +11,6 @@ const BuilFolder    = WorkSpace + "Build";
 const Buildlog      = WorkSpace + "BuildLog.log";
 const EnvCheck      = WorkSpace + ".vscode/CatEnvCheck.cat";
 const StatusFile    = WorkSpace + ".vscode/CatStatus.cat";
-const GlobalCmd_E   = "\"& (echo 0 > "+StatusFile+")";
-var   BuildPath     = "";
 var   PreBuildCmd   = "&";
 var   BuildCommand  = "";
 var   Parameter01   = "";
@@ -27,8 +26,6 @@ var   CleanCommand  = "";
 FileSys.writeFile (StatusFile, "0", 'utf-8', (_err) =>{});
 var   BuildStatus   = "0";
 
-//  Change encode into 437 :: cmd /C to compatible between MS cmd and MS Powershell
-var   GlobalCmd_S   = "cmd /C \" chcp 437 & cd " + BuildPath + " & ";
 
 //
 // Clear Env file when project start.
@@ -62,6 +59,7 @@ function GetTerminalAndCheckEnvironment (Message:string):vscode.Terminal|null {
     //
     // Check build path is exist or not.
     //
+    var BuildPath;
     BuildPath     = (GetConfig.get("CAT.00_BuildPath")+"").replace(/\\/g, "/").indexOf (":/") === NOT_FOUND?
                     WorkSpace + GetConfig.get("CAT.00_BuildPath") : GetConfig.get("CAT.00_BuildPath")+"";
     if (!FileSys.existsSync(BuildPath) && !FileSys.existsSync(WorkSpace+BuildPath)) {
@@ -73,20 +71,19 @@ function GetTerminalAndCheckEnvironment (Message:string):vscode.Terminal|null {
     //
     PreBuildCmd   = GetConfig.get("CAT.01_PreBuildCmd")+"&" !== PreBuildCmd ?
                     GetConfig.get("CAT.01_PreBuildCmd")+"&"+ DelEnvCheck() : PreBuildCmd;
-    BuildCommand  = GetConfig.get("CAT.02_BuildCmd") !== ""  ? "(" + PreBuildCmd + GetConfig.get("CAT.02_BuildCmd") + ") > "+ Buildlog + " 2>&1" : "";
+    BuildCommand  = GetConfig.get("CAT.02_BuildCmd") !== ""  ? "(" + PreBuildCmd + GetConfig.get("CAT.02_BuildCmd") + ")" : "";
     if (GetConfig.get("CAT.04_SetParameterWith") === "Build") {
         Parameter01   = GetConfig.get("CAT.Parameter01") !== "" ?
-                        "(" + PreBuildCmd + GetConfig.get("CAT.02_BuildCmd") + " " +GetConfig.get("CAT.Parameter01") + ") > "+ Buildlog + " 2>&1" : "";
+                        "(" + PreBuildCmd + GetConfig.get("CAT.02_BuildCmd") + " " +GetConfig.get("CAT.Parameter01") + ")" : "";
         Parameter02   = GetConfig.get("CAT.Parameter02") !== "" ?
-                        "(" + PreBuildCmd + GetConfig.get("CAT.02_BuildCmd") + " " +GetConfig.get("CAT.Parameter02") + ") > "+ Buildlog + " 2>&1" : "";
+                        "(" + PreBuildCmd + GetConfig.get("CAT.02_BuildCmd") + " " +GetConfig.get("CAT.Parameter02") + ")" : "";
     } else {
         Parameter01   = GetConfig.get("CAT.Parameter01") !== "" ?
-                        "(" + PreBuildCmd .replace ("&", " "+GetConfig.get("CAT.Parameter01")+"&"+ GetConfig.get("CAT.02_BuildCmd")) + ") > "+ Buildlog + " 2>&1" : "";
+                        "(" + PreBuildCmd .replace ("&", " "+GetConfig.get("CAT.Parameter01")+"&"+ GetConfig.get("CAT.02_BuildCmd")) + ")" : "";
         Parameter02   = GetConfig.get("CAT.Parameter02") !== "" ?
-                        "(" + PreBuildCmd .replace ("&", " "+GetConfig.get("CAT.Parameter02")+"&"+ GetConfig.get("CAT.02_BuildCmd")) + ") > "+ Buildlog + " 2>&1" : "";
+                        "(" + PreBuildCmd .replace ("&", " "+GetConfig.get("CAT.Parameter02")+"&"+ GetConfig.get("CAT.02_BuildCmd")) + ")" : "";
     }
     CleanCommand = "" + GetConfig.get("CAT.03_CleanCmd");
-    GlobalCmd_S  = "cmd /C \"chcp 437 & cd " + BuildPath + " & ";
     //
     // Create Terminal.
     //
@@ -176,7 +173,7 @@ function SearchBuildFolder (Root:string, FolderName:string):string[] {
 //
 function Delay (Sec :number){
     return new Promise (function (Resolve,Reject){
-     setTimeout (Resolve,Sec); 
+     setTimeout (Resolve,Sec);
     });
 };
 
@@ -192,10 +189,10 @@ export async function CreatEnvAndBuildCode () {
     //
     // Check Build commands.
     //
-    if (PreBuildCmd === "&") { 
+    if (PreBuildCmd === "&") {
         vscode.window.showInformationMessage (' ❗️❗️ Please set [CAT.01_PreBuildCmd] before you use this function.');
         return;
-    }else if (BuildCommand === "") { 
+    }else if (BuildCommand === "") {
         vscode.window.showInformationMessage (' ❗️❗️ Please unless set [CAT.02_BuildCmd]');
         return;
     }
@@ -209,7 +206,7 @@ export async function CreatEnvAndBuildCode () {
             "2⃣️  With ["+GetConfig.get("CAT.Parameter01")+"]",
             "3⃣️  With ["+GetConfig.get("CAT.Parameter02")+"]")
         .then (function (Select) {
-            let Build = Select?.indexOf("1⃣️  ") !== NOT_FOUND ? 
+            let Build = Select?.indexOf("1⃣️  ") !== NOT_FOUND ?
                         BuildCommand : Select?.indexOf("2⃣️  ") !== NOT_FOUND ?
                         Parameter01  : Parameter02;
             if (!Select || Build === "") {
@@ -219,7 +216,7 @@ export async function CreatEnvAndBuildCode () {
             let BuildStatus = FileSys.readFileSync (StatusFile, 'utf-8');
             if (BuildStatus.indexOf("0") !== NOT_FOUND) {
                 FileSys.writeFileSync (StatusFile, "Building");
-                Terminal.sendText (GlobalCmd_S + Build + GlobalCmd_E);
+                SendCommand (Terminal, Build, WorkSpace, true, Buildlog, StatusFile);
                 vscode.window.showInformationMessage (" 🐈 Start to build code.");
             } else {
                 vscode.window.showInformationMessage (" ❗️❗️ BIOS-CAT is now  ["+BuildStatus+"] !!.");
@@ -228,7 +225,7 @@ export async function CreatEnvAndBuildCode () {
     } else {
         await Delay(1000);
         FileSys.writeFileSync (StatusFile, "Building");
-        Terminal.sendText (GlobalCmd_S + BuildCommand + GlobalCmd_E);
+        SendCommand (Terminal, BuildCommand, WorkSpace, true, Buildlog, StatusFile);
         vscode.window.showInformationMessage (" 🐈 Start to build code.");
     }
     Terminal.show (true);
@@ -250,7 +247,7 @@ export async function CleanUpWorkSpace () {
     //
     // Check Clena command.
     //
-    if (CleanCommand === "") { 
+    if (CleanCommand === "") {
         vscode.window.showInformationMessage (' ❗️❗️ Please set [CAT.03_CleanCmd] before you use it.');
         return;
     } await Delay(1000);
@@ -259,7 +256,7 @@ export async function CleanUpWorkSpace () {
     //
     FileSys.writeFileSync (StatusFile, "Cleaning");
     FileSys.unlink (Buildlog,(_err)=>{});
-    Terminal.sendText (GlobalCmd_S + PreBuildCmd + CleanCommand + GlobalCmd_E);
+    SendCommand (Terminal, PreBuildCmd + CleanCommand, WorkSpace, true, "", StatusFile);
     Terminal.show (true);
 }
 
@@ -318,7 +315,7 @@ export async function BuildSingleModule () {
     //
     // Check prebuild command.
     //
-    if (PreBuildCmd === "&") { 
+    if (PreBuildCmd === "&") {
         vscode.window.showInformationMessage (' ❗️❗️ Please set [CAT.01_PreBuildCmd] before you use this function.');
         return;
     } await Delay(1000);
@@ -328,7 +325,7 @@ export async function BuildSingleModule () {
     if (!FileSys.existsSync(EnvCheck)) {
         FileSys.writeFileSync (StatusFile, "Checking environment");
         vscode.window.showInformationMessage (' 🔬 Check prebuild command can work or not.... ');
-        Terminal.sendText (GlobalCmd_S + "("+ PreBuildCmd +"nmake -t > "+ EnvCheck + " 2>&1)" + GlobalCmd_E);
+        SendCommand (Terminal, "("+ PreBuildCmd +"nmake -t > "+ EnvCheck + " 2>&1)", WorkSpace, true, "", StatusFile);
         await Delay(500);
         do {/* Wait for EnvCheck create */} while (!FileSys.existsSync(EnvCheck));
     }
@@ -371,5 +368,5 @@ export async function BuildSingleModule () {
     }
     Terminal.show (true);
     FileSys.writeFileSync (StatusFile, "Building module");
-    Terminal.sendText (GlobalCmd_S + ModuleBuildCmd + GlobalCmd_E);
+    SendCommand (Terminal, ModuleBuildCmd, WorkSpace, true, "", StatusFile);
 }
