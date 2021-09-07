@@ -5,10 +5,11 @@ import * as vscode  from 'vscode';
 //
 // Local define class file.
 //
+import {WorkSpace}  from './00_GeneralFunction';
 //============= Middle Area =============//
 import { 
 	CreatEnvAndBuildCode,
-	ChecBuildLogAndJump2Error,
+	CheckBuildLogAndJump2Error,
 	CleanUpWorkSpace,
 	BuildSingleModule
 } from './M01_MainEditorFunction';
@@ -20,7 +21,8 @@ import {
 	AddBookMarkElement,
 	EditBookMarkElement, 
 	DelBookMarkElement,
-	JumpInToBookMark
+	JumpInToBookMark,
+	GetCurruntPath
 } from './L01_SideBarTreeView';
 
 import { 
@@ -34,7 +36,6 @@ export function activate (context: vscode.ExtensionContext) {
 	//
 	// Init Variable that we need ~
 	//
-	const WorkSpace = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
 	const TreeL01   = new NodeDependenciesProvider(WorkSpace);
 	vscode.window.registerTreeDataProvider ('L01', TreeL01);
 	console.log ('Great~ "BIOS-CAT" is now active!');
@@ -51,7 +52,7 @@ export function activate (context: vscode.ExtensionContext) {
 	//
 	// Check build log & show build error (if it have)
 	//
-	vscode.commands.registerCommand ('BIOS-CAT.CMD03', ()=>{ ChecBuildLogAndJump2Error (); });
+	vscode.commands.registerCommand ('BIOS-CAT.CMD03', ()=>{ CheckBuildLogAndJump2Error (); });
 
 	//
 	//  Build individual module
@@ -66,6 +67,9 @@ export function activate (context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand ('BIOS-CAT.L01Delete', (Item: Dependency) => { DelBookMarkElement (TreeL01, Item); });
 	vscode.commands.registerCommand ('BIOS-CAT.L01Reflash', () => { TreeL01.Refresh(); });
 	vscode.commands.registerCommand ('BIOS-CAT.L01JumpToFile', (Item: Dependency) => { JumpInToBookMark (Item); });
+	vscode.commands.registerCommand ('BIOS-CAT.L01CopyFullPath', () => { GetCurruntPath (1); });
+	vscode.commands.registerCommand ('BIOS-CAT.L01CopyFolderPath', () => { GetCurruntPath (2); });
+	vscode.commands.registerCommand ('BIOS-CAT.L01CopyFileName', () => { GetCurruntPath (3); });
 
 	//
 	//  Sidebar L02 (Record log) command area.

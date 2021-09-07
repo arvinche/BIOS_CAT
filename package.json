@@ -69,24 +69,30 @@
 			}
 		},
 		"commands": [
-			{"command": "BIOS-CAT.CMD01"         , "title": "01_Build code"},
-			{"command": "BIOS-CAT.CMD02"         , "title": "02_Clean"},
-			{"command": "BIOS-CAT.CMD03"         , "title": "03_Jump to error"},
-			{"command": "BIOS-CAT.CMD04"         , "title": "04_BuildThisModule"},
-			{"command": "BIOS-CAT.L01AddMark"    , "title": "Add BookMark 📒"    , "icon": "./Images/L01_Add.png"},
-			{"command": "BIOS-CAT.L01Reflash"    , "title": "Reflash BookMark 📒", "icon": "./Images/L01_Reflash.png"},
-			{"command": "BIOS-CAT.L01Edit"       , "title": "Edit BookMark 📒"   , "icon": "./Images/L01_Edit.png"},
-			{"command": "BIOS-CAT.L01Delete"     , "title": "Delete BookMark 📒" , "icon": "./Images/L01_Delete.png"},
-			{"command": "BIOS-CAT.L01JumpToFile" , "title": "Jump to file 📒"    , "icon": "./Images/L01_Jump.png"},
-			{"command": "BIOS-CAT.L02StartRecord", "title": "Start/Stop record log", "icon": "./Images/L01_Jump.png"}
+			{"command": "BIOS-CAT.CMD01"            , "title": "01_Build code"},
+			{"command": "BIOS-CAT.CMD02"            , "title": "02_Clean"},
+			{"command": "BIOS-CAT.CMD03"            , "title": "03_Jump to Build log / error"},
+			{"command": "BIOS-CAT.CMD04"            , "title": "04_BuildThisModule (With Makefile)"},
+			{"command": "BIOS-CAT.L01AddMark"       , "title": "Add BookMark 📒"    , "icon": "./Images/L01_Add.png"},
+			{"command": "BIOS-CAT.L01Reflash"       , "title": "Reflash BookMark 📒", "icon": "./Images/L01_Reflash.png"},
+			{"command": "BIOS-CAT.L01Edit"          , "title": "Edit BookMark 📒"   , "icon": "./Images/L01_Edit.png"},
+			{"command": "BIOS-CAT.L01Delete"        , "title": "Delete BookMark 📒" , "icon": "./Images/L01_Delete.png"},
+			{"command": "BIOS-CAT.L01JumpToFile"    , "title": "Jump to file 📒"    , "icon": "./Images/L01_Jump.png"},
+			{"command": "BIOS-CAT.L01CopyFullPath"  , "title": "Copy Full Path"},
+			{"command": "BIOS-CAT.L01CopyFolderPath", "title": "Copy Folder Path"},
+			{"command": "BIOS-CAT.L01CopyFileName"  , "title": "Copy File Name"},
+			{"command": "BIOS-CAT.L02StartRecord"   , "title": "Start/Stop record log", "icon": "./Images/L01_Jump.png"}
 		],
 		"keybindings": [
-			{"command": "BIOS-CAT.CMD01",          "key": "alt+'",  "when": "editorTextFocus"},
-			{"command": "BIOS-CAT.CMD02",          "key": "alt+;",  "when": "editorTextFocus"},
-			{"command": "BIOS-CAT.CMD03",          "key": "alt+/",  "when": "editorTextFocus"},
-			{"command": "BIOS-CAT.CMD04",          "key": "alt+.",  "when": "editorTextFocus"},
-			{"command": "BIOS-CAT.L01AddMark",     "key": "ctrl+m", "when": "editorTextFocus", "mac": "cmd+m"},
-			{"command": "BIOS-CAT.L02StartRecord", "key": "alt+r",  "when": "editorTextFocus"}
+			{"command": "BIOS-CAT.CMD01",            "key": "alt+'",   "when": "editorTextFocus"},
+			{"command": "BIOS-CAT.CMD02",            "key": "alt+;",   "when": "editorTextFocus"},
+			{"command": "BIOS-CAT.CMD03",            "key": "alt+/",   "when": "editorTextFocus"},
+			{"command": "BIOS-CAT.CMD04",            "key": "alt+.",   "when": "editorTextFocus"},
+			{"command": "BIOS-CAT.L01AddMark",       "key": "ctrl+m",  "when": "editorTextFocus", "mac": "cmd+m"},
+			{"command": "BIOS-CAT.L01CopyFullPath",  "key": "alt+p",   "when": "editorTextFocus", "mac": "cmd+p"},
+			{"command": "BIOS-CAT.L01CopyFolderPath","key": "alt+[",   "when": "editorTextFocus"},
+			{"command": "BIOS-CAT.L01CopyFileName",  "key": "alt+]",   "when": "editorTextFocus"},
+			{"command": "BIOS-CAT.L02StartRecord",   "key": "alt+r",   "when": "editorTextFocus"}
 		],
 		"menus": {
 			"view/title": [

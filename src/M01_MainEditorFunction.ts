@@ -3,34 +3,27 @@
 import * as vscode  from 'vscode';
 import * as FileSys from 'fs';
 import * as RLSys   from 'readline';
-import { SendCommand } from './RunCommand';
+import {
+  //== Variable ==
+    WorkSpace,
+    EnvCheck,
+    StatusFile,
+  //== Function ==
+    SendCommand2PY, 
+    Delay, 
+    DelEnvCheck 
+} from './00_GeneralFunction';
 
 const NOT_FOUND     = -1;
-const WorkSpace     = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
 const BuilFolder    = WorkSpace + "Build";
-const Buildlog      = WorkSpace + "BuildLog.log";
-const EnvCheck      = WorkSpace + ".vscode/CatEnvCheck.cat";
-const StatusFile    = WorkSpace + ".vscode/CatStatus.cat";
+const Buildlog      = WorkSpace + ".vscode/BuildLog.log";
+const NmakeCheck    = "NMAKE : fatal error U1064:";
 var   PreBuildCmd   = "&";
 var   BuildCommand  = "";
 var   Parameter01   = "";
 var   Parameter02   = "";
 var   CleanCommand  = "";
-
-//  Build status define (but now write directly in the "StatusFile"):
-//  0 : Waiting for instructions.
-//  1 : Building code.
-//  2 : Clean up work space.
-//  3 : Building single module.
-//
-FileSys.writeFile (StatusFile, "0", 'utf-8', (_err) =>{});
 var   BuildStatus   = "0";
-
-
-//
-// Clear Env file when project start.
-//
-FileSys.unlink (EnvCheck,(_err)=>{});
 
 //============= Local Function =============//
 //
@@ -59,8 +52,7 @@ function GetTerminalAndCheckEnvironment (Message:string):vscode.Terminal|null {
     //
     // Check build path is exist or not.
     //
-    var BuildPath;
-    BuildPath     = (GetConfig.get("CAT.00_BuildPath")+"").replace(/\\/g, "/").indexOf (":/") === NOT_FOUND?
+    var BuildPath = (GetConfig.get("CAT.00_BuildPath")+"").replace(/\\/g, "/").indexOf (":/") === NOT_FOUND?
                     WorkSpace + GetConfig.get("CAT.00_BuildPath") : GetConfig.get("CAT.00_BuildPath")+"";
     if (!FileSys.existsSync(BuildPath) && !FileSys.existsSync(WorkSpace+BuildPath)) {
         vscode.window.showInformationMessage (" ❗️❗️ File path  ["+BuildPath+"]  seems not exist.");
@@ -94,11 +86,6 @@ function GetTerminalAndCheckEnvironment (Message:string):vscode.Terminal|null {
     if (Message !== "") { vscode.window.showInformationMessage (Message); }
     return Terminal;
 }
-
-//
-// Clear Env Function.
-//
-function DelEnvCheck():string {FileSys.unlink (EnvCheck,(_err)=>{}); return "";}
 
 //
 //  Find the file with sub file name. (from inside out)
@@ -168,15 +155,6 @@ function SearchBuildFolder (Root:string, FolderName:string):string[] {
     return ModulesFolder;
 }
 
-//
-// Delay function for use.
-//
-function Delay (Sec :number){
-    return new Promise (function (Resolve,Reject){
-     setTimeout (Resolve,Sec);
-    });
-};
-
 //============= External Function =============//
 //
 // Start to build code
@@ -216,7 +194,7 @@ export async function CreatEnvAndBuildCode () {
             let BuildStatus = FileSys.readFileSync (StatusFile, 'utf-8');
             if (BuildStatus.indexOf("0") !== NOT_FOUND) {
                 FileSys.writeFileSync (StatusFile, "Building");
-                SendCommand (Terminal, Build, WorkSpace, true, Buildlog, StatusFile);
+                SendCommand2PY (Terminal, Build, WorkSpace, true, Buildlog);
                 vscode.window.showInformationMessage (" 🐈 Start to build code.");
             } else {
                 vscode.window.showInformationMessage (" ❗️❗️ BIOS-CAT is now  ["+BuildStatus+"] !!.");
@@ -225,16 +203,10 @@ export async function CreatEnvAndBuildCode () {
     } else {
         await Delay(1000);
         FileSys.writeFileSync (StatusFile, "Building");
-        SendCommand (Terminal, BuildCommand, WorkSpace, true, Buildlog, StatusFile);
+        SendCommand2PY (Terminal, BuildCommand, WorkSpace, true, Buildlog);
         vscode.window.showInformationMessage (" 🐈 Start to build code.");
     }
     Terminal.show (true);
-    const options = {
-        selection: new vscode.Range (new vscode.Position(0, 0), new vscode.Position(0, 0)),
-        preview: true,
-        viewColumn: vscode.ViewColumn.One
-    };
-    vscode.window.showTextDocument (vscode.Uri.file (Buildlog), options);
 }
 
 //
@@ -255,38 +227,41 @@ export async function CleanUpWorkSpace () {
     // Delete Build log and clean workspace.
     //
     FileSys.writeFileSync (StatusFile, "Cleaning");
-    FileSys.unlink (Buildlog,(_err)=>{});
-    SendCommand (Terminal, PreBuildCmd + CleanCommand, WorkSpace, true, "", StatusFile);
+    FileSys.unlink (Buildlog, (_err)=>{});
+    SendCommand2PY (Terminal, PreBuildCmd + CleanCommand, WorkSpace, true, "");
     Terminal.show (true);
 }
 
 //
 // Check build log & show build error (if it have)
 //
-export function ChecBuildLogAndJump2Error () {
+export function CheckBuildLogAndJump2Error () {
     var LineCount  = 0;
     var ErrorCount = 0;
     if (!FileSys.existsSync (Buildlog)) {
         vscode.window.showInformationMessage (' ❗️❗️ There have no build log to analyze.');
         return;
     }
+    //
+    //  Open build log in vscode.
+    //
+    const options = {
+        selection: new vscode.Range (new vscode.Position (0, 0), new vscode.Position (0, 0)),
+        preview: true,
+        viewColumn: vscode.ViewColumn.One
+    };
+    vscode.window.showTextDocument (vscode.Uri.file (Buildlog), options);
     vscode.window.showInformationMessage (' 🔍 Checking build log ......... ');
     //
     // If there have error, open the file and jump to the error line.
     //
     RLSys.createInterface ({ input: FileSys.createReadStream (Buildlog) }).on ('line', function(Line) {
         LineCount++;
-        if ( (/: error +\w+:/g.test(Line)) === true ) {
+        if ( (/ error +\w+:/g.test(Line)) === true ) {
             ErrorCount++;
             //
-            //  Open build log in vscode.
+            // C & inf checker.
             //
-            const options = {
-                selection: new vscode.Range (new vscode.Position (LineCount-1, 0), new vscode.Position (LineCount, 0)),
-                preview: true,
-                viewColumn: vscode.ViewColumn.One
-            };
-            vscode.window.showTextDocument (vscode.Uri.file (Buildlog), options);
             if (Line.indexOf (":\\")) {
                 Line.split (" ").forEach (function (Units) {
                     if (Units.indexOf (":\\") === 1) {
@@ -325,14 +300,19 @@ export async function BuildSingleModule () {
     if (!FileSys.existsSync(EnvCheck)) {
         FileSys.writeFileSync (StatusFile, "Checking environment");
         vscode.window.showInformationMessage (' 🔬 Check prebuild command can work or not.... ');
-        SendCommand (Terminal, "("+ PreBuildCmd +"nmake -t > "+ EnvCheck + " 2>&1)", WorkSpace, true, "", StatusFile);
-        await Delay(500);
-        do {/* Wait for EnvCheck create */} while (!FileSys.existsSync(EnvCheck));
+        SendCommand2PY (Terminal, "("+ PreBuildCmd +"nmake -t)", WorkSpace, false, EnvCheck);
+        //
+        // Wait 5 sec to make sure the pyhton command can indeed marge, and wait for "EnvCheck" file generate.
+        // (If prebuild can do successful this part will only run once time.)
+        //
+        await Delay(5000);
+        //do {/* Wait for EnvCheck create */} while (!FileSys.existsSync(EnvCheck));
     }
+    await Delay(1000);
     let CheckFile = FileSys.readFileSync (EnvCheck, 'utf-8');
-    if (CheckFile.indexOf ("not recognized") !== NOT_FOUND) {
+    if (CheckFile.indexOf (NmakeCheck) === NOT_FOUND) {
         FileSys.unlink (EnvCheck,(_err)=>{});
-        vscode.window.showInformationMessage (" ❗️❗️ Please help BIOS-Cat to check prebuild command too create environment~");
+        vscode.window.showInformationMessage (" ❗️❗️ Prebuild command error! \n Please help BIOS-Cat to check prebuild command too create environment~");
         return;
     } else if (!FileSys.existsSync (BuilFolder) && 1) {
         FileSys.unlink (EnvCheck,(_err)=>{});
@@ -351,7 +331,7 @@ export async function BuildSingleModule () {
     let FileName = vscode.window.activeTextEditor?.document.fileName.replace(/\\/g,"/").split("/").pop()+"";
     let ModuleName = FindModuleName (vscode.window.activeTextEditor?.document.fileName+"", FileName, ".inf", BuilFolder);
     if (ModuleName === "") {
-        vscode.window.showInformationMessage (" ❗️❗️ Can\'t find [ "+FileName+" ] in inf file, please check it and rebuild again.");
+        vscode.window.showInformationMessage (" ❗️❗️ Can\'t find [ "+FileName+" ] in \"inf\" file, please check it and rebuild again.");
         FileSys.writeFileSync (StatusFile, "0");
         return;
     }
@@ -368,5 +348,5 @@ export async function BuildSingleModule () {
     }
     Terminal.show (true);
     FileSys.writeFileSync (StatusFile, "Building module");
-    SendCommand (Terminal, ModuleBuildCmd, WorkSpace, true, "", StatusFile);
+    SendCommand2PY (Terminal, ModuleBuildCmd, WorkSpace, true, "");
 }

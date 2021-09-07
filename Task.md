@@ -17,6 +17,7 @@
 |            12 | Sync PDF document with codebase               | T.B.D             | T.B.D         | Feature   |
 |            13 | Binary UEFI variable Parser                   | T.B.D             | Arvin         | Feature   |
 |            14 | Run command by python                         | Done              | Gua           | Feature   |
+|            15 | Copy current select file path hotkey          | Done              | Arvin         | Feature   |
 
 ## Bug/Enhance List
 | Index | Feature Index | Task                                          | Status            | Author        | Attribute |

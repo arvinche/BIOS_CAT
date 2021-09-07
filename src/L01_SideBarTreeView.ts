@@ -2,10 +2,10 @@
 import * as vscode  from 'vscode';
 import * as FileSys from 'fs';
 import * as Path	from 'path';
+import {WorkSpace}  from './00_GeneralFunction';
 
-const WorkSpace     = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
 const BookmarkPath  = WorkSpace + ".vscode/Bookmark.json";
-const WsIndex       = 0;
+var   WsIndex       = 0;
 var   NeedtoShowTip = 1;
 
 export class NodeDependenciesProvider implements vscode.TreeDataProvider<Dependency> {
@@ -335,6 +335,27 @@ export function JumpInToBookMark (Item: Dependency) {
 		preview: true,
 		viewColumn: vscode.ViewColumn.One
 	};
-	console.log ();
 	vscode.window.showTextDocument (vscode.Uri.file (SelectMarkPath), options);
+}
+
+//
+//  Get the file path.
+//  1 => Get full path work (space + folder + file name)
+//  2 => Get full path work (space + folder)
+//  2 => Get full path work (file name only)
+//
+export function GetCurruntPath (Type:number) {
+	var FilePath = vscode.window.activeTextEditor?.document.fileName.replace(/\\/g,"/");
+	var FileName = FilePath?.split("/").pop()+"";
+	if (Type === 1) {
+		require("child_process").exec('clip').stdin.end (FilePath);
+		FileName = "Full path";
+	} else if  (Type === 2) {
+		require("child_process").exec('clip').stdin.end (FilePath?.replace(FileName, ""));
+		FileName = "Folder path";
+	} else {
+		require("child_process").exec('clip').stdin.end (FileName);
+		FileName = "File name";
+	}
+	vscode.window.showInformationMessage (" 😊 Copy [ "+FileName+" ] Success~ Use Ctrl+P to use it.");
 }
