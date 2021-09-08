@@ -30,4 +30,5 @@
 |     5 |             8 | It can't get "nmake" so it will always filed  | Done              | Arvin         | Bug       |
 |     6 |             8 | Once Pop-up window not be ckeck will caust build function failed| Done  | Arvin   | Bug       |
 |     7 |            16 | Remove unused Parameter                       | Done              | Gua           | Bug       |
+|     8 |            15 | Fix build code hang                           | Done              | Gua           | Bug       |
 

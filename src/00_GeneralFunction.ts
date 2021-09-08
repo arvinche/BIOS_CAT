@@ -27,7 +27,7 @@ export function DelEnvCheck():string {FileSys.unlink (EnvCheck,(_err)=>{}); retu
 
 //=============== Init BIOS-CAT area ===============
 //
-//  This area will clear Statusfile and make sure 
+//  This area will clear Statusfile and make sure
 //  BIOS-CAT can return to default when user open
 //  vscode. (Only execution when user enter vscode)
 //
@@ -90,7 +90,7 @@ def RunCommand (Command, Workspace = None, OutputPath = None, IsStdout = False):
     if (LogFile != None):
       LogFile.write(Line)
     sys.stdout.flush()
-    P.wait()
+  P.wait()
   if (LogFile != None):
     LogFile.close ()
   return P.returncode
@@ -142,7 +142,7 @@ export async function SendCommand2PY (
   // Add delay to make sure command can get indeed and marge into "PythonCmd".
   //
   await Delay(1000);
-  PythonCmd = "(py -3 -W ignore \"" + PythonCmd + "\" " + "-C \"" + GlobalCmd_S + Command + "\" ";
+  PythonCmd = "(py -3 \"" + PythonCmd + "\" " + "-C \"" + GlobalCmd_S + Command + "\" ";
   PythonCmd += IsStdout? "-S " : "";
   PythonCmd += (OutputPath !== '') ? "-O \"" + OutputPath + "\")" : ")";
   //
