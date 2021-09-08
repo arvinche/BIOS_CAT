@@ -4,6 +4,7 @@ import * as vscode  from 'vscode';
 
 //=============== Global variable area ===============
 //
+export const IsWindows  = true;
 export const WorkSpace  = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
 export const EnvCheck   = WorkSpace + ".vscode/CatEnvCheck.cat";
 export const StatusFile = WorkSpace + ".vscode/CatStatus.cat";
@@ -49,7 +50,15 @@ FileSys.unlink (EnvCheck,(_err)=>{});
 //
 // This area will use python to send command line.
 //
+const OurPythonPath    = WorkSpace + ".vscode/RunCommand.py";
+const RemovePY         = !IsWindows? "del /q/f \""+OurPythonPath+"\"" : 
+                                     "del /q/f \""+OurPythonPath.replace(/\//g,"\\")+"\"";
 const RunCommandPython = `
+#######       ###        ########
+##           ## ##          ##
+##     Cat python for cmd   ##
+##         ##     ##        ##
+#######   ##       ##       ##
 
 import os, sys, argparse, subprocess
 
@@ -106,11 +115,11 @@ if __name__ == '__main__':
 //  Check python environment & generate RunCommand.py.
 //
 function GenRunCommand (WorkSpace:string) {
-  if (!FileSys.existsSync (WorkSpace + ".vscode/RunCommand.py")) {
+  if (!FileSys.existsSync (OurPythonPath)) {
     //
     // To-Do:  need to check py env in here.
     //
-    FileSys.writeFile (WorkSpace + ".vscode/RunCommand.py", RunCommandPython, (err) => {});
+    FileSys.writeFile (OurPythonPath, RunCommandPython, (err) => {});
   }
   return WorkSpace + ".vscode/RunCommand.py";
 }
@@ -136,7 +145,7 @@ export async function SendCommand2PY (
   await Delay(1000);
   Terminal.sendText ("cmd /C chcp 437");
   var   GlobalCmd_S  =  "cd " + BuildPath + " & ";
-  const GlobalCmd_E  =  "& (echo 0 > "+StatusFile+")";
+  const GlobalCmd_E  =  "& ("+RemovePY+" & echo 0 > "+StatusFile+")";
   let   PythonCmd    =  GenRunCommand (WorkSpace);
   //
   // Add delay to make sure command can get indeed and marge into "PythonCmd".
@@ -148,6 +157,6 @@ export async function SendCommand2PY (
   //
   // Send command into Terminal.
   //
-  console.log(PythonCmd);
+  console.log(PythonCmd+GlobalCmd_E);
   Terminal.sendText (PythonCmd + GlobalCmd_E);
 }

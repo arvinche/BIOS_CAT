@@ -164,8 +164,8 @@ export async function CreatEnvAndBuildCode () {
     //
     // Get Build parameter.
     //
-     var ParameterList: {[key:string]: string} = Object.assign({}, GetConfig.get("CAT.Parameter"));
-     let ChooseBuildList: {[key:string]: string} = Object.create (null);
+    var ParameterList: {[key:string]: string} = Object.assign({}, GetConfig.get("CAT.Parameter"));
+    let ChooseBuildList: {[key:string]: string} = Object.create (null);
 
     for (var Parameter in ParameterList) {
         var KeyName  = `${Parameter} [${ParameterList[Parameter]}]`;
@@ -185,7 +185,7 @@ export async function CreatEnvAndBuildCode () {
         } else {
             var SelectString = Select + "";
             if (GetConfig.get("CAT.04_SetParameterWith") === "Build") {
-                Parameter =   "(" + PreBuildCmd + GetConfig.get("CAT.02_BuildCmd") + " " + ChooseBuildList[SelectString] + ")";
+                Parameter = "(" + PreBuildCmd + GetConfig.get("CAT.02_BuildCmd") + " " + ChooseBuildList[SelectString] + ")";
             } else {
                 Parameter = "(" + PreBuildCmd .replace ("&", " "+ ChooseBuildList[SelectString] + "&" + GetConfig.get("CAT.02_BuildCmd")) + ")";
             }

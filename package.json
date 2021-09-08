@@ -42,8 +42,8 @@
 					"default": {
 						"Debug": "",
 						"Release": "r",
-						"API Debug": "fspapi",
-						"API Release": "fspapi r"
+						"FSP-API Debug": "fspapi",
+						"FSP-API Release": "fspapi r"
 					},
 					"additionalProperties": {
 						"type": "string"
