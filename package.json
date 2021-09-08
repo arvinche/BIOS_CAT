@@ -40,10 +40,10 @@
 				"CAT.Parameter": {
 					"type": "object",
 					"default": {
-						"Debug": "",
 						"Release": "r",
-						"FSP-API Debug": "fspapi",
-						"FSP-API Release": "fspapi r"
+						"Debug": "",
+						"FSP-API Release": "fspapi r",
+						"FSP-API Debug": "fspapi"
 					},
 					"additionalProperties": {
 						"type": "string"

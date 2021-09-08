@@ -17,7 +17,7 @@ import {
 const NOT_FOUND     = -1;
 const BuilFolder    = WorkSpace + "Build";
 const Buildlog      = WorkSpace + ".vscode/BuildLog.log";
-const NmakeCheck    = "NMAKE : fatal error U1064:";
+const NmakeCheck    = "NMAKE : fatal error U1062:";
 var   PreBuildCmd   = "&";
 var   BuildCommand  = "";
 var   CleanCommand  = "";
@@ -294,7 +294,7 @@ export async function BuildSingleModule () {
     if (!FileSys.existsSync(EnvCheck)) {
         FileSys.writeFileSync (StatusFile, "Checking environment");
         vscode.window.showInformationMessage (' 🔬 Check prebuild command can work or not.... ');
-        SendCommand2PY (Terminal, "("+ PreBuildCmd +"nmake -t)", WorkSpace, false, EnvCheck);
+        SendCommand2PY (Terminal, "("+ PreBuildCmd +"nmake -x)", WorkSpace, true, EnvCheck);
         //
         // Wait 5 sec to make sure the pyhton command can indeed marge, and wait for "EnvCheck" file generate.
         // (If prebuild can do successful this part will only run once time.)

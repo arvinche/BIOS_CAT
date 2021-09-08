@@ -31,4 +31,5 @@
 |     6 |             8 | Once Pop-up window not be ckeck will caust build function failed| Done  | Arvin   | Bug       |
 |     7 |            16 | Remove unused Parameter                       | Done              | Gua           | Bug       |
 |     8 |            15 | Fix build code hang                           | Done              | Gua           | Bug       |
+|     9 |             8 | Some env can not use this feature             | Done              | Arvin         | Enhance   |
 
