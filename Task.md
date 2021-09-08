@@ -18,6 +18,7 @@
 |            13 | Binary UEFI variable Parser                   | T.B.D             | Arvin         | Feature   |
 |            14 | Run command by python                         | Done              | Gua           | Feature   |
 |            15 | Copy current select file path hotkey          | Done              | Arvin         | Feature   |
+|            16 | Build Multiple Parameter Support              | Done              | Gua/Arvin     | Feature   |
 
 ## Bug/Enhance List
 | Index | Feature Index | Task                                          | Status            | Author        | Attribute |

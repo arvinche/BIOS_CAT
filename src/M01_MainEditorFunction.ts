@@ -9,9 +9,9 @@ import {
     EnvCheck,
     StatusFile,
   //== Function ==
-    SendCommand2PY, 
-    Delay, 
-    DelEnvCheck 
+    SendCommand2PY,
+    Delay,
+    DelEnvCheck
 } from './00_GeneralFunction';
 
 const NOT_FOUND     = -1;
@@ -20,8 +20,6 @@ const Buildlog      = WorkSpace + ".vscode/BuildLog.log";
 const NmakeCheck    = "NMAKE : fatal error U1064:";
 var   PreBuildCmd   = "&";
 var   BuildCommand  = "";
-var   Parameter01   = "";
-var   Parameter02   = "";
 var   CleanCommand  = "";
 var   BuildStatus   = "0";
 
@@ -64,17 +62,6 @@ function GetTerminalAndCheckEnvironment (Message:string):vscode.Terminal|null {
     PreBuildCmd   = GetConfig.get("CAT.01_PreBuildCmd")+"&" !== PreBuildCmd ?
                     GetConfig.get("CAT.01_PreBuildCmd")+"&"+ DelEnvCheck() : PreBuildCmd;
     BuildCommand  = GetConfig.get("CAT.02_BuildCmd") !== ""  ? "(" + PreBuildCmd + GetConfig.get("CAT.02_BuildCmd") + ")" : "";
-    if (GetConfig.get("CAT.04_SetParameterWith") === "Build") {
-        Parameter01   = GetConfig.get("CAT.Parameter01") !== "" ?
-                        "(" + PreBuildCmd + GetConfig.get("CAT.02_BuildCmd") + " " +GetConfig.get("CAT.Parameter01") + ")" : "";
-        Parameter02   = GetConfig.get("CAT.Parameter02") !== "" ?
-                        "(" + PreBuildCmd + GetConfig.get("CAT.02_BuildCmd") + " " +GetConfig.get("CAT.Parameter02") + ")" : "";
-    } else {
-        Parameter01   = GetConfig.get("CAT.Parameter01") !== "" ?
-                        "(" + PreBuildCmd .replace ("&", " "+GetConfig.get("CAT.Parameter01")+"&"+ GetConfig.get("CAT.02_BuildCmd")) + ")" : "";
-        Parameter02   = GetConfig.get("CAT.Parameter02") !== "" ?
-                        "(" + PreBuildCmd .replace ("&", " "+GetConfig.get("CAT.Parameter02")+"&"+ GetConfig.get("CAT.02_BuildCmd")) + ")" : "";
-    }
     CleanCommand = "" + GetConfig.get("CAT.03_CleanCmd");
     //
     // Create Terminal.
@@ -175,37 +162,44 @@ export async function CreatEnvAndBuildCode () {
         return;
     }
     //
-    // Check if there have 02 or 03 command.
+    // Get Build parameter.
     //
-    if (Parameter01 !== "" || Parameter02 !== "") {
-        await vscode.window.showInformationMessage (
-            " 🤔 Chouse time !! select one command to execute ~~",
-            "1⃣️  Build without parameter.",
-            "2⃣️  With ["+GetConfig.get("CAT.Parameter01")+"]",
-            "3⃣️  With ["+GetConfig.get("CAT.Parameter02")+"]")
-        .then (function (Select) {
-            let Build = Select?.indexOf("1⃣️  ") !== NOT_FOUND ?
-                        BuildCommand : Select?.indexOf("2⃣️  ") !== NOT_FOUND ?
-                        Parameter01  : Parameter02;
-            if (!Select || Build === "") {
-                vscode.window.showInformationMessage (' ❗️❗️ Cancel execution.');
-                return;
-            }
-            let BuildStatus = FileSys.readFileSync (StatusFile, 'utf-8');
-            if (BuildStatus.indexOf("0") !== NOT_FOUND) {
-                FileSys.writeFileSync (StatusFile, "Building");
-                SendCommand2PY (Terminal, Build, WorkSpace, true, Buildlog);
-                vscode.window.showInformationMessage (" 🐈 Start to build code.");
-            } else {
-                vscode.window.showInformationMessage (" ❗️❗️ BIOS-CAT is now  ["+BuildStatus+"] !!.");
-            }
-        });
-    } else {
-        await Delay(1000);
-        FileSys.writeFileSync (StatusFile, "Building");
-        SendCommand2PY (Terminal, BuildCommand, WorkSpace, true, Buildlog);
-        vscode.window.showInformationMessage (" 🐈 Start to build code.");
+     var ParameterList: {[key:string]: string} = Object.assign({}, GetConfig.get("CAT.Parameter"));
+     let ChooseBuildList: {[key:string]: string} = Object.create (null);
+
+    for (var Parameter in ParameterList) {
+        var KeyName  = `${Parameter} [${ParameterList[Parameter]}]`;
+        var KeyValue = `${ParameterList[Parameter]}`;
+        ChooseBuildList[KeyName] = KeyValue;
     }
+
+    await vscode.window.showInformationMessage (
+        " 🤔 Choose time !! select one command to execute ~~",
+        ...Object.keys (ChooseBuildList)
+        )
+    .then (function (Select) {
+        var Build:string;
+        if (!Select) {
+            vscode.window.showInformationMessage (' ❗️❗️ Cancel execution.');
+            return;
+        } else {
+            var SelectString = Select + "";
+            if (GetConfig.get("CAT.04_SetParameterWith") === "Build") {
+                Parameter =   "(" + PreBuildCmd + GetConfig.get("CAT.02_BuildCmd") + " " + ChooseBuildList[SelectString] + ")";
+            } else {
+                Parameter = "(" + PreBuildCmd .replace ("&", " "+ ChooseBuildList[SelectString] + "&" + GetConfig.get("CAT.02_BuildCmd")) + ")";
+            }
+            Build = Parameter;
+        }
+        let BuildStatus = FileSys.readFileSync (StatusFile, 'utf-8');
+        if (BuildStatus.indexOf("0") !== NOT_FOUND) {
+            FileSys.writeFileSync (StatusFile, "Building");
+            SendCommand2PY (Terminal, Build, WorkSpace, true, Buildlog);
+            vscode.window.showInformationMessage (" 🐈 Start to build code.");
+        } else {
+            vscode.window.showInformationMessage (" ❗️❗️ BIOS-CAT is now  ["+BuildStatus+"] !!.");
+        }
+    });
     Terminal.show (true);
 }
 
@@ -217,7 +211,7 @@ export async function CleanUpWorkSpace () {
     const Terminal  =  GetTerminalAndCheckEnvironment (" 🧹 Start to clean up your work spase.");
     if (Terminal === null) { return; }
     //
-    // Check Clena command.
+    // Check Clean command.
     //
     if (CleanCommand === "") {
         vscode.window.showInformationMessage (' ❗️❗️ Please set [CAT.03_CleanCmd] before you use it.');

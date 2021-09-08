@@ -37,6 +37,19 @@
 					"default" : "bld",
 					"description": "Here is for build command or bat file that you can build your code  ex: nmake XXX or Build.bat ...."
 				},
+				"CAT.Parameter": {
+					"type": "object",
+					"default": {
+						"Debug": "",
+						"Release": "r",
+						"API Debug": "fspapi",
+						"API Release": "fspapi r"
+					},
+					"additionalProperties": {
+						"type": "string"
+					},
+					"description": "Build command Parameter setting 01 ex. efidebug or perf .etc"
+				},
 				"CAT.Parameter01": {
 					"type": "string",
 					"default" : "r",
