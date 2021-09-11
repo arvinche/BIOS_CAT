@@ -60,8 +60,8 @@
 					"default": "PreBuild",
 					"enum": ["PreBuild", "Build"],
 					"enumDescriptions": [
-					  "The prameter will go with [PreBuild] command.",
-					  "The prameter will go with [Build] command."
+					  "The parameter will go with [PreBuild] command.",
+					  "The parameter will go with [Build] command."
 					]
 				},
 				"X.ShowTip": {
@@ -77,7 +77,7 @@
 			{"command": "BIOS-CAT.CMD03"            , "title": "03_Jump to Build log / error"},
 			{"command": "BIOS-CAT.CMD04"            , "title": "04_BuildThisModule (With Makefile)"},
 			{"command": "BIOS-CAT.L01AddMark"       , "title": "Add BookMark 📒"    , "icon": "./Images/L01_Add.png"},
-			{"command": "BIOS-CAT.L01Reflash"       , "title": "Reflash BookMark 📒", "icon": "./Images/L01_Reflash.png"},
+			{"command": "BIOS-CAT.L01Refresh"       , "title": "Refresh BookMark 📒", "icon": "./Images/L01_Refresh.png"},
 			{"command": "BIOS-CAT.L01Edit"          , "title": "Edit BookMark 📒"   , "icon": "./Images/L01_Edit.png"},
 			{"command": "BIOS-CAT.L01Delete"        , "title": "Delete BookMark 📒" , "icon": "./Images/L01_Delete.png"},
 			{"command": "BIOS-CAT.L01JumpToFile"    , "title": "Jump to file 📒"    , "icon": "./Images/L01_Jump.png"},
@@ -100,7 +100,7 @@
 		"menus": {
 			"view/title": [
 				{ "command": "BIOS-CAT.L01AddMark", "when": "view == L01", "group": "navigation" },
-				{ "command": "BIOS-CAT.L01Reflash", "when": "view == L01", "group": "navigation" }
+				{ "command": "BIOS-CAT.L01Refresh", "when": "view == L01", "group": "navigation" }
 			],
 			"view/item/context": [
 				{ "command": "BIOS-CAT.L01Edit", "when": "view == L01", "group": "inline" },

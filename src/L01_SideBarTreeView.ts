@@ -6,13 +6,13 @@ import {WorkSpace}  from './00_GeneralFunction';
 
 const BookmarkPath  = WorkSpace + ".vscode/Bookmark.json";
 var   WsIndex       = 0;
-var   NeedtoShowTip = 1;
+var   NeedToShowTip = 1;
 
 export class NodeDependenciesProvider implements vscode.TreeDataProvider<Dependency> {
 
 	constructor (private WorkspaceRoot: string) {
 		const BookMarkPath = Path.join (this.WorkspaceRoot, '.vscode/Bookmark.json');
-		try { 
+		try {
 			FileSys.accessSync (BookMarkPath);
 		} catch (err) {
 			if (this.WorkspaceRoot !== "") {
@@ -21,7 +21,7 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 				}
 				FileSys.writeFile (
 					BookMarkPath,
-					'[{"Group":"This is a sampel~","Time":"","FileAndPath":[{"Tag":"Welcome use bookmark","Path":"","Start":"0.0","End":"0.0","Time":""}]}]',
+					'[{"Group":"This is a sample~","Time":"","FileAndPath":[{"Tag":"Welcome use bookmark","Path":"","Start":"0.0","End":"0.0","Time":""}]}]',
 					'utf-8', (_err)=>{}
 				);
 			} else {
@@ -30,7 +30,7 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 		}
 	}
     //
-    //  Reflash area.
+    //  Refresh area.
     //
 	private _onDidChangeTreeData: vscode.EventEmitter<Dependency | undefined | null | void> = new vscode.EventEmitter<Dependency | undefined | null | void>();
 	readonly onDidChangeTreeData: vscode.Event<Dependency | undefined | null | void> = this._onDidChangeTreeData.event;
@@ -48,7 +48,7 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 
 	getChildren (Element: Dependency): Thenable<Dependency[]> {
 		if (!this.WorkspaceRoot) {
-			vscode.window.showInformationMessage(' ❗️❗️ Please assign a wrokspace first.');
+			vscode.window.showInformationMessage(' ❗️❗️ Please assign a workspace first.');
 			return Promise.resolve([]);
 		}
 		//
@@ -59,7 +59,7 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 			return Promise.resolve (this.getBookMarkJson (BookMarkPath, Element));
 		} else {
 			vscode.window.showInformationMessage (' ❗️❗️ You don\' have bookmark.');
-			try { 
+			try {
 				FileSys.accessSync (BookMarkPath);
 			} catch (_err) {
 				if (!FileSys.existsSync(this.WorkspaceRoot+"/.vscode")) {
@@ -67,7 +67,7 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 				}
 				FileSys.writeFile (
 					BookMarkPath,
-					'[{"Group":"This is a sampel~","Time":"","FileAndPath":[{"Tag":"Welcome use bookmark","Path":"","Start":"0.0","End":"0.0","Time":""}]}]',
+					'[{"Group":"This is a sample~","Time":"","FileAndPath":[{"Tag":"Welcome use bookmark","Path":"","Start":"0.0","End":"0.0","Time":""}]}]',
 					'utf-8',(_err)=>{}
 				);
 			}
@@ -91,7 +91,7 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 					}
 				}
 			} else {
-				if (BookmarkJson[i].Group === "This is a sampel~") { continue; }
+				if (BookmarkJson[i].Group === "This is a sample~") { continue; }
 				Content.push(new Dependency (
 					i,
 					BookmarkJson[i].Group,
@@ -135,11 +135,11 @@ export function AddBookMarkElement (TreeL01: NodeDependenciesProvider) {
 	const Editor = vscode.window.activeTextEditor;
 
 	for (let i=0; i<BM.length; i++) {
-		if (BM[i].Group === "This is a sampel~") {continue;}
+		if (BM[i].Group === "This is a sample~") {continue;}
 		GroupArray.push (BM[i].Group);
 	}
 	vscode.window.showQuickPick (
-		GroupArray, 
+		GroupArray,
 		{canPickMany:false, placeHolder:' 👇 Select or input the Group that you want:'})
 	.then( function (SelectMsg) {
 		var Now = new Date();
@@ -252,7 +252,7 @@ export function EditBookMarkElement (TreeL01: NodeDependenciesProvider, Item: De
 export function DelBookMarkElement (TreeL01: NodeDependenciesProvider, Item: Dependency) {
 	var BM = JSON.parse (FileSys.readFileSync(BookmarkPath, 'utf-8'));
 	var i  = Item.groupIndex.valueOf();
-	if (NeedtoShowTip) {
+	if (NeedToShowTip) {
 		vscode.window.showInformationMessage (
 			" ❗️❗️ You sure you want to delete this ("+ Item.markTitle +") bookmark ?",
 			'Yes I do !!',
@@ -260,7 +260,7 @@ export function DelBookMarkElement (TreeL01: NodeDependenciesProvider, Item: Dep
 			'Don\'t show again.')
 		.then (function (Select) {
 			if (Select !== 'No Thanks ~') {
-				if (Select === 'Don\'t show again.') { NeedtoShowTip = 0; }
+				if (Select === 'Don\'t show again.') { NeedToShowTip = 0; }
 				if ( Item.collapsibleState ) {
 					if (BM[i].Group === Item.markTitle) {
 						delete BM[i];
@@ -317,7 +317,7 @@ export function JumpInToBookMark (Item: Dependency) {
 		if ( BM[GI].FileAndPath[i].Tag === Item.markTitle) {
 			SelectBookmark = BM[GI].FileAndPath[i];
 			SelectMarkPath = SelectBookmark.Path.replace("{WorkSpace["+WsIndex+"]}", WorkSpace);
-			try { 
+			try {
 				FileSys.accessSync (SelectMarkPath);
 			} catch (_err) {
 				vscode.window.showInformationMessage (' ❗️❗️ File may be remove, please check it in your workspace. ');
@@ -344,7 +344,7 @@ export function JumpInToBookMark (Item: Dependency) {
 //  2 => Get full path work (space + folder)
 //  2 => Get full path work (file name only)
 //
-export function GetCurruntPath (Type:number) {
+export function GetCurrentPath (Type:number) {
 	var FilePath = vscode.window.activeTextEditor?.document.fileName.replace(/\\/g,"/");
 	var FileName = FilePath?.split("/").pop()+"";
 	if (Type === 1) {

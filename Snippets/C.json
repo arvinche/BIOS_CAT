@@ -2,7 +2,7 @@
   "Debug Macro": {
     "prefix": "DM",
     "body": ["DEBUG ((DEBUG_INFO|DEBUG_ERROR, \"${2:^Cat^ Debug count : 0x%X }\\n\", ${1:Count}));"],
-    "description": "Debug Marro that use in UEFI architecture."
+    "description": "Debug Macro that use in UEFI architecture."
   },
   "C Function Template": {
     "prefix": "cfun",
@@ -106,7 +106,7 @@
     "prefix": "cpei",
     "body": [
       "/**",
-      "  <$1Breif Description>",
+      "  <$1Brief Description>",
       "",
       "  @param[in]  FileHandle           Handle of the file being invoked.",
       "  @param[in]  PeiServices          Describes the list of possible PEI Services.",
@@ -143,7 +143,7 @@
     "prefix": "cdxe",
     "body": [
       "/**",
-      "  <$1Breif Description>",
+      "  <$1Brief Description>",
       "",
       "  @param[in] ImageHandle    The firmware allocated handle for the EFI image.",
       "  @param[in] SystemTable    A pointer to the EFI System Table.",

@@ -7,7 +7,7 @@ import * as vscode  from 'vscode';
 //
 import {WorkSpace}  from './00_GeneralFunction';
 //============= Middle Area =============//
-import { 
+import {
 	CreatEnvAndBuildCode,
 	CheckBuildLogAndJump2Error,
 	CleanUpWorkSpace,
@@ -15,17 +15,17 @@ import {
 } from './M01_MainEditorFunction';
 
 //=============  Left Area  =============//
-import { 
-	NodeDependenciesProvider, 
+import {
+	NodeDependenciesProvider,
 	Dependency,
 	AddBookMarkElement,
-	EditBookMarkElement, 
+	EditBookMarkElement,
 	DelBookMarkElement,
 	JumpInToBookMark,
-	GetCurruntPath
+	GetCurrentPath
 } from './L01_SideBarTreeView';
 
-import { 
+import {
 	StarOrStoptRecordLog
 } from './L02_SideBarRecordLog';
 
@@ -57,7 +57,7 @@ export function activate (context: vscode.ExtensionContext) {
 	//
 	//  Build individual module
 	//
-	vscode.commands.registerCommand ('BIOS-CAT.CMD04', ()=>{ BuildSingleModule (); });	
+	vscode.commands.registerCommand ('BIOS-CAT.CMD04', ()=>{ BuildSingleModule (); });
 
 	//
 	//  Sidebar L01 (Bookmark) command area.
@@ -65,11 +65,11 @@ export function activate (context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand ('BIOS-CAT.L01AddMark', () => { AddBookMarkElement (TreeL01); });
 	vscode.commands.registerCommand ('BIOS-CAT.L01Edit', (Item: Dependency) => { EditBookMarkElement (TreeL01, Item); });
 	vscode.commands.registerCommand ('BIOS-CAT.L01Delete', (Item: Dependency) => { DelBookMarkElement (TreeL01, Item); });
-	vscode.commands.registerCommand ('BIOS-CAT.L01Reflash', () => { TreeL01.Refresh(); });
+	vscode.commands.registerCommand ('BIOS-CAT.L01Refresh', () => { TreeL01.Refresh(); });
 	vscode.commands.registerCommand ('BIOS-CAT.L01JumpToFile', (Item: Dependency) => { JumpInToBookMark (Item); });
-	vscode.commands.registerCommand ('BIOS-CAT.L01CopyFullPath', () => { GetCurruntPath (1); });
-	vscode.commands.registerCommand ('BIOS-CAT.L01CopyFolderPath', () => { GetCurruntPath (2); });
-	vscode.commands.registerCommand ('BIOS-CAT.L01CopyFileName', () => { GetCurruntPath (3); });
+	vscode.commands.registerCommand ('BIOS-CAT.L01CopyFullPath', () => { GetCurrentPath (1); });
+	vscode.commands.registerCommand ('BIOS-CAT.L01CopyFolderPath', () => { GetCurrentPath (2); });
+	vscode.commands.registerCommand ('BIOS-CAT.L01CopyFileName', () => { GetCurrentPath (3); });
 
 	//
 	//  Sidebar L02 (Record log) command area.

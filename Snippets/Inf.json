@@ -1,8 +1,8 @@
 {
-    "Deoptimize": {
+    "DeOptimize": {
         "prefix": "OD",
         "body": ["[BuildOptions] \n  MSFT:*_*_*_CC_FLAGS  = /Od"],
-        "description": "Add build command to deoptimize code"
+        "description": "Add build command to de-optimize code"
     },
     "EDK PEI INF Template": {
         "prefix": "PEI",

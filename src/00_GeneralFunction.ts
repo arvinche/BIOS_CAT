@@ -28,7 +28,7 @@ export function DelEnvCheck():string {FileSys.unlink (EnvCheck,(_err)=>{}); retu
 
 //=============== Init BIOS-CAT area ===============
 //
-//  This area will clear Statusfile and make sure
+//  This area will clear StatusFile and make sure
 //  BIOS-CAT can return to default when user open
 //  vscode. (Only execution when user enter vscode)
 //
@@ -51,7 +51,7 @@ FileSys.unlink (EnvCheck,(_err)=>{});
 // This area will use python to send command line.
 //
 const OurPythonPath    = WorkSpace + ".vscode/RunCommand.py";
-const RemovePY         = !IsWindows? "del /q/f \""+OurPythonPath+"\"" : 
+const RemovePY         = !IsWindows? "del /q/f \""+OurPythonPath+"\"" :
                                      "del /q/f \""+OurPythonPath.replace(/\//g,"\\")+"\"";
 const RunCommandPython = `
 #######       ###        ########
@@ -129,7 +129,7 @@ function GenRunCommand (WorkSpace:string) {
 //
 export async function SendCommand2PY (
   Terminal   :vscode.Terminal,
-  Command    :string,  // The command that we need pass throuhg python to execution.
+  Command    :string,  // The command that we need pass through python to execution.
   WorkSpace  :string,  // Current work space path.
   IsStdout   :boolean, // Can out put to vscode internal terminal or not.
   OutputPath :string,  // The path that can be out put.
