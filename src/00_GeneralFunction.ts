@@ -115,10 +115,10 @@ if __name__ == '__main__':
 //  Check python environment & generate RunCommand.py.
 //
 function GenRunCommand (WorkSpace:string) {
+  if (!FileSys.existsSync ("C:\\Windows\\py.exe")) {
+    return "";
+  }
   if (!FileSys.existsSync (OurPythonPath)) {
-    //
-    // To-Do:  need to check py env in here.
-    //
     FileSys.writeFile (OurPythonPath, RunCommandPython, (err) => {});
   }
   return WorkSpace + ".vscode/RunCommand.py";
@@ -147,6 +147,11 @@ export async function SendCommand2PY (
   var   GlobalCmd_S  =  "cd " + BuildPath + " & ";
   const GlobalCmd_E  =  "& ("+RemovePY+" & echo 0 > "+StatusFile+")";
   let   PythonCmd    =  GenRunCommand (WorkSpace);
+  if (PythonCmd === "") {
+    vscode.window.showInformationMessage (" ❗️❗️ Please install python 3.X in your system.");
+    return;
+  }
+
   //
   // Add delay to make sure command can get indeed and marge into "PythonCmd".
   //
