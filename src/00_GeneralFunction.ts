@@ -4,6 +4,7 @@ import * as vscode  from 'vscode';
 
 //=============== Global variable area ===============
 //
+export const NOT_FOUND  = -1;
 export const IsWindows  = true;
 export const WorkSpace  = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
 export const EnvCheck   = WorkSpace + ".vscode/CatEnvCheck.cat";
@@ -19,12 +20,14 @@ export function Delay (Sec :number){
   });
 };
 
+
 //=============== Clear EnvCheck function area ===============
 //
 //  Clear "EnvCheck" Function. return "" can make this function
 //  use "+" to add into string too execute it.
 //
 export function DelEnvCheck():string {FileSys.unlink (EnvCheck,(_err)=>{}); return "";}
+
 
 //=============== Init BIOS-CAT area ===============
 //
@@ -46,6 +49,7 @@ FileSys.writeFile (StatusFile, "0", 'utf-8', (_err) =>{});
 //
 FileSys.unlink (EnvCheck,(_err)=>{});
 
+
 //=============== Send command to python area ===============
 //
 // This area will use python to send command line.
@@ -53,6 +57,8 @@ FileSys.unlink (EnvCheck,(_err)=>{});
 const OurPythonPath    = WorkSpace + ".vscode/RunCommand.py";
 const RemovePY         = !IsWindows? "del /q/f \""+OurPythonPath+"\"" :
                                      "del /q/f \""+OurPythonPath.replace(/\//g,"\\")+"\"";
+const CheckPythonPath  = !IsWindows? "/usr/bin/python":
+                                     "C:\\Windows\\py.exe";
 const RunCommandPython = `
 #######       ###        ########
 ##           ## ##          ##
@@ -115,9 +121,13 @@ if __name__ == '__main__':
 //  Check python environment & generate RunCommand.py.
 //
 function GenRunCommand (WorkSpace:string) {
-  if (!FileSys.existsSync ("C:\\Windows\\py.exe")) {
-    return "";
-  }
+  //
+  // Check python have in our environment or not.
+  //
+  if (!FileSys.existsSync (CheckPythonPath)) { return ""; }
+  //
+  // Create Python file for execution.
+  //
   if (!FileSys.existsSync (OurPythonPath)) {
     FileSys.writeFile (OurPythonPath, RunCommandPython, (err) => {});
   }

@@ -26,6 +26,7 @@ import {
 } from './L01_SideBarTreeView';
 
 import {
+	RecordAllModuleGuidAndName,
 	StarOrStoptRecordLog
 } from './L02_SideBarRecordLog';
 
@@ -37,6 +38,7 @@ export function activate (context: vscode.ExtensionContext) {
 	// Init Variable that we need ~
 	//
 	const TreeL01   = new NodeDependenciesProvider(WorkSpace);
+	RecordAllModuleGuidAndName (WorkSpace);
 	vscode.window.registerTreeDataProvider ('L01', TreeL01);
 	console.log ('Great~ "BIOS-CAT" is now active!');
 	//

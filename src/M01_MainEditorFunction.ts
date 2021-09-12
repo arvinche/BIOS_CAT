@@ -8,14 +8,14 @@ import {
     WorkSpace,
     EnvCheck,
     StatusFile,
+    NOT_FOUND,
   //== Function ==
     SendCommand2PY,
     Delay,
     DelEnvCheck
 } from './00_GeneralFunction';
 
-const NOT_FOUND     = -1;
-const BuildFolder    = WorkSpace + "Build";
+const BuildFolder   = WorkSpace + "Build";
 const BuildLog      = WorkSpace + ".vscode/BuildLog.log";
 const NmakeCheck    = "NMAKE : fatal error U1062:";
 var   PreBuildCmd   = "&";
@@ -99,6 +99,7 @@ function FindModuleName (Root:string, SearchContent:string, SubName:string, Excl
                         for (let i=0; i<Line.length; i++) {
                             if (Line[i].indexOf ("BASE_NAME") !== NOT_FOUND) {
                                 ModuleName = Line[i].split(" ").pop()?.replace("\r","")+"";
+                                break;
                             }
                         }
                     }

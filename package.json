@@ -64,6 +64,11 @@
 					  "The parameter will go with [Build] command."
 					]
 				},
+				"CAT.05_LogFilePath": {
+					"type": "string",
+					"default" : "",
+					"description": "The path of the log that you need BIOS-CAT to analyze."
+				},
 				"X.ShowTip": {
 					"type": "boolean",
 					"default": true,
