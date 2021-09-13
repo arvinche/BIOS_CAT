@@ -11,7 +11,7 @@ import {
       SendCommand2PY
 } from './00_GeneralFunction';
 
-const ModuleInfoPath      = WorkSpace + ".vscode/CatModuleInfo.cat";
+const ModuleInfoPath      = WorkSpace + ".vscode/CatModuleInfo.bcat";
 const CatLogFile          = WorkSpace + ".vscode/CatRecort.log";
 const PeiDriver           = "Loading PEIM";
 const DxeDriver           = "Loading driver";

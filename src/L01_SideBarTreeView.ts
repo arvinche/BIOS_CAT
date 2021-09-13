@@ -4,14 +4,14 @@ import * as FileSys from 'fs';
 import * as Path	from 'path';
 import {WorkSpace}  from './00_GeneralFunction';
 
-const BookmarkPath  = WorkSpace + ".vscode/Bookmark.json";
+const BookmarkPath  = WorkSpace + ".vscode/Bookmark.bcat";
 var   WsIndex       = 0;
 var   NeedToShowTip = 1;
 
 export class NodeDependenciesProvider implements vscode.TreeDataProvider<Dependency> {
 
 	constructor (private WorkspaceRoot: string) {
-		const BookMarkPath = Path.join (this.WorkspaceRoot, '.vscode/Bookmark.json');
+		const BookMarkPath = Path.join (this.WorkspaceRoot, '.vscode/Bookmark.bcat');
 		try {
 			FileSys.accessSync (BookMarkPath);
 		} catch (err) {
@@ -54,7 +54,7 @@ export class NodeDependenciesProvider implements vscode.TreeDataProvider<Depende
 		//
 		// Check book mark file.
 		//
-		const BookMarkPath = Path.join (this.WorkspaceRoot, '.vscode/Bookmark.json');
+		const BookMarkPath = Path.join (this.WorkspaceRoot, '.vscode/Bookmark.bcat');
 		if (this.PathExists (BookMarkPath)) {
 			return Promise.resolve (this.getBookMarkJson (BookMarkPath, Element));
 		} else {

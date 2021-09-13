@@ -7,8 +7,8 @@ import * as vscode  from 'vscode';
 export const NOT_FOUND  = -1;
 export const IsWindows  = true;
 export const WorkSpace  = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
-export const EnvCheck   = WorkSpace + ".vscode/CatEnvCheck.cat";
-export const StatusFile = WorkSpace + ".vscode/CatStatus.cat";
+export const EnvCheck   = WorkSpace + ".vscode/CatEnvCheck.bcat";
+export const StatusFile = WorkSpace + ".vscode/CatStatus.bcat";
 
 //=============== Delay function area ===============
 //

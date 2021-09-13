@@ -37,9 +37,9 @@ export function activate (context: vscode.ExtensionContext) {
 	//
 	// Init Variable that we need ~
 	//
-	const TreeL01   = new NodeDependenciesProvider(WorkSpace);
-	RecordAllModuleGuidAndName (WorkSpace);
+	const TreeL01 = new NodeDependenciesProvider(WorkSpace);
 	vscode.window.registerTreeDataProvider ('L01', TreeL01);
+	RecordAllModuleGuidAndName (WorkSpace);
 	console.log ('Great~ "BIOS-CAT" is now active!');
 	//
 	// Start to build code
