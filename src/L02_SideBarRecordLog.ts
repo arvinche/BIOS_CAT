@@ -8,17 +8,20 @@ import {
       WorkSpace,
       NOT_FOUND,
     //== Function ==
-      SendCommand2PY
+      Delay
 } from './00_GeneralFunction';
 
 const ModuleInfoPath      = WorkSpace + ".vscode/CatModuleInfo.bcat";
 const CatLogFile          = WorkSpace + ".vscode/CatRecort.log";
-const PeiDriver           = "Loading PEIM";
-const DxeDriver           = "Loading driver";
-const GetBaseAddress      = "Loading driver at ";
+const PeiDriver           = "Loading PEIM ";
+const DxeDriver           = "Loading driver ";
+const GetPEIAddress       = "Loading PEIM at ";
+const GetDxeAddress       = "Loading driver at ";
 var   ModuleInfo:string[] = [];
 
 //============= Local Function =============//
+//
+//  Get your PC's serialport.
 //
 function GetEnableSerialport () {
 
@@ -55,6 +58,17 @@ function AnalyzeLogFile () {
     let LogFile    = vscode.workspace.getConfiguration().get("CAT.05_LogFilePath") !== "" ?
                      vscode.workspace.getConfiguration().get("CAT.05_LogFilePath")+"" :
                      CatLogFile;
+    //
+    //  Check log file exists or not.
+    //
+    if (!FileSys.existsSync (LogFile)) {
+        if (CatLogFile === LogFile) {
+            vscode.window.showInformationMessage (" ❗️❗️ Cannot open log with default path, please set your log path in setting.");
+        } else {
+            vscode.window.showInformationMessage (" ❗️❗️ Cannot open log file ["+LogFile+"].");
+        }
+        return;
+    }
     let Line       = FileSys.readFileSync (LogFile, 'utf-8').split ("\n");
     var DriverGUID = "";
     for (let i=0, i2=0, Step=0; i<Line.length; i++) {
@@ -63,15 +77,15 @@ function AnalyzeLogFile () {
         // Step 1 : get base address form log file.
         //
         if (Step) {
-            if (Line[i].indexOf (GetBaseAddress) !== NOT_FOUND) {
-                ModuleInfo[i2] += "/3"+Line[i].replace(GetBaseAddress, "").split(" ")[0];
+            if (Line[i].indexOf (GetPEIAddress) !== NOT_FOUND || Line[i].indexOf (GetDxeAddress) !== NOT_FOUND) {
+                ModuleInfo[i2] += "/3"+Line[i].replace(GetPEIAddress, "").replace(GetDxeAddress, "").split(" ")[0];
                 Step = 0;
                 //console.log(ModuleInfo[i2]);
             }
         } else if (Line[i].indexOf (PeiDriver) !== NOT_FOUND && DriverGUID === "") {
-            DriverGUID = ""+Line[i].split(" ").pop()?.replace("\r","");
+            DriverGUID = ""+Line[i].split(" ").pop()?.replace("\r","").replace("\n","").toUpperCase();
         } else if (Line[i].indexOf (DxeDriver) !== NOT_FOUND && DriverGUID === "") {
-            DriverGUID += ""+Line[i].split(" ").pop()?.replace("\r","");
+            DriverGUID += ""+Line[i].split(" ").pop()?.replace("\r","").replace("\n","").toUpperCase();
         }
         if (!Step && DriverGUID !== "") {
             for (i2=0; i2<ModuleInfo.length; i2++) {
@@ -82,10 +96,11 @@ function AnalyzeLogFile () {
             } DriverGUID = "";
         }
     }
+    FileSys.writeFile (ModuleInfoPath+"_Tamp", ModuleInfo.toString(), (err) => {});
 }
 
 //
-//  Analyze Map file to find the code that where we hang.
+//  Analyze Map file and try to find the code that where we hang.
 //
 function AnalyzeMapFile () { }
 
@@ -94,12 +109,15 @@ function AnalyzeMapFile () { }
 //
 //  Search all inf file and record GUID and Module name.
 //
-export function RecordAllModuleGuidAndName (Root:string) {
-    let Info:string[] = [];
+//  Flag 0 : If ModuleInfoPath exsts, use it otherwise scan work space then gen it.
+//       1 : Even ModuleInfoPath exsts, still scan work space and gen it.
+//
+export async function RecordAllModuleGuidAndName (Flag:number) {
     //
     // Check if we have already have info then read it, if not create one.
     //
-    if (!FileSys.existsSync (ModuleInfoPath)) {
+    if (!FileSys.existsSync (ModuleInfoPath) || Flag) {
+        let Info:string[] = [];
         function DeepFind (Root:string) {
             FileSys.readdirSync(Root).forEach ( function (item) {
                 let FilePath = require('path').join (Root,item);
@@ -113,9 +131,9 @@ export function RecordAllModuleGuidAndName (Root:string) {
                     let Line       = FileSys.readFileSync (FilePath, 'utf-8').split ("\n");
                     for (let i=0; i<Line.length; i++) {
                         if (Line[i].indexOf ("BASE_NAME") !== NOT_FOUND) {
-                            TempString = "!1"+Line[i].split(" ").pop()?.replace("\r","")+"~";
+                            TempString = "!1"+Line[i].split(" ").pop()?.replace("\r","").replace("\n","")+"~";
                         } else if (Line[i].indexOf ("FILE_GUID") !== NOT_FOUND) {
-                            TempString += "!2"+Line[i].split(" ").pop()?.replace("\r","")+"~";
+                            TempString += "!2"+Line[i].split(" ").pop()?.replace("\r","").replace("\n","").toUpperCase()+"~";
                         } else if (TempString.indexOf ("~!") !== NOT_FOUND) {
                             TempString = TempString.replace("~!","/").replace("!","").replace("~","");
                             Info.push(TempString);
@@ -125,13 +143,34 @@ export function RecordAllModuleGuidAndName (Root:string) {
                 }
             });
         }
-        DeepFind (Root);
+        vscode.window.showInformationMessage (" 🔍 Scan work space to gen Module Info.");
+        FileSys.unlink (ModuleInfoPath,(_err)=>{});
+        await Delay(1000);
+        DeepFind (WorkSpace);
         ModuleInfo = Info;
         FileSys.writeFile (ModuleInfoPath, ModuleInfo.toString(), (err) => {});
+        vscode.window.showInformationMessage (" 🔍 Gen Infomation Done.");
     } else {
         ModuleInfo = FileSys.readFileSync (ModuleInfoPath, 'utf-8').split(",");
+        vscode.window.showInformationMessage (" 🔍 Get Module info success.");
     }
-    //AnalyzeLogFile();
 }
 
+//
+//  Try to analyze the log and map file then jump to error.
+//
+export function AnalyzeAndJumptoError () {
+    //
+    //  Analyze Log file to get module base address.
+    //
+    AnalyzeLogFile ();
+    //
+    //  Analyze Map file and try to find code position.
+    //
+    AnalyzeMapFile ();
+}
+
+//
+// To-do 
+//
 export function StarOrStoptRecordLog () { }

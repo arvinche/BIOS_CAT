@@ -27,6 +27,7 @@ import {
 
 import {
 	RecordAllModuleGuidAndName,
+	AnalyzeAndJumptoError,
 	StarOrStoptRecordLog
 } from './L02_SideBarRecordLog';
 
@@ -39,7 +40,7 @@ export function activate (context: vscode.ExtensionContext) {
 	//
 	const TreeL01 = new NodeDependenciesProvider(WorkSpace);
 	vscode.window.registerTreeDataProvider ('L01', TreeL01);
-	RecordAllModuleGuidAndName (WorkSpace);
+	RecordAllModuleGuidAndName (0);
 	console.log ('Great~ "BIOS-CAT" is now active!');
 	//
 	// Start to build code
@@ -76,7 +77,9 @@ export function activate (context: vscode.ExtensionContext) {
 	//
 	//  Sidebar L02 (Record log) command area.
 	//
-	vscode.commands.registerCommand ('BIOS-CAT.L02StartRecord!!', function () { StarOrStoptRecordLog (); });
+	vscode.commands.registerCommand ('BIOS-CAT.L02StartRecord', function () { StarOrStoptRecordLog (); });
+	vscode.commands.registerCommand ('BIOS-CAT.L02Analyze', function () { AnalyzeAndJumptoError (); });
+	vscode.commands.registerCommand ('BIOS-CAT.L02RefreshModuleInfo', function () { RecordAllModuleGuidAndName(1); });
 	//vscode.workspace.getConfiguration().update('', true);
 }
 

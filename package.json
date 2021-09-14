@@ -77,19 +77,21 @@
 			}
 		},
 		"commands": [
-			{"command": "BIOS-CAT.CMD01"            , "title": "01_Build code"},
-			{"command": "BIOS-CAT.CMD02"            , "title": "02_Clean"},
-			{"command": "BIOS-CAT.CMD03"            , "title": "03_Jump to Build log / error"},
-			{"command": "BIOS-CAT.CMD04"            , "title": "04_BuildThisModule (With Makefile)"},
-			{"command": "BIOS-CAT.L01AddMark"       , "title": "Add BookMark 📒"    , "icon": "./Images/L01_Add.png"},
-			{"command": "BIOS-CAT.L01Refresh"       , "title": "Refresh BookMark 📒", "icon": "./Images/L01_Refresh.png"},
-			{"command": "BIOS-CAT.L01Edit"          , "title": "Edit BookMark 📒"   , "icon": "./Images/L01_Edit.png"},
-			{"command": "BIOS-CAT.L01Delete"        , "title": "Delete BookMark 📒" , "icon": "./Images/L01_Delete.png"},
-			{"command": "BIOS-CAT.L01JumpToFile"    , "title": "Jump to file 📒"    , "icon": "./Images/L01_Jump.png"},
-			{"command": "BIOS-CAT.L01CopyFullPath"  , "title": "Copy Full Path"},
-			{"command": "BIOS-CAT.L01CopyFolderPath", "title": "Copy Folder Path"},
-			{"command": "BIOS-CAT.L01CopyFileName"  , "title": "Copy File Name"},
-			{"command": "BIOS-CAT.L02StartRecord"   , "title": "Start/Stop record log", "icon": "./Images/L01_Jump.png"}
+			{"command": "BIOS-CAT.CMD01"               , "title": "01_Build code"},
+			{"command": "BIOS-CAT.CMD02"               , "title": "02_Clean"},
+			{"command": "BIOS-CAT.CMD03"               , "title": "03_Jump to Build log / error"},
+			{"command": "BIOS-CAT.CMD04"               , "title": "04_BuildThisModule (With Makefile)"},
+			{"command": "BIOS-CAT.L01AddMark"          , "title": "Add BookMark 📒"    , "icon": "./Images/L01_Add.png"},
+			{"command": "BIOS-CAT.L01Refresh"          , "title": "Refresh BookMark 📒", "icon": "./Images/L01_Refresh.png"},
+			{"command": "BIOS-CAT.L01Edit"             , "title": "Edit BookMark 📒"   , "icon": "./Images/L01_Edit.png"},
+			{"command": "BIOS-CAT.L01Delete"           , "title": "Delete BookMark 📒" , "icon": "./Images/L01_Delete.png"},
+			{"command": "BIOS-CAT.L01JumpToFile"       , "title": "Jump to file 📒"    , "icon": "./Images/L01_Jump.png"},
+			{"command": "BIOS-CAT.L01CopyFullPath"     , "title": "Copy Full Path"},
+			{"command": "BIOS-CAT.L01CopyFolderPath"   , "title": "Copy Folder Path"},
+			{"command": "BIOS-CAT.L01CopyFileName"     , "title": "Copy File Name"},
+			{"command": "BIOS-CAT.L02StartRecord"      , "title": "Start/Stop record log", "icon": "./Images/L01_Jump.png"},
+			{"command": "BIOS-CAT.L02Analyze"          , "title": "Start analyze logfile & map file", "icon": "./Images/L02_Analyze.png"},
+			{"command": "BIOS-CAT.L02RefreshModuleInfo", "title": "Reget Module info", "icon": "./Images/L02_Refresh.png"}
 		],
 		"keybindings": [
 			{"command": "BIOS-CAT.CMD01",            "key": "alt+'",   "when": "editorTextFocus"},
@@ -105,7 +107,9 @@
 		"menus": {
 			"view/title": [
 				{ "command": "BIOS-CAT.L01AddMark", "when": "view == L01", "group": "navigation" },
-				{ "command": "BIOS-CAT.L01Refresh", "when": "view == L01", "group": "navigation" }
+				{ "command": "BIOS-CAT.L01Refresh", "when": "view == L01", "group": "navigation" },
+				{ "command": "BIOS-CAT.L02Analyze", "when": "view == L02", "group": "navigation" },
+				{ "command": "BIOS-CAT.L02RefreshModuleInfo", "when": "view == L02", "group": "navigation" }
 			],
 			"view/item/context": [
 				{ "command": "BIOS-CAT.L01Edit", "when": "view == L01", "group": "inline" },

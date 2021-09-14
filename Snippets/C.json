@@ -1,8 +1,8 @@
 {
   "Debug Macro": {
-    "prefix": "DM",
+    "prefix": "SD",
     "body": ["DEBUG ((DEBUG_INFO|DEBUG_ERROR, \"${2:^Cat^ Debug count : 0x%X }\\n\", ${1:Count}));"],
-    "description": "Debug Macro that use in UEFI architecture."
+    "description": "Set Debug Macro to print debug message that use in UEFI architecture."
   },
   "C Function Template": {
     "prefix": "cfun",
