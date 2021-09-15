@@ -4,11 +4,12 @@ import * as vscode  from 'vscode';
 
 //=============== Global variable area ===============
 //
-export const NOT_FOUND  = -1;
-export const IsWindows  = true;
-export const WorkSpace  = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
-export const EnvCheck   = WorkSpace + ".vscode/CatEnvCheck.bcat";
-export const StatusFile = WorkSpace + ".vscode/CatStatus.bcat";
+export const NOT_FOUND   = -1;
+export const IsWindows   = true;
+export const WorkSpace   = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
+export const BuildFolder = WorkSpace + "Build";
+export const EnvCheck    = WorkSpace + ".vscode/CatEnvCheck.bcat";
+export const StatusFile  = WorkSpace + ".vscode/CatStatus.bcat";
 
 //=============== Delay function area ===============
 //

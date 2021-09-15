@@ -8,6 +8,7 @@ import {
     WorkSpace,
     EnvCheck,
     StatusFile,
+    BuildFolder,
     NOT_FOUND,
   //== Function ==
     SendCommand2PY,
@@ -15,7 +16,6 @@ import {
     DelEnvCheck
 } from './00_GeneralFunction';
 
-const BuildFolder   = WorkSpace + "Build";
 const BuildLog      = WorkSpace + ".vscode/BuildLog.log";
 const NmakeCheck    = "NMAKE : fatal error U1062:";
 var   PreBuildCmd   = "&";
@@ -40,7 +40,7 @@ function GetTerminalAndCheckEnvironment (Message:string):vscode.Terminal|null {
     //
     BuildStatus = FileSys.readFileSync (StatusFile, 'utf-8');
     if (BuildStatus.indexOf("0") === NOT_FOUND) {
-        vscode.window.showInformationMessage (" ❗️❗️ BIOS-CAT is now  ["+BuildStatus+"] !!.");
+        vscode.window.showInformationMessage (" 💢 BIOS-CAT is now  ["+BuildStatus+"] !!.");
         return null;
     }
     //
@@ -196,9 +196,9 @@ export async function CreatEnvAndBuildCode () {
         if (BuildStatus.indexOf("0") !== NOT_FOUND) {
             FileSys.writeFileSync (StatusFile, "Building");
             SendCommand2PY (Terminal, Build, WorkSpace, true, BuildLog);
-            vscode.window.showInformationMessage (" 🐈 Start to build code.");
+            vscode.window.showInformationMessage (" 🐾 Start to build code.");
         } else {
-            vscode.window.showInformationMessage (" ❗️❗️ BIOS-CAT is now  ["+BuildStatus+"] !!.");
+            vscode.window.showInformationMessage (" 💢 BIOS-CAT is now  ["+BuildStatus+"] !!.");
         }
     });
     Terminal.show (true);

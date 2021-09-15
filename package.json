@@ -90,7 +90,7 @@
 			{"command": "BIOS-CAT.L01CopyFolderPath"   , "title": "Copy Folder Path"},
 			{"command": "BIOS-CAT.L01CopyFileName"     , "title": "Copy File Name"},
 			{"command": "BIOS-CAT.L02StartRecord"      , "title": "Start/Stop record log", "icon": "./Images/L01_Jump.png"},
-			{"command": "BIOS-CAT.L02Analyze"          , "title": "Start analyze logfile & map file", "icon": "./Images/L02_Analyze.png"},
+			{"command": "BIOS-CAT.L02Analyze"          , "title": "Analyze Log & Map file", "icon": "./Images/L02_Analyze.png"},
 			{"command": "BIOS-CAT.L02RefreshModuleInfo", "title": "Reget Module info", "icon": "./Images/L02_Refresh.png"}
 		],
 		"keybindings": [
@@ -108,8 +108,8 @@
 			"view/title": [
 				{ "command": "BIOS-CAT.L01AddMark", "when": "view == L01", "group": "navigation" },
 				{ "command": "BIOS-CAT.L01Refresh", "when": "view == L01", "group": "navigation" },
-				{ "command": "BIOS-CAT.L02Analyze", "when": "view == L02", "group": "navigation" },
-				{ "command": "BIOS-CAT.L02RefreshModuleInfo", "when": "view == L02", "group": "navigation" }
+				{ "command": "BIOS-CAT.L02Analyze", "when": "view == L02-2", "group": "navigation" },
+				{ "command": "BIOS-CAT.L02RefreshModuleInfo", "when": "view == L02-2", "group": "navigation" }
 			],
 			"view/item/context": [
 				{ "command": "BIOS-CAT.L01Edit", "when": "view == L01", "group": "inline" },
@@ -128,8 +128,8 @@
 		"views": {
 			"CatMaster": [
 				{"id": "L01", "name": "　📒 Bookmark ~"},
-				{"id": "L02", "name": "　💻 Record Log"},
-				{"id": "L03", "name": "　View port 03"}
+				{"id": "L02-1", "name": "　💻 Record Log"},
+				{"id": "L02-2", "name": "　📊 Memroy Map Seeker"}
 			]
 		},
 		"languages": [
