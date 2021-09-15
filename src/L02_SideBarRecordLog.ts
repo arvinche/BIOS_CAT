@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as vscode  from 'vscode';
 import * as FileSys from 'fs';
-import * as Path	from 'path';
+import * as Path    from 'path';
 //import * as SerialPort  from 'serialport';
 import {
     //== Variable ==
@@ -20,6 +20,7 @@ const GetPEIAddress       = "Loading PEIM at ";
 const GetDxeAddress       = "Loading driver at ";
 const ModuleSizeSumTag    = " Start ";
 const FunctionAddrTag     = " f ";
+var   TreeL02:any         = null;
 var   ModuleInfo:string[] = [];
 
 //============= Local Function =============//
@@ -57,7 +58,7 @@ function GetEnableSerialport () {
 //
 //  Analyze log file and find all module base address.
 //
-function AnalyzeLogFile () {
+function AnalyzeLogFile ():number {
     let LogFile    = vscode.workspace.getConfiguration().get("CAT.05_LogFilePath") !== "" ?
                      vscode.workspace.getConfiguration().get("CAT.05_LogFilePath")+"" :
                      CatLogFile;
@@ -70,7 +71,7 @@ function AnalyzeLogFile () {
         } else {
             vscode.window.showInformationMessage (" ❗️❗️ Cannot open log file ["+LogFile+"].");
         }
-        return;
+        return 1;
     }
     let Line       = FileSys.readFileSync (LogFile, 'utf-8').split ("\n");
     var DriverGUID = "";
@@ -99,7 +100,7 @@ function AnalyzeLogFile () {
                 }
             } DriverGUID = "";
         }
-    }
+    } return 0;
 }
 
 //
@@ -183,12 +184,124 @@ async function AnalyzeMapFile () {
     vscode.window.showInformationMessage (" 🔍 Scan work space to gen Memroy map Info.");
     await Delay(100);
     DeepFind (BuildFolder);
-    FileSys.writeFile (ModuleInfoPath+"_", ModuleInfo.toString(), (err) => {});
+    FileSys.writeFile (ModuleInfoPath, ModuleInfo.toString(), (err) => {});
     vscode.window.showInformationMessage (" 👍 Gen MAP Done.");
 }
 
 
 //============= External Function =============//
+//
+// Class for memory map user interface.
+//
+export class MemoryDependenciesProvider implements vscode.TreeDataProvider<MemoryDependency> {
+
+    constructor (private WorkspaceRoot: string) {}
+    //
+    //  Refresh area.
+    //
+    private _onDidChangeTreeData: vscode.EventEmitter<MemoryDependency | undefined | null | void> = new vscode.EventEmitter<MemoryDependency | undefined | null | void>();
+    readonly onDidChangeTreeData: vscode.Event<MemoryDependency | undefined | null | void> = this._onDidChangeTreeData.event;
+    Refresh(): void { this._onDidChangeTreeData.fire(); }
+    //
+    // Check Path function.
+    //
+    private PathExists (Path: string): boolean {
+        try { FileSys.accessSync (Path);
+        } catch (_err) { return false;
+        } return true;
+    }
+
+    getTreeItem (Element: MemoryDependency): vscode.TreeItem { return Element; }
+
+    getChildren (Element: MemoryDependency): Thenable<MemoryDependency[]> {
+        if (!this.WorkspaceRoot) {
+            vscode.window.showInformationMessage(' ❗️❗️ Please assign a workspace first.');
+            return Promise.resolve([]);
+        }
+        //
+        // Check book mark file.
+        //
+        if (this.PathExists (ModuleInfoPath)) {
+            return Promise.resolve (this.getMemoryInfoTree (Element));
+        } else {
+            vscode.window.showInformationMessage (' ❗️❗️ You don\' have Moduleinfo please build once time to gen mep file.');
+            return Promise.resolve ([]);
+        }
+    }
+
+    private getMemoryInfoTree (Element: MemoryDependency): MemoryDependency[] {
+        let Content = [];
+        let GetModuleInfo = FileSys.readFileSync (ModuleInfoPath, 'utf-8').split(",");
+        for (let i=0; i<GetModuleInfo.length; i++) {
+            let ModuleElement = GetModuleInfo[i].split("/");
+            if (Element) {
+                if (i === Element.driverIndex && GetModuleInfo[i].indexOf("/3") !== NOT_FOUND) {
+                    let FName = "", FOffset = "";
+                    for (let i2=0; i2<ModuleElement.length; i2++) {
+                        if (ModuleElement[i2][0] === "5") {
+                            FName   = ModuleElement[i2].replace("5","").split("|")[0];
+                            FOffset = ModuleElement[i2].replace("5","").split("|")[1];
+                            Content.push(new MemoryDependency (
+                                i, FName, "", FOffset, "",
+                                vscode.TreeItemCollapsibleState.None
+                            ));
+                        }
+                    }
+                }
+            } else {
+                let MName = "", MGuid = "", MSize = "", MBaseAddr = [];
+                for (let i2=0, i3=0; i2<ModuleElement.length; i2++) {
+                    if (ModuleElement[i2][0] === "1") {
+                        MName = ModuleElement[i2].replace("1","");
+                    } else if (ModuleElement[i2][0] === "2") {
+                        MGuid = "🔰"+ModuleElement[i2].replace("2","");
+                    } else if (ModuleElement[i2][0] === "3") {
+                        MBaseAddr.push(++i3+" ▻ "+ModuleElement[i2].replace("3",""));
+                    } else if (ModuleElement[i2][0] === "4") {
+                        MSize = ModuleElement[i2].replace("4","");
+                    } 
+                }
+                Content.push(new MemoryDependency (
+                    i, MName, MGuid,
+                    (MBaseAddr.length!==0)?"    "+MBaseAddr.toString().replace(/,/g,"\n    "):"",
+                    MSize,
+                    vscode.TreeItemCollapsibleState.Collapsed
+                ));
+            }
+        }
+        return Content;
+    }
+}
+
+export class MemoryDependency extends vscode.TreeItem {
+    constructor (
+        public driverIndex: Number,
+        public readonly tagName: string,
+        public driverGuil: string,
+        public baseAddr: string,
+        public driverSize: string,
+        public readonly collapsibleState: vscode.TreeItemCollapsibleState
+    ) {
+        super (tagName, collapsibleState);
+        this.tooltip = collapsibleState ? 
+                       "Guid : "+`${this.driverGuil}`+"\n💠BaseAddress :\n"+this.baseAddr :
+                       "";
+        this.description = collapsibleState ?
+                           (this.baseAddr !== "" ?
+                           "✅Driver Size: "+ this.driverSize:
+                           "❌Can't Get Addr form log."):
+                           "Offset : "+this.baseAddr;
+        this.iconPath = collapsibleState ? {
+            light: Path.join (__filename, '../..', './Images/L02_GroupRoot.png'),
+            dark: Path.join (__filename, '../..', './Images/L02_GroupRoot.png')
+        }:{
+            light: Path.join (__filename, '../..', './Images/00_CatIcon.png'),
+            dark: Path.join (__filename, '../..', './Images/00_CatIcon.png')
+        };
+    }
+    //contextValue = this.collapsibleState?'Mepn_G':'Mepn_M';
+}
+
 //
 //  Search all inf file and record GUID and Module name.
 //
@@ -244,6 +357,11 @@ export async function RecordAllModuleGuidAndName (Flag:number) {
         ModuleInfo = FileSys.readFileSync (ModuleInfoPath, 'utf-8').split(",");
         vscode.window.showInformationMessage (" 👍 Get Module info success.");
     }
+    //
+    // Create data tree and wait for update.
+    //
+    TreeL02 = new MemoryDependenciesProvider(WorkSpace);
+    vscode.window.registerTreeDataProvider ('L02-2', TreeL02);
 }
 
 //
@@ -251,13 +369,23 @@ export async function RecordAllModuleGuidAndName (Flag:number) {
 //
 export function AnalyzeAndJumptoError () {
     //
+    // Check all need file exists or not.
+    //
+    if (!FileSys.existsSync (ModuleInfoPath)) {
+        vscode.window.showInformationMessage (' ❗️❗️ You don\' have Moduleinfo please build once time to gen mep file.');
+        return;
+    }
+    //
     //  Analyze Log file to get module base address.
     //
-    AnalyzeLogFile ();
+    if (AnalyzeLogFile()){
+        return;
+    }
     //
     //  Analyze Map file and try to find code position.
     //
     AnalyzeMapFile ();
+    TreeL02.Refresh();
 }
 
 //
