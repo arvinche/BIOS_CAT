@@ -20,6 +20,7 @@ const GetPEIAddress       = "Loading PEIM at ";
 const GetDxeAddress       = "Loading driver at ";
 const ModuleSizeSumTag    = " Start ";
 const FunctionAddrTag     = " f ";
+var   SearchString        = "";
 var   Filterof_X          = true;
 var   TreeL02:any         = null;
 var   ModuleInfo:string[] = [];
@@ -259,6 +260,12 @@ export class MemoryDependenciesProvider implements vscode.TreeDataProvider<Memor
         let Content = [];
         let GetModuleInfo = FileSys.readFileSync (ModuleInfoPath, 'utf-8').split(",");
         for (let i=0; i<GetModuleInfo.length; i++) {
+            if (SearchString !== "") {
+                // If user have input search string, filtrate it !
+                if (GetModuleInfo[i].toUpperCase().indexOf(SearchString.toUpperCase()) === NOT_FOUND ) {
+                    continue;
+                }
+            }
             let ModuleElement = GetModuleInfo[i].split("/");
             if (Element) {
                 if (i === Element.driverIndex && GetModuleInfo[i].indexOf("/3") !== NOT_FOUND) {
@@ -407,18 +414,35 @@ export async function RecordAllModuleGuidAndName (Flag:number) {
     TreeL02 = new MemoryDependenciesProvider(WorkSpace);
     vscode.window.registerTreeDataProvider ('L02-2', TreeL02);
     await AnalyzeAndGenTreeMap();
+    SearchString = "";
     TreeL02.Refresh();
+}
+
+//
+// Show input box to let user can search module or address.
+//
+export function SearchModuleOrAddr () {
+    vscode.window.showInputBox({
+        ignoreFocusOut:true,
+        placeHolder:' 🔍 Please input string to search Driver / Function / Memory address 🔍'})
+    .then (function (Message) {
+        if (Message) {
+            Filterof_X   = false;
+            SearchString = Message;
+            TreeL02.Refresh();
+        }
+    });
 }
 
 //
 // Available filter or not.
 //
-export function AvailableFilter () { Filterof_X = !Filterof_X;  TreeL02.Refresh(); }
+export function AvailableFilter () { Filterof_X = !Filterof_X; SearchString = ""; TreeL02.Refresh(); }
 
 //
 // Reflahs L02-2 block area.
 //
-export function ReflashL02_2 () { TreeL02.Refresh(); }
+export function ReflashL02_2 () { SearchString = ""; TreeL02.Refresh(); }
 
 //
 // To-do 
