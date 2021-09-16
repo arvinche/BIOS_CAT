@@ -27,7 +27,8 @@ import {
 
 import {
 	RecordAllModuleGuidAndName,
-	AnalyzeAndJumptoError,
+	AvailableFilter,
+	ReflashL02_2,
 	StarOrStoptRecordLog
 } from './L02_SideBarRecordLog';
 
@@ -78,8 +79,9 @@ export function activate (context: vscode.ExtensionContext) {
 	//  Sidebar L02 (Record log) command area.
 	//
 	vscode.commands.registerCommand ('BIOS-CAT.L02StartRecord', function () { StarOrStoptRecordLog (); });
-	vscode.commands.registerCommand ('BIOS-CAT.L02Analyze', function () { AnalyzeAndJumptoError (); });
-	vscode.commands.registerCommand ('BIOS-CAT.L02RefreshModuleInfo', function () { RecordAllModuleGuidAndName(1); });
+	vscode.commands.registerCommand ('BIOS-CAT.L02FullRefresh', function () { RecordAllModuleGuidAndName(1); });
+	vscode.commands.registerCommand ('BIOS-CAT.L02Reflash', function () { ReflashL02_2 (); });
+	vscode.commands.registerCommand ('BIOS-CAT.L02FilterAvailable', function () { AvailableFilter (); });
 	//vscode.workspace.getConfiguration().update('', true);
 }
 

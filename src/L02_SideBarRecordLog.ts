@@ -20,6 +20,7 @@ const GetPEIAddress       = "Loading PEIM at ";
 const GetDxeAddress       = "Loading driver at ";
 const ModuleSizeSumTag    = " Start ";
 const FunctionAddrTag     = " f ";
+var   Filterof_X          = true;
 var   TreeL02:any         = null;
 var   ModuleInfo:string[] = [];
 
@@ -166,10 +167,12 @@ async function AnalyzeMapFile () {
                         }
                     } else if (Step === 2 && Line[i].indexOf(FunctionAddrTag) !== NOT_FOUND) {
                         //
-                        // Step 2. Get all function relative address.
+                        // Step 2. Get all function relative address & reference.
                         //
                         TempArray       = Line[i].replace(/\s+/g, ' ').split(" ");
-                        TempString      = "/5"+TempArray[2]+"|0x"+parseInt(TempArray[3],16).toString(16);
+                        TempString      = "/5"+TempArray[2]+"|0x"
+                                              +parseInt(TempArray[3],16).toString(16)+"|"
+                                              +TempArray[5];
                         if (ModuleInfo[i2].indexOf(TempString) === NOT_FOUND) {
                             ModuleInfo[i2] += TempString;
                         }
@@ -186,6 +189,29 @@ async function AnalyzeMapFile () {
     DeepFind (BuildFolder);
     FileSys.writeFile (ModuleInfoPath, ModuleInfo.toString(), (err) => {});
     vscode.window.showInformationMessage (" 👍 Gen MAP Done.");
+}
+
+//
+//  Try to analyze the log and map file then jump to error.
+//
+async function AnalyzeAndGenTreeMap () {
+    //
+    // Check all need file exists or not.
+    //
+    if (!FileSys.existsSync (ModuleInfoPath)) {
+        vscode.window.showInformationMessage (' ❗️❗️ You don\' have Moduleinfo please build once time to gen mep file.');
+        return;
+    }
+    //
+    //  Analyze Log file to get module base address.
+    //
+    if (AnalyzeLogFile()){
+        return;
+    }
+    //
+    //  Analyze Map file and try to find code position.
+    //
+    AnalyzeMapFile ();
 }
 
 
@@ -236,13 +262,21 @@ export class MemoryDependenciesProvider implements vscode.TreeDataProvider<Memor
             let ModuleElement = GetModuleInfo[i].split("/");
             if (Element) {
                 if (i === Element.driverIndex && GetModuleInfo[i].indexOf("/3") !== NOT_FOUND) {
-                    let FName = "", FOffset = "";
+                    let Mname = "", FName = "", FOffset = "", FReference = "";
                     for (let i2=0; i2<ModuleElement.length; i2++) {
+                        if (ModuleElement[i2][0] === "1") {
+                            Mname = ModuleElement[i2].replace("1","");
+                        }
                         if (ModuleElement[i2][0] === "5") {
-                            FName   = ModuleElement[i2].replace("5","").split("|")[0];
-                            FOffset = ModuleElement[i2].replace("5","").split("|")[1];
+                            let TmpStr = ModuleElement[i2].replace("5","").split("|");
+                            FName      = TmpStr[0];
+                            FName      = FName[0]+FName[1] === "__" ? FName.replace("__","🌀🌀"):
+                                         FName[0] === "_" ? FName.replace("_","🌀"):
+                                         FName;
+                            FOffset    = TmpStr[1];
+                            FReference = TmpStr[2].indexOf(Mname) === NOT_FOUND? TmpStr[2] : "";
                             Content.push(new MemoryDependency (
-                                i, FName, "", FOffset, "",
+                                i, FName, FReference, FOffset, "",
                                 vscode.TreeItemCollapsibleState.None
                             ));
                         }
@@ -256,17 +290,19 @@ export class MemoryDependenciesProvider implements vscode.TreeDataProvider<Memor
                     } else if (ModuleElement[i2][0] === "2") {
                         MGuid = "🔰"+ModuleElement[i2].replace("2","");
                     } else if (ModuleElement[i2][0] === "3") {
-                        MBaseAddr.push(++i3+" ▻ "+ModuleElement[i2].replace("3",""));
+                        MBaseAddr.push(++i3+" ▻ "+ModuleElement[i2].replace("3","").toUpperCase());
                     } else if (ModuleElement[i2][0] === "4") {
                         MSize = ModuleElement[i2].replace("4","");
                     } 
                 }
-                Content.push(new MemoryDependency (
-                    i, MName, MGuid,
-                    (MBaseAddr.length!==0)?"    "+MBaseAddr.toString().replace(/,/g,"\n    "):"",
-                    MSize,
-                    vscode.TreeItemCollapsibleState.Collapsed
-                ));
+                if ( MBaseAddr.length !== 0 || !Filterof_X) {
+                    Content.push(new MemoryDependency (
+                        i, MName, MGuid,
+                        (MBaseAddr.length!==0)?"    "+MBaseAddr.toString().replace(/,/g,"\n    "):"",
+                        MSize,
+                        vscode.TreeItemCollapsibleState.Collapsed
+                    ));
+                }
             }
         }
         return Content;
@@ -285,10 +321,14 @@ export class MemoryDependency extends vscode.TreeItem {
         super (tagName, collapsibleState);
         this.tooltip = collapsibleState ? 
                        "Guid : "+`${this.driverGuil}`+"\n💠BaseAddress :\n"+this.baseAddr :
-                       "";
+                       driverGuil !== ""?
+                       "♻ Use from : "+driverGuil.replace(":"," : ").replace(".obj","") :
+                       "📍 It's a local function" ;
         this.description = collapsibleState ?
-                           (this.baseAddr !== "" ?
-                           "✅Driver Size: "+ this.driverSize:
+                           (this.baseAddr !== "" ?    // No Address mean not been build.
+                             (this.driverSize !== ""? // No Size mean it may be a binary file.
+                             "✅ Driver Size: "+ this.driverSize:
+                             "🔒 This may be a binary ~"):
                            "❌Can't Get Addr form log."):
                            "Offset : "+this.baseAddr;
         this.iconPath = collapsibleState ? {
@@ -346,6 +386,10 @@ export async function RecordAllModuleGuidAndName (Flag:number) {
         //
         // Real entry of this function to call recursive.
         //
+        if ( !FileSys.existsSync (BuildFolder) ) {
+            vscode.window.showInformationMessage (" 💢 Can't find Build folder to gen memory map tree.");
+            return;
+        }
         vscode.window.showInformationMessage (" 🔍 Scan work space to gen Module Info.");
         FileSys.unlink (ModuleInfoPath,(_err)=>{});
         await Delay(1000);
@@ -355,38 +399,26 @@ export async function RecordAllModuleGuidAndName (Flag:number) {
         vscode.window.showInformationMessage (" 👍 Gen Infomation Done.");
     } else {
         ModuleInfo = FileSys.readFileSync (ModuleInfoPath, 'utf-8').split(",");
-        vscode.window.showInformationMessage (" 👍 Get Module info success.");
+        vscode.window.showInformationMessage (" 👍 Get Module info form existing database success.");
     }
     //
     // Create data tree and wait for update.
     //
     TreeL02 = new MemoryDependenciesProvider(WorkSpace);
     vscode.window.registerTreeDataProvider ('L02-2', TreeL02);
+    await AnalyzeAndGenTreeMap();
+    TreeL02.Refresh();
 }
 
 //
-//  Try to analyze the log and map file then jump to error.
+// Available filter or not.
 //
-export function AnalyzeAndJumptoError () {
-    //
-    // Check all need file exists or not.
-    //
-    if (!FileSys.existsSync (ModuleInfoPath)) {
-        vscode.window.showInformationMessage (' ❗️❗️ You don\' have Moduleinfo please build once time to gen mep file.');
-        return;
-    }
-    //
-    //  Analyze Log file to get module base address.
-    //
-    if (AnalyzeLogFile()){
-        return;
-    }
-    //
-    //  Analyze Map file and try to find code position.
-    //
-    AnalyzeMapFile ();
-    TreeL02.Refresh();
-}
+export function AvailableFilter () { Filterof_X = !Filterof_X;  TreeL02.Refresh(); }
+
+//
+// Reflahs L02-2 block area.
+//
+export function ReflashL02_2 () { TreeL02.Refresh(); }
 
 //
 // To-do 

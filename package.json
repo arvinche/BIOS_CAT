@@ -90,8 +90,9 @@
 			{"command": "BIOS-CAT.L01CopyFolderPath"   , "title": "Copy Folder Path"},
 			{"command": "BIOS-CAT.L01CopyFileName"     , "title": "Copy File Name"},
 			{"command": "BIOS-CAT.L02StartRecord"      , "title": "Start/Stop record log", "icon": "./Images/L01_Jump.png"},
-			{"command": "BIOS-CAT.L02Analyze"          , "title": "Analyze Log & Map file", "icon": "./Images/L02_Analyze.png"},
-			{"command": "BIOS-CAT.L02RefreshModuleInfo", "title": "Reget Module info", "icon": "./Images/L02_Refresh.png"}
+			{"command": "BIOS-CAT.L02FullRefresh"      , "title": "Rescan all file then generate map table.", "icon": "./Images/L02_FullRefresh.png"},
+			{"command": "BIOS-CAT.L02Reflash"          , "title": "Reflash map table", "icon": "./Images/L02_Refresh.png"},
+			{"command": "BIOS-CAT.L02FilterAvailable"  , "title": "Show All / Only available", "icon": "./Images/L02_Analyze.png"}
 		],
 		"keybindings": [
 			{"command": "BIOS-CAT.CMD01",            "key": "alt+'",   "when": "editorTextFocus"},
@@ -106,10 +107,11 @@
 		],
 		"menus": {
 			"view/title": [
-				{ "command": "BIOS-CAT.L01AddMark", "when": "view == L01", "group": "navigation" },
-				{ "command": "BIOS-CAT.L01Refresh", "when": "view == L01", "group": "navigation" },
-				{ "command": "BIOS-CAT.L02Analyze", "when": "view == L02-2", "group": "navigation" },
-				{ "command": "BIOS-CAT.L02RefreshModuleInfo", "when": "view == L02-2", "group": "navigation" }
+				{ "command": "BIOS-CAT.L01AddMark",        "when": "view == L01", "group": "navigation" },
+				{ "command": "BIOS-CAT.L01Refresh",        "when": "view == L01", "group": "navigation" },
+				{ "command": "BIOS-CAT.L02FullRefresh",    "when": "view == L02-2", "group": "navigation" },
+				{ "command": "BIOS-CAT.L02Reflash",        "when": "view == L02-2", "group": "navigation" },
+				{ "command": "BIOS-CAT.L02FilterAvailable","when": "view == L02-2", "group": "navigation" }
 			],
 			"view/item/context": [
 				{ "command": "BIOS-CAT.L01Edit", "when": "view == L01", "group": "inline" },
@@ -129,7 +131,7 @@
 			"CatMaster": [
 				{"id": "L01", "name": "　📒 Bookmark ~"},
 				{"id": "L02-1", "name": "　💻 Record Log"},
-				{"id": "L02-2", "name": "　📈 Memroy Map Seeker"}
+				{"id": "L02-2", "name": "　🧭 Driver Memroy Map Seeker"}
 			]
 		},
 		"languages": [
