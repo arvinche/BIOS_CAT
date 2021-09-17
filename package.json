@@ -104,7 +104,8 @@
 			{"command": "BIOS-CAT.L01CopyFullPath",  "key": "alt+p",   "when": "editorTextFocus", "mac": "cmd+p"},
 			{"command": "BIOS-CAT.L01CopyFolderPath","key": "alt+[",   "when": "editorTextFocus"},
 			{"command": "BIOS-CAT.L01CopyFileName",  "key": "alt+]",   "when": "editorTextFocus"},
-			{"command": "BIOS-CAT.L02StartRecord",   "key": "alt+r",   "when": "editorTextFocus"}
+			{"command": "BIOS-CAT.L02StartRecord",   "key": "alt+r"},
+			{"command": "BIOS-CAT.L02SearchModule",  "key": "alt+m"}
 		],
 		"menus": {
 			"view/title": [

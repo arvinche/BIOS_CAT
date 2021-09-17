@@ -72,8 +72,7 @@ function AnalyzeLogFile ():number {
             vscode.window.showInformationMessage (" ❗️❗️ Cannot open log with default path, please set your log path in setting.");
         } else {
             vscode.window.showInformationMessage (" ❗️❗️ Cannot open log file ["+LogFile+"].");
-        }
-        return 1;
+        } return 1;
     }
     let Line       = FileSys.readFileSync (LogFile, 'utf-8').split ("\n");
     var DriverGUID = "";
@@ -206,9 +205,7 @@ async function AnalyzeAndGenTreeMap () {
     //
     //  Analyze Log file to get module base address.
     //
-    if (AnalyzeLogFile()){
-        return;
-    }
+    if (AnalyzeLogFile()){ return; }
     //
     //  Analyze Map file and try to find code position.
     //
@@ -260,13 +257,29 @@ export class MemoryDependenciesProvider implements vscode.TreeDataProvider<Memor
         let Content = [];
         let GetModuleInfo = FileSys.readFileSync (ModuleInfoPath, 'utf-8').split(",");
         for (let i=0; i<GetModuleInfo.length; i++) {
+            let ModuleElement = GetModuleInfo[i].split("/");
             if (SearchString !== "") {
+                //
                 // If user have input search string, filtrate it !
-                if (GetModuleInfo[i].toUpperCase().indexOf(SearchString.toUpperCase()) === NOT_FOUND ) {
-                    continue;
+                //
+                let CmpString = GetModuleInfo[i].toUpperCase();
+                if (CmpString.indexOf(SearchString.toUpperCase()) === NOT_FOUND ) {
+                    let X = parseInt(SearchString.toUpperCase().replace("0X","").replace("H",""), 16);
+                    //
+                    // If user input an address, check it's in any driver range or not.
+                    //
+                    if (!isNaN(X)) {
+                        let MB=0, MS=0;
+                        for (let i2=0; i2<ModuleElement.length; i2++) {
+                            if (ModuleElement[i2][0] === "3") {
+                                MB = parseInt(ModuleElement[i2].replace("3","").toUpperCase().replace("0X","").replace("H",""),16);
+                            } else if (ModuleElement[i2][0] === "4") {
+                                MS = parseInt(ModuleElement[i2].replace("4","").toUpperCase().replace("0X","").replace("H",""),16);
+                            }
+                        } if (X<MB || X>(MB+MS)) { continue; }
+                    } else { continue; }
                 }
             }
-            let ModuleElement = GetModuleInfo[i].split("/");
             if (Element) {
                 if (i === Element.driverIndex && GetModuleInfo[i].indexOf("/3") !== NOT_FOUND) {
                     let Mname = "", FName = "", FOffset = "", FReference = "";
@@ -411,11 +424,11 @@ export async function RecordAllModuleGuidAndName (Flag:number) {
     //
     // Create data tree and wait for update.
     //
-    TreeL02 = new MemoryDependenciesProvider(WorkSpace);
+    SearchString = "";
+    TreeL02      = new MemoryDependenciesProvider(WorkSpace);
     vscode.window.registerTreeDataProvider ('L02-2', TreeL02);
     await AnalyzeAndGenTreeMap();
-    SearchString = "";
-    TreeL02.Refresh();
+    await TreeL02.Refresh();
 }
 
 //
