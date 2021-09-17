@@ -13,17 +13,21 @@ import {
 } from './00_GeneralFunction';
 
 const ModuleInfoPath      = WorkSpace + ".vscode/CatModuleInfo.bcat";
+const GuidInfoPath        = WorkSpace + ".vscode/CatGuidInfo.bcat";
 const CatLogFile          = WorkSpace + ".vscode/CatRecort.log";
 const PeiDriver           = "Loading PEIM ";
 const DxeDriver           = "Loading driver ";
 const GetPEIAddress       = "Loading PEIM at ";
 const GetDxeAddress       = "Loading driver at ";
+const GetProtocolAddr     = "InstallProtocolInterface: ";
 const ModuleSizeSumTag    = " Start ";
 const FunctionAddrTag     = " f ";
+const GuidDataBase        = "Guid.xref";
 var   SearchString        = "";
 var   Filterof_X          = true;
 var   TreeL02:any         = null;
 var   ModuleInfo:string[] = [];
+var   GuidInfo:string[]   = [];
 
 //============= Local Function =============//
 //
@@ -76,14 +80,14 @@ function AnalyzeLogFile ():number {
     }
     let Line       = FileSys.readFileSync (LogFile, 'utf-8').split ("\n");
     var DriverGUID = "";
-    for (let i=0, i2=0, Step=0; i<Line.length; i++) {
+    for (let i=0, i2=0, Step=0, TmpStr=""; i<Line.length; i++) {
         //
         // Step 0 : find driver have been load or not.
         // Step 1 : get base address form log file.
         //
         if (Step) {
             if (Line[i].indexOf (GetPEIAddress) !== NOT_FOUND || Line[i].indexOf (GetDxeAddress) !== NOT_FOUND) {
-                let TmpStr = "/30x" + parseInt( Line[i].replace(GetPEIAddress, "").replace(GetDxeAddress, "").split(" ")[0].replace("0x",""),16).toString(16);
+                TmpStr = "/30x" + parseInt( Line[i].replace(GetPEIAddress, "").replace(GetDxeAddress, "").split(" ")[0].replace("0x",""),16).toString(16);
                 if (ModuleInfo[i2].indexOf(TmpStr) === NOT_FOUND) {
                     ModuleInfo[i2] += TmpStr;
                 } Step = 0;
@@ -93,13 +97,29 @@ function AnalyzeLogFile ():number {
         } else if (Line[i].indexOf (DxeDriver) !== NOT_FOUND && DriverGUID === "") {
             DriverGUID += ""+Line[i].split(" ").pop()?.replace("\r","").replace("\n","").toUpperCase();
         }
+        //
+        // If driver have install protocol, get protocol Address.
+        //
+        if (i2 && Line[i].indexOf (GetProtocolAddr) !== NOT_FOUND) {
+            let TempArray = Line[i].replace(GetProtocolAddr, "").replace("\r","").replace("\n","").split(" ");
+            let GuidName = "Can get Guid Database [Guid.xref]";
+            let X = 0;
+            if (GuidInfo.length) {
+                for (X=0; X<GuidInfo.length; X++) {
+                    if (GuidInfo[X].indexOf(TempArray[0]) !== NOT_FOUND) { break; }
+                }
+                GuidName = X>=GuidInfo.length? "⚠ Not Find": GuidInfo[X].split(" ")[1].replace("\r","").replace("\n","");
+            }
+            TmpStr = "/P"+GuidName+"|"+TempArray[0]+"|"+TempArray[1];
+            ModuleInfo[i2] += TmpStr;
+        }
         if (!Step && DriverGUID !== "") {
             for (i2=0; i2<ModuleInfo.length; i2++) {
                 if (ModuleInfo[i2].indexOf(DriverGUID) !== NOT_FOUND) {
                     Step = 1;
                     break;
                 }
-            } DriverGUID = "";
+            } i2 = i2>=ModuleInfo.length?0:i2; DriverGUID = "";
         }
     } return 0;
 }
@@ -172,7 +192,7 @@ async function AnalyzeMapFile () {
                         TempArray       = Line[i].replace(/\s+/g, ' ').split(" ");
                         TempString      = "/5"+TempArray[2]+"|0x"
                                               +parseInt(TempArray[3],16).toString(16)+"|"
-                                              +TempArray[5];
+                                              +TempArray[5].replace(".obj","");
                         if (ModuleInfo[i2].indexOf(TempString) === NOT_FOUND) {
                             ModuleInfo[i2] += TempString;
                         }
@@ -264,7 +284,7 @@ export class MemoryDependenciesProvider implements vscode.TreeDataProvider<Memor
                 //
                 let CmpString = GetModuleInfo[i].toUpperCase();
                 if (CmpString.indexOf(SearchString.toUpperCase()) === NOT_FOUND ) {
-                    let X = parseInt(SearchString.toUpperCase().replace("0X","").replace("H",""), 16);
+                    let X = parseInt(SearchString.toUpperCase(), 16);
                     //
                     // If user input an address, check it's in any driver range or not.
                     //
@@ -272,9 +292,9 @@ export class MemoryDependenciesProvider implements vscode.TreeDataProvider<Memor
                         let MB=0, MS=0;
                         for (let i2=0; i2<ModuleElement.length; i2++) {
                             if (ModuleElement[i2][0] === "3") {
-                                MB = parseInt(ModuleElement[i2].replace("3","").toUpperCase().replace("0X","").replace("H",""),16);
+                                MB = parseInt(ModuleElement[i2].replace("3","").toUpperCase(),16);
                             } else if (ModuleElement[i2][0] === "4") {
-                                MS = parseInt(ModuleElement[i2].replace("4","").toUpperCase().replace("0X","").replace("H",""),16);
+                                MS = parseInt(ModuleElement[i2].replace("4","").toUpperCase(),16);
                             }
                         } if (X<MB || X>(MB+MS)) { continue; }
                     } else { continue; }
@@ -286,8 +306,16 @@ export class MemoryDependenciesProvider implements vscode.TreeDataProvider<Memor
                     for (let i2=0; i2<ModuleElement.length; i2++) {
                         if (ModuleElement[i2][0] === "1") {
                             Mname = ModuleElement[i2].replace("1","");
-                        }
-                        if (ModuleElement[i2][0] === "5") {
+                        } else if (ModuleElement[i2][0] === "P") {
+                            let TmpStr = ModuleElement[i2].replace("P","").split("|");
+                            FName      = "🧬 "+TmpStr[0];
+                            FReference = TmpStr[1];
+                            FOffset    = "0x"+TmpStr[2];
+                            Content.push(new MemoryDependency (
+                                i, FName, FReference, FOffset, "",
+                                vscode.TreeItemCollapsibleState.None
+                            ));
+                        } else if (ModuleElement[i2][0] === "5") {
                             let TmpStr = ModuleElement[i2].replace("5","").split("|");
                             FName      = TmpStr[0];
                             FName      = FName[0]+FName[1] === "__" ? FName.replace("__","🌀🌀"):
@@ -342,16 +370,19 @@ export class MemoryDependency extends vscode.TreeItem {
         this.tooltip = collapsibleState ? 
                        "Guid : "+`${this.driverGuil}`+"\n💠BaseAddress :\n"+this.baseAddr :
                        driverGuil !== ""?
-                       "♻ Use from : "+driverGuil.replace(":"," : ").replace(".obj","") :
+                       "♻ Reference : "+driverGuil.replace(":"," : "):
                        "📍 It's a local function" ;
         this.description = collapsibleState ?
                            (this.baseAddr !== "" ?    // No Address mean not been build.
                              (this.driverSize !== ""? // No Size mean it may be a binary file.
-                             "✅ Driver Size: "+ this.driverSize:
-                             "🔒 This may be a binary ~"):
-                           "❌Can't Get Addr form log."):
-                           "Offset : "+this.baseAddr;
-        this.iconPath = collapsibleState ? {
+                               "✅ Driver Size: "+ this.driverSize:
+                               "🔒 This may be a binary ~"):
+                             "❌Can't Get Addr form log."):
+                           (this.tagName.indexOf("🧬") !== NOT_FOUND?
+                            "Install at : "+this.baseAddr:
+                            "Offset : "+this.baseAddr);
+        this.iconPath = (this.tagName.indexOf("🧬") !== NOT_FOUND) || (this.tagName.indexOf("🌀") !== NOT_FOUND) ?
+        "" : collapsibleState ? {
             light: Path.join (__filename, '../..', './Images/L02_GroupRoot.png'),
             dark: Path.join (__filename, '../..', './Images/L02_GroupRoot.png')
         }:{
@@ -372,8 +403,7 @@ export async function RecordAllModuleGuidAndName (Flag:number) {
     //
     // Check if we have already have info then read it, if not create one.
     //
-    if (!FileSys.existsSync (ModuleInfoPath) || Flag) {
-        let Info:string[] = [];
+    if (!FileSys.existsSync (ModuleInfoPath) || !FileSys.existsSync (GuidInfoPath) || Flag) {
         //
         // Recursive to find out.
         //
@@ -395,9 +425,20 @@ export async function RecordAllModuleGuidAndName (Flag:number) {
                             TempString += "!2"+Line[i].split(" ").pop()?.replace("\r","").replace("\n","").toUpperCase()+"~";
                         } else if (TempString.indexOf ("~!") !== NOT_FOUND) {
                             TempString = TempString.replace("~!","/").replace("!","").replace("~","");
-                            if (Info.indexOf(TempString) === NOT_FOUND) {
-                                Info.push(TempString);
+                            if (ModuleInfo.indexOf(TempString) === NOT_FOUND) {
+                                ModuleInfo.push(TempString);
                             } break;
+                        }
+                    }
+                } else if (FilePath.endsWith (GuidDataBase)) {
+                    if (!GuidInfo.length) {
+                        GuidInfo = FileSys.readFileSync (FilePath, 'utf-8').split ("\n");
+                    } else {
+                        let Line = FileSys.readFileSync (FilePath, 'utf-8').split ("\n");
+                        for (let i=0; i<Line.length; i++) {
+                            if (GuidInfo.indexOf(Line[i]) !== NOT_FOUND) {
+                                GuidInfo.push(Line[i]);
+                            }
                         }
                     }
                 }
@@ -410,15 +451,19 @@ export async function RecordAllModuleGuidAndName (Flag:number) {
             vscode.window.showInformationMessage (" 💢 Can't find Build folder to gen memory map tree.");
             return;
         }
+        ModuleInfo = [];
+        GuidInfo   = [];
         vscode.window.showInformationMessage (" 🔍 Scan work space to gen Module Info.");
         FileSys.unlink (ModuleInfoPath,(_err)=>{});
+        FileSys.unlink (GuidInfoPath,(_err)=>{});
         await Delay(1000);
         DeepFind (WorkSpace);
-        ModuleInfo = Info;
         FileSys.writeFile (ModuleInfoPath, ModuleInfo.toString(), (err) => {});
+        FileSys.writeFile (GuidInfoPath, GuidInfo.toString().replace(/\r/g,""), (err) => {});
         vscode.window.showInformationMessage (" 👍 Gen Infomation Done.");
     } else {
         ModuleInfo = FileSys.readFileSync (ModuleInfoPath, 'utf-8').split(",");
+        GuidInfo   = FileSys.readFileSync (GuidInfoPath, 'utf-8').split(",");
         vscode.window.showInformationMessage (" 👍 Get Module info form existing database success.");
     }
     //
@@ -440,7 +485,7 @@ export function SearchModuleOrAddr () {
         placeHolder:' 🔍 Please input string to search Driver / Function / Memory address 🔍'})
     .then (function (Message) {
         if (Message) {
-            Filterof_X   = false;
+            Filterof_X   = true;
             SearchString = Message;
             TreeL02.Refresh();
         }
@@ -450,7 +495,7 @@ export function SearchModuleOrAddr () {
 //
 // Available filter or not.
 //
-export function AvailableFilter () { Filterof_X = !Filterof_X; SearchString = ""; TreeL02.Refresh(); }
+export function AvailableFilter () { Filterof_X = !Filterof_X; TreeL02.Refresh(); }
 
 //
 // Reflahs L02-2 block area.

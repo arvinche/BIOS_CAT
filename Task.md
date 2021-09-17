@@ -35,4 +35,5 @@
 |    10 |            14 | Check system exist python tool or not         | Done              | Gua           | Enhance   |
 |    11 |             4 | Add log and module info analyze function      | Done              | Arvin         | Enhance   |
 |    12 |             4 | Add input box let user can enter address      | Done              | Arvin         | Enhance   |
+|    13 |             4 | Get driver install protocol address function  | Done              | Arvin         | Enhance   |
 
