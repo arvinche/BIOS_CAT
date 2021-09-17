@@ -34,5 +34,5 @@
 |     9 |             8 | Some env can not use this feature             | Done              | Arvin         | Enhance   |
 |    10 |            14 | Check system exist python tool or not         | Done              | Gua           | Enhance   |
 |    11 |             4 | Add log and module info analyze function      | Done              | Arvin         | Enhance   |
-|    12 |             4 | Add input box let user can enter address      | On-Going          | Arvin         | Enhance   |
+|    12 |             4 | Add input box let user can enter address      | Done              | Arvin         | Enhance   |
 
