@@ -277,6 +277,13 @@ export class MemoryDependenciesProvider implements vscode.TreeDataProvider<Memor
         let Content = [];
         let GetModuleInfo = FileSys.readFileSync (ModuleInfoPath, 'utf-8').split(",");
         for (let i=0; i<GetModuleInfo.length; i++) {
+            //
+            // If it's a Lib, skip it, won't show in tree.
+            //
+            if (GetModuleInfo[i].indexOf("/L") !== NOT_FOUND) { continue; }
+            //
+            // It's a driver, gen into tree.
+            //
             let ModuleElement = GetModuleInfo[i].split("/");
             if (SearchString !== "") {
                 //
@@ -336,7 +343,7 @@ export class MemoryDependenciesProvider implements vscode.TreeDataProvider<Memor
                     if (ModuleElement[i2][0] === "1") {
                         MName = ModuleElement[i2].replace("1","");
                     } else if (ModuleElement[i2][0] === "2") {
-                        MGuid = "🔰"+ModuleElement[i2].replace("2","");
+                        MGuid = ModuleElement[i2].replace("2","");
                     } else if (ModuleElement[i2][0] === "3") {
                         MBaseAddr.push(++i3+" ▻ "+ModuleElement[i2].replace("3","").toUpperCase());
                     } else if (ModuleElement[i2][0] === "4") {
@@ -368,7 +375,7 @@ export class MemoryDependency extends vscode.TreeItem {
     ) {
         super (tagName, collapsibleState);
         this.tooltip = collapsibleState ? 
-                       "Guid : "+`${this.driverGuil}`+"\n💠BaseAddress :\n"+this.baseAddr :
+                       "Guid : 🔰"+`${this.driverGuil}`+"\n💠BaseAddress :\n"+this.baseAddr :
                        driverGuil !== ""?
                        "♻ Reference : "+driverGuil.replace(":"," : "):
                        "📍 It's a local function" ;
@@ -390,7 +397,10 @@ export class MemoryDependency extends vscode.TreeItem {
             dark: Path.join (__filename, '../..', './Images/00_CatIcon.png')
         };
     }
-    //contextValue = this.collapsibleState?'Mepn_G':'Mepn_M';
+    contextValue = (this.collapsibleState || this.tagName.indexOf("🧬") !== NOT_FOUND)?
+                   (this.tagName.indexOf("⚠") === NOT_FOUND?
+                   'Mepn_AGN':"Mepn_AG"):
+                   'Mepn_N';
 }
 
 //
@@ -416,11 +426,12 @@ export async function RecordAllModuleGuidAndName (Flag:number) {
                     //
                     DeepFind (FilePath);
                 } else if (FilePath.endsWith (".inf")) {
-                    let TempString = "";
-                    let Line       = FileSys.readFileSync (FilePath, 'utf-8').split ("\n");
+                    let TempString = FileSys.readFileSync (FilePath, 'utf-8');
+                    let Line       = TempString.split ("\n");
+                    TempString     = TempString.indexOf("LIBRARY_CLASS") === NOT_FOUND? "" : "/L";
                     for (let i=0; i<Line.length; i++) {
                         if (Line[i].indexOf ("BASE_NAME") !== NOT_FOUND) {
-                            TempString = "!1"+Line[i].split(" ").pop()?.replace("\r","").replace("\n","")+"~";
+                            TempString += "!1"+Line[i].split(" ").pop()?.replace("\r","").replace("\n","")+"~";
                         } else if (Line[i].indexOf ("FILE_GUID") !== NOT_FOUND) {
                             TempString += "!2"+Line[i].split(" ").pop()?.replace("\r","").replace("\n","").toUpperCase()+"~";
                         } else if (TempString.indexOf ("~!") !== NOT_FOUND) {
@@ -501,6 +512,24 @@ export function AvailableFilter () { Filterof_X = !Filterof_X; TreeL02.Refresh()
 // Reflahs L02-2 block area.
 //
 export function ReflashL02_2 () { SearchString = ""; TreeL02.Refresh(); }
+
+//
+// Let user can copy message that they need.
+//
+export function GetAndCopyModuleInfo (Item: MemoryDependency, Type:number) {
+    var Info = "";
+    if (Type === 1) {
+        require("child_process").exec('clip').stdin.end (Item.tagName.valueOf().replace("🧬 ",""));
+        Info = "Name";
+    } else if  (Type === 2) {
+        require("child_process").exec('clip').stdin.end (Item.driverGuil.valueOf());
+        Info = "Guid";
+    } else {
+        require("child_process").exec('clip').stdin.end (Item.baseAddr.valueOf().replace(/ ▻ /g,":"));
+        Info = "Address";
+    }
+    vscode.window.showInformationMessage (" 😊 Copy [ "+Info+" ] Success~ Use Ctrl+P to use it.");
+}
 
 //
 // To-do 

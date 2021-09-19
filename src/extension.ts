@@ -26,11 +26,13 @@ import {
 } from './L01_SideBarTreeView';
 
 import {
+    MemoryDependency,
     RecordAllModuleGuidAndName,
     SearchModuleOrAddr,
     AvailableFilter,
     ReflashL02_2,
-    StarOrStoptRecordLog
+    StarOrStoptRecordLog,
+    GetAndCopyModuleInfo
 } from './L02_SideBarRecordLog';
 
 //
@@ -84,6 +86,9 @@ export function activate (context: vscode.ExtensionContext) {
     vscode.commands.registerCommand ('BIOS-CAT.L02Reflash', function () { ReflashL02_2 (); });
     vscode.commands.registerCommand ('BIOS-CAT.L02FilterAvailable', function () { AvailableFilter (); });
     vscode.commands.registerCommand ('BIOS-CAT.L02SearchModule', function () { SearchModuleOrAddr (); });
+    vscode.commands.registerCommand ('BIOS-CAT.L02CopyName', (Item: MemoryDependency) => { GetAndCopyModuleInfo (Item, 1); });
+    vscode.commands.registerCommand ('BIOS-CAT.L02CopyGuid', (Item: MemoryDependency) => { GetAndCopyModuleInfo (Item, 2); });
+    vscode.commands.registerCommand ('BIOS-CAT.L02CopyAddress', (Item: MemoryDependency) => { GetAndCopyModuleInfo (Item, 3); });
     //vscode.workspace.getConfiguration().update('', true);
 }
 

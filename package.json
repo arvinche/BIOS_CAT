@@ -93,7 +93,10 @@
 			{"command": "BIOS-CAT.L02FullRefresh"      , "title": "Rescan all file then generate map table.", "icon": "./Images/L02_FullRefresh.png"},
 			{"command": "BIOS-CAT.L02Reflash"          , "title": "Reflash map table", "icon": "./Images/L02_Refresh.png"},
 			{"command": "BIOS-CAT.L02FilterAvailable"  , "title": "Show All / Only available", "icon": "./Images/L02_Analyze.png"},
-			{"command": "BIOS-CAT.L02SearchModule"     , "title": "Search Address or Module", "icon": "./Images/L02_Search.png"}
+			{"command": "BIOS-CAT.L02SearchModule"     , "title": "Search Address or Module", "icon": "./Images/L02_Search.png"},
+			{"command": "BIOS-CAT.L02CopyName"         , "title": "Copy name", "icon": "./Images/L02_1Name.png"},
+			{"command": "BIOS-CAT.L02CopyGuid"         , "title": "Copy guid", "icon": "./Images/L02_2Guid.png"},
+			{"command": "BIOS-CAT.L02CopyAddress"      , "title": "Copy address", "icon": "./Images/L02_3Address.png"}
 		],
 		"keybindings": [
 			{"command": "BIOS-CAT.CMD01",            "key": "alt+'",   "when": "editorTextFocus"},
@@ -105,7 +108,7 @@
 			{"command": "BIOS-CAT.L01CopyFolderPath","key": "alt+[",   "when": "editorTextFocus"},
 			{"command": "BIOS-CAT.L01CopyFileName",  "key": "alt+]",   "when": "editorTextFocus"},
 			{"command": "BIOS-CAT.L02StartRecord",   "key": "alt+r"},
-			{"command": "BIOS-CAT.L02SearchModule",  "key": "alt+m"}
+			{"command": "BIOS-CAT.L02SearchModule",  "key": "ctrl+shift+d"}
 		],
 		"menus": {
 			"view/title": [
@@ -119,7 +122,10 @@
 			"view/item/context": [
 				{ "command": "BIOS-CAT.L01Edit", "when": "view == L01", "group": "inline" },
 				{ "command": "BIOS-CAT.L01Delete", "when": "view == L01", "group": "inline" },
-				{ "command": "BIOS-CAT.L01JumpToFile", "when": "view == L01  && viewItem == Depn_M", "group": "inline" }
+				{ "command": "BIOS-CAT.L01JumpToFile", "when": "view == L01  && viewItem == Depn_M", "group": "inline" },
+				{ "command": "BIOS-CAT.L02CopyName", "when": "view == L02-2 && viewItem != Mepn_AG", "group": "inline" },
+				{ "command": "BIOS-CAT.L02CopyGuid", "when": "view == L02-2 && viewItem == Mepn_AGN || viewItem == Mepn_AG", "group": "inline" },
+				{ "command": "BIOS-CAT.L02CopyAddress", "when": "view == L02-2  && viewItem == Mepn_AGN || viewItem == Mepn_AG", "group": "inline" }
 			],
 			"editor/context": [
 				{ "when": "editorFocus", "command": "BIOS-CAT.CMD01", "group": "navigation" },
