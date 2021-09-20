@@ -6,10 +6,12 @@
 
 This is a extension Can make BIOS engineer more convenient.
 
-Of course, some of function also good to use even you are not a BIOS engineer :)
+Of course, some of function also good to use even you are not BIOS engineer.🤪
 
 ## Features
-<h2 id="0">Hot-Key.</h2>
+<h2 id="0" style="color:#c96b00;">Hot-Key.</h2>
+
+  * `Provide hot-key as below.`
 
   1. `ALT+P`        : Copy current file full path.
   2. `ALT+[`        : Copy current file folder path.
@@ -18,31 +20,31 @@ Of course, some of function also good to use even you are not a BIOS engineer :)
   5. `ALT+r`        : Start [Record log](#3).
   6. `CTRL+SHIFT+d` : Search with [Memory map seeker](#4).
 
-<h2 id="1">Bookmark.</h2>
+<h2 id="1" style="color:#c96b00;">Bookmark.</h2>
 
-  Provide bookmark for user can mark their step or something need to record.
+  * `Provide bookmark for user can mark their step or something need to record.`
 
   1. You can group bookmarks, make it no longer cluttered.
   2. You can edit item name whatever you want.
   3. BIOS-CAT will also record time when you create book mark.
   4. Of course you can user book mark jump to the please that you record.
 
-<h2 id="2">Build code button.</h2>
+<h2 id="2" style="color:#c96b00;">Build code button.</h2>
 
-  Provide space that can let user save build command, convenient to use ~
+  * `Provide space that can let user save build command, convenient to use ~`
 
   1. Build code as Release / Debug / FSP-API release /FSP-API debug.
   2. Clean up workspacce.
   3. Provide button that can click to jump to build error.
   4. Build single module that can reduce time spend with build error debug.
 
-<h2 id="3">Embedded putty.</h2>
+<h2 id="3" style="color:#c96b00;">Embedded putty.</h2>
 
   To-Do
 
-<h2 id="4">Memory map seeker.</h2>
+<h2 id="4" style="color:#c96b00;">Memory map seeker.</h2>
 
-  Provide driver memory map seeker to let you know:
+  * `Provide driver memory map seeker to let you know:`
 
   1. What driver actually execute on your platform.
   2. The driver actual memory address and size on your platform.
@@ -52,21 +54,30 @@ Of course, some of function also good to use even you are not a BIOS engineer :)
      use "Address" to find it's located at which driver.
   6. Provide button that you can fase copy Address, GUID or driver/function/protocol name.
 
+<h2 id="2" style="color:#c96b00;">[Ported from other side]</h2>
+
+  * `We have function reference EDK2:`
+
+  1. FDF/DEC/INF/VFR/HFR Parser.
+
+
 ## Requirements
 
 * Need to install [Python](https://www.python.org/)
 
 ## Extension Settings
 
-All setting have illustrate with item !!
+  All setting have illustrate in extension settings !!
+
+  Please click `the icon [⚙️] in top area` to see them.
 
 ## Known Issues
 
- 1. First time use "Build with single module" neet to click twice time.
+  1. First time use "Build with single module" neet to click twice time.
 
 ## Release Notes
 
-Please reference [Here!!](./Task.md)
+  * Please reference [Here!!](./Task.md)
 
 
 ## END OF NOTES

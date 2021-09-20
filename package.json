@@ -27,6 +27,17 @@
 					"default" : "Intel/AlderLakeBoardPkg",
 					"description": "This field is for your command bat path, you can gave two way : \n  1. Absolute path. ex: c://User//Workspace/CommandFolder \n  2. Relative path. ex: Workspace/CommandFolder"
 				},
+				"CAT.00_Compile": {
+					"type": "string",
+					"default": "1.Visual studio",
+					"enum": ["1.Visual studio", "2.GCC", "3.Clang"],
+					"description": "[ Once modify this item, please restart VSCODE. ]",
+					"enumDescriptions": [
+					  "Build with Microsoft - visual studio.",
+					  "Build with GNU Collection - GCC.",
+					  "Build with LLVM(Low Level Virtual Machine) - Clang"
+					]
+				},
 				"CAT.01_BuildCmdPreload": {
 					"type": "string",
 					"default" : "prep",

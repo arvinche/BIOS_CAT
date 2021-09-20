@@ -8,6 +8,7 @@ import {
       WorkSpace,
       BuildFolder,
       NOT_FOUND,
+      CompileIS,
     //== Function ==
       Delay
 } from './00_GeneralFunction';
@@ -23,6 +24,7 @@ const GetProtocolAddr     = "InstallProtocolInterface: ";
 const ModuleSizeSumTag    = " Start ";
 const FunctionAddrTag     = " f ";
 const GuidDataBase        = "Guid.xref";
+const Decoder             = 'base64';
 var   SearchString        = "";
 var   Filterof_X          = true;
 var   TreeL02:any         = null;
@@ -138,14 +140,18 @@ function AnalyzeLogFile ():number {
     } return 0;
 }
 
+//vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 //
-//  Analyze Map file in build folder and try to get actual memory location.
+//  Below 3 function is function to analyze Map file for each compile 
+//  in build folder and try to get actual memory location.
 //
+
+//  [Microsoft - visual studio.]
 //  Step 0 : Check this module have map file or not.
 //  Step 1 : Get module full size.
 //  Step 2 : Get All function relative address in this module.
 //
-async function AnalyzeMapFile () { 
+async function AnalyzeMapFile_VS () {
     //
     // Recursive to find out.
     //
@@ -218,12 +224,15 @@ async function AnalyzeMapFile () {
     //
     // Real entry of this function to call recursive.
     //
-    vscode.window.showInformationMessage (" 🔍 Scan work space to gen Memroy map Info.");
     await Delay(100);
     DeepFind (BuildFolder);
-    FileSys.writeFile (ModuleInfoPath, ModuleInfo.toString(), (err) => {});
-    vscode.window.showInformationMessage (" 👍 Gen MAP Done.");
 }
+
+//  [GNU Collection - GCC.]
+async function AnalyzeMapFile_GCC () {}
+
+//  [LLVM(Low Level Virtual Machine) - Clang]
+async function AnalyzeMapFile_CLANG () {}
 
 //
 //  Try to analyze the log and map file then jump to error.
@@ -244,7 +253,21 @@ async function AnalyzeAndGenTreeMap () {
     //
     //  Analyze Map file and try to find code position.
     //
-    AnalyzeMapFile ();
+    vscode.window.showInformationMessage (" 🔍 Scan work space to gen Memroy map Info.");
+    switch (CompileIS) {
+        case "1":
+            await AnalyzeMapFile_VS (); break;
+        case "2":
+            await AnalyzeMapFile_GCC (); break;
+        case "3":
+            await AnalyzeMapFile_CLANG (); break;
+        default:
+            vscode.window.showInformationMessage (" 👎 Some strange parameters has ran in.");
+            return;
+    }
+    FileSys.writeFile (ModuleInfoPath, Buffer.from(ModuleInfo.toString()).toString(Decoder), (err) => {});
+    vscode.window.showInformationMessage (" 👍 Gen MAP Done.");
+    await Delay(100);
 }
 
 
@@ -290,7 +313,7 @@ export class MemoryDependenciesProvider implements vscode.TreeDataProvider<Memor
 
     private getMemoryInfoTree (Element: MemoryDependency): MemoryDependency[] {
         let Content = [];
-        let GetModuleInfo = FileSys.readFileSync (ModuleInfoPath, 'utf-8').split(",");
+        let GetModuleInfo = Buffer.from(FileSys.readFileSync (ModuleInfoPath, 'utf-8'),Decoder).toString().split(",");
         for (let i=0; i<GetModuleInfo.length; i++) {
             //
             // If it's a Lib, skip it, won't show in tree.
@@ -429,6 +452,7 @@ export async function RecordAllModuleGuidAndName (Flag:number) {
     // If user turn off the feature, retunr at entry.
     //
     if (!vscode.workspace.getConfiguration().get("CAT.02_AnalyzeMemoryFunction")){ return; }
+    TreeL02 = (TreeL02 === null)?new MemoryDependenciesProvider(WorkSpace) : TreeL02;
     //
     // Check if we have already have info then read it, if not create one.
     //
@@ -488,22 +512,20 @@ export async function RecordAllModuleGuidAndName (Flag:number) {
         FileSys.unlink (GuidInfoPath,(_err)=>{});
         await Delay(1000);
         DeepFind (WorkSpace);
-        FileSys.writeFile (ModuleInfoPath, ModuleInfo.toString(), (err) => {});
-        FileSys.writeFile (GuidInfoPath, GuidInfo.toString().replace(/\r/g,""), (err) => {});
+        FileSys.writeFile (ModuleInfoPath, Buffer.from(ModuleInfo.toString()).toString(Decoder), (err) => {});
+        FileSys.writeFile (GuidInfoPath, Buffer.from(GuidInfo.toString().replace(/\r/g,"")).toString(Decoder), (err) => {});
         vscode.window.showInformationMessage (" 👍 Gen Infomation Done.");
     } else {
-        ModuleInfo = FileSys.readFileSync (ModuleInfoPath, 'utf-8').split(",");
-        GuidInfo   = FileSys.readFileSync (GuidInfoPath, 'utf-8').split(",");
+        ModuleInfo = Buffer.from(FileSys.readFileSync (ModuleInfoPath, 'utf-8'),Decoder).toString().split(",");
+        GuidInfo   = Buffer.from(FileSys.readFileSync (GuidInfoPath, 'utf-8'),Decoder).toString().split(",");
         vscode.window.showInformationMessage (" 👍 Get Module info from [Previous Existing] database success.");
     }
     //
     // Create data tree and wait for update.
     //
     SearchString = "";
-    TreeL02      = new MemoryDependenciesProvider(WorkSpace);
     vscode.window.registerTreeDataProvider ('L02-2', TreeL02);
     await AnalyzeAndGenTreeMap();
-    await Delay(1000);
     TreeL02.Refresh();
 }
 

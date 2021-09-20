@@ -38,4 +38,5 @@
 |    12 |             4 | Add input box let user can enter address      | Done              | Arvin         | Enhance   |
 |    13 |             4 | Get driver install protocol address function  | Done              | Arvin         | Enhance   |
 |    14 |             4 | Let user can copy info form L02               | Done              | Arvin         | Enhance   |
+|    15 |             4 | Add decoder for system file so that it won’t be searched all the time|Done| Arvin | Enhance   |
 

@@ -5,11 +5,21 @@ import * as vscode  from 'vscode';
 //=============== Global variable area ===============
 //
 export const NOT_FOUND   = -1;
+//
+// True  : Os environment is Mocrosoft windows.
+// False : Os environment is Linux system.
+//
 export const IsWindows   = true;
 export const WorkSpace   = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
 export const BuildFolder = WorkSpace + "Build";
 export const EnvCheck    = WorkSpace + ".vscode/CatEnvCheck.bcat";
 export const StatusFile  = WorkSpace + ".vscode/CatStatus.bcat";
+//
+// 1. Microsoft - visual studio.
+// 2. GNU Collection - GCC.
+// 3. LLVM(Low Level Virtual Machine) - Clang.
+//
+export const CompileIS   = (vscode.workspace.getConfiguration().get("CAT.00_Compile")+"")[0];
 
 //=============== Delay function area ===============
 //
