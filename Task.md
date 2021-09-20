@@ -19,6 +19,7 @@
 |            14 | Run command by python                         | Done              | Gua           | Feature   |
 |            15 | Copy current select file path hotkey          | Done              | Arvin         | Feature   |
 |            16 | Build Multiple Parameter Support              | Done              | Gua/Arvin     | Feature   |
+|            17 | Binary UEFI FSP Parser                        | On-Going          | Gua           | Feature   |
 
 ## Bug/Enhance List
 | Index | Feature Index | Task                                          | Status            | Author        | Attribute |

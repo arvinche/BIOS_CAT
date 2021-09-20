@@ -96,7 +96,8 @@
 			{"command": "BIOS-CAT.L02SearchModule"     , "title": "Search Address or Module", "icon": "./Images/L02_Search.png"},
 			{"command": "BIOS-CAT.L02CopyName"         , "title": "Copy name", "icon": "./Images/L02_1Name.png"},
 			{"command": "BIOS-CAT.L02CopyGuid"         , "title": "Copy guid", "icon": "./Images/L02_2Guid.png"},
-			{"command": "BIOS-CAT.L02CopyAddress"      , "title": "Copy address", "icon": "./Images/L02_3Address.png"}
+			{"command": "BIOS-CAT.L02CopyAddress"      , "title": "Copy address", "icon": "./Images/L02_3Address.png"},
+			{"command": "BIOS-CAT.L03OpenFspEditor"    , "title": "FSP Editor"}
 		],
 		"keybindings": [
 			{"command": "BIOS-CAT.CMD01",            "key": "alt+'",   "when": "editorTextFocus"},

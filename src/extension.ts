@@ -35,6 +35,10 @@ import {
     GetAndCopyModuleInfo
 } from './L02_SideBarRecordLog';
 
+import {
+    CreateFspEditorView
+} from './L03_FspEditor'
+
 //
 //  Function Entry ~
 //
@@ -46,6 +50,12 @@ export function activate (context: vscode.ExtensionContext) {
     vscode.window.registerTreeDataProvider ('L01', TreeL01);
     RecordAllModuleGuidAndName (0);
     console.log ('Great~ "BIOS-CAT" is now active!');
+
+    //
+    // FSP Editor
+    //
+    context.subscriptions.push (CreateFspEditorView ());
+
     //
     // Start to build code
     //
