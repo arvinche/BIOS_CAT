@@ -40,7 +40,7 @@ function GetTerminalAndCheckEnvironment (Message:string):vscode.Terminal|null {
     //
     BuildStatus = FileSys.readFileSync (StatusFile, 'utf-8');
     if (BuildStatus.indexOf("0") === NOT_FOUND) {
-        vscode.window.showInformationMessage (" 💢 BIOS-CAT is now  ["+BuildStatus+"] !!.");
+        vscode.window.showInformationMessage (" 💦 BIOS-CAT is now  ["+BuildStatus+"] !!.");
         return null;
     }
     //
@@ -59,10 +59,10 @@ function GetTerminalAndCheckEnvironment (Message:string):vscode.Terminal|null {
     //
     // Reacquire all variable, because user may change it any time.
     //
-    PreBuildCmd   = GetConfig.get("CAT.01_PreBuildCmd")+"&" !== PreBuildCmd ?
-                    GetConfig.get("CAT.01_PreBuildCmd")+"&"+ DelEnvCheck() : PreBuildCmd;
-    BuildCommand  = GetConfig.get("CAT.02_BuildCmd") !== ""  ? "(" + PreBuildCmd + GetConfig.get("CAT.02_BuildCmd") + ")" : "";
-    CleanCommand = "" + GetConfig.get("CAT.03_CleanCmd");
+    PreBuildCmd   = GetConfig.get("CAT.01_BuildCmdPreload")+"&" !== PreBuildCmd ?
+                    GetConfig.get("CAT.01_BuildCmdPreload")+"&"+ DelEnvCheck() : PreBuildCmd;
+    BuildCommand  = GetConfig.get("CAT.01_BuildCmdStart") !== ""  ? "(" + PreBuildCmd + GetConfig.get("CAT.01_BuildCmdStart") + ")" : "";
+    CleanCommand = "" + GetConfig.get("CAT.01_CleanCmd");
     //
     // Create Terminal.
     //
@@ -156,16 +156,16 @@ export async function CreatEnvAndBuildCode () {
     // Check Build commands.
     //
     if (PreBuildCmd === "&") {
-        vscode.window.showInformationMessage (' ❗️❗️ Please set [CAT.01_PreBuildCmd] before you use this function.');
+        vscode.window.showInformationMessage (' ❗️❗️ Please set [CAT.01_BuildCmdPreload] before you use this function.');
         return;
     }else if (BuildCommand === "") {
-        vscode.window.showInformationMessage (' ❗️❗️ Please unless set [CAT.02_BuildCmd]');
+        vscode.window.showInformationMessage (' ❗️❗️ Please unless set [CAT.01_BuildCmdStart]');
         return;
     }
     //
     // Get Build parameter.
     //
-    var ParameterList: {[key:string]: string} = Object.assign({}, GetConfig.get("CAT.Parameter"));
+    var ParameterList: {[key:string]: string} = Object.assign({}, GetConfig.get("CAT.01_ParameterSettingDetail"));
     let ChooseBuildList: {[key:string]: string} = Object.create (null);
 
     for (var Parameter in ParameterList) {
@@ -185,10 +185,10 @@ export async function CreatEnvAndBuildCode () {
             return;
         } else {
             var SelectString = Select + "";
-            if (GetConfig.get("CAT.04_SetParameterWith") === "Build") {
-                Parameter = "(" + PreBuildCmd + GetConfig.get("CAT.02_BuildCmd") + " " + ChooseBuildList[SelectString] + ")";
+            if (GetConfig.get("CAT.01_ParameterGoWith") === "Build") {
+                Parameter = "(" + PreBuildCmd + GetConfig.get("CAT.01_BuildCmdStart") + " " + ChooseBuildList[SelectString] + ")";
             } else {
-                Parameter = "(" + PreBuildCmd .replace ("&", " "+ ChooseBuildList[SelectString] + "&" + GetConfig.get("CAT.02_BuildCmd")) + ")";
+                Parameter = "(" + PreBuildCmd .replace ("&", " "+ ChooseBuildList[SelectString] + "&" + GetConfig.get("CAT.01_BuildCmdStart")) + ")";
             }
             Build = Parameter;
         }
@@ -215,7 +215,7 @@ export async function CleanUpWorkSpace () {
     // Check Clean command.
     //
     if (CleanCommand === "") {
-        vscode.window.showInformationMessage (' ❗️❗️ Please set [CAT.03_CleanCmd] before you use it.');
+        vscode.window.showInformationMessage (' ❗️❗️ Please set [CAT.01_CleanCmd] before you use it.');
         return;
     } await Delay(1000);
     //
@@ -286,7 +286,7 @@ export async function BuildSingleModule () {
     // Check pre-build command.
     //
     if (PreBuildCmd === "&") {
-        vscode.window.showInformationMessage (' ❗️❗️ Please set [CAT.01_PreBuildCmd] before you use this function.');
+        vscode.window.showInformationMessage (' ❗️❗️ Please set [CAT.01_BuildCmdPreload] before you use this function.');
         return;
     } await Delay(1000);
     //
@@ -305,6 +305,7 @@ export async function BuildSingleModule () {
     }
     await Delay(1000);
     let CheckFile = FileSys.readFileSync (EnvCheck, 'utf-8');
+    await Delay(100);
     if (CheckFile.indexOf (NmakeCheck) === NOT_FOUND) {
         FileSys.unlink (EnvCheck,(_err)=>{});
         vscode.window.showInformationMessage (" ❗️❗️ Pre-build command error! \n Please help BIOS-Cat to check pre-build command too create environment~");
@@ -332,7 +333,11 @@ export async function BuildSingleModule () {
     }
     let MakeFilePath = SearchBuildFolder (BuildFolder, ModuleName);
     if (!MakeFilePath.length) {
-        vscode.window.showInformationMessage (" ❗️❗️ Can\'t find [ "+ModuleName+" ] in Build folder, please unless full build once time or make sure this module will been build.");
+        vscode.window.showInformationMessage (
+            " ❗️❗️ Can\'t find [ "+ModuleName+" ] in Build folder, please unless full build once time or make sure this module will been build. 🏭 Like to Build now?",
+            "Yes Sure!",
+            "No Thanks.").
+        then(function (Message) { if (Message === "Yes Sure!") {CreatEnvAndBuildCode();} });
         FileSys.writeFileSync (StatusFile, "0");
         return;
     }

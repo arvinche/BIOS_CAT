@@ -1,72 +1,73 @@
 # BIOS-CAT README
+[![Marketplace](https://vsmarketplacebadge.apphb.com/version/Cat-Master-Arvin.BIOS-CAT.svg)](https://vsmarketplacebadge.apphb.com/version/Cat-Master-Arvin.BIOS-CAT.svg)
+[![Installs](https://vsmarketplacebadge.apphb.com/installs-short/Cat-Master-Arvin.BIOS-CAT.svg)](https://vsmarketplacebadge.apphb.com/installs-short/Cat-Master-Arvin.BIOS-CAT.svg)
+[![Downloads](https://vsmarketplacebadge.apphb.com/downloads-short/Cat-Master-Arvin.BIOS-CAT.svg)](https://vsmarketplacebadge.apphb.com/downloads-short/Cat-Master-Arvin.BIOS-CAT.svg)
+[![Rating](https://vsmarketplacebadge.apphb.com/rating-short/Cat-Master-Arvin.BIOS-CAT.svg)](https://vsmarketplacebadge.apphb.com/rating-short/Cat-Master-Arvin.BIOS-CAT.svg)
 
 This is a extension Can make BIOS engineer more convenient.
-Of course some functions are good to use even if you are not a BIOS engineer :)
+
+Of course, some of function also good to use even you are not a BIOS engineer :)
 
 ## Features
+<h2 id="0">Hot-Key.</h2>
 
-1. Build series.
-  a. One click build code.
-  b. One click clear work space.
-  c. One click catch & jump to build error.
-  d. One click build single module.
+  1. `ALT+P`        : Copy current file full path.
+  2. `ALT+[`        : Copy current file folder path.
+  3. `ALT+]`        : Copy current file name.
+  4. `ALT+m`        : Add [Bookmark](#1).
+  5. `ALT+r`        : Start [Record log](#3).
+  6. `CTRL+SHIFT+d` : Search with [Memory map seeker](#4).
 
-2. Bookmark.
-  
+<h2 id="1">Bookmark.</h2>
+
+  Provide bookmark for user can mark their step or something need to record.
+
+  1. You can group bookmarks, make it no longer cluttered.
+  2. You can edit item name whatever you want.
+  3. BIOS-CAT will also record time when you create book mark.
+  4. Of course you can user book mark jump to the please that you record.
+
+<h2 id="2">Build code button.</h2>
+
+  Provide space that can let user save build command, convenient to use ~
+
+  1. Build code as Release / Debug / FSP-API release /FSP-API debug.
+  2. Clean up workspacce.
+  3. Provide button that can click to jump to build error.
+  4. Build single module that can reduce time spend with build error debug.
+
+<h2 id="3">Embedded putty.</h2>
+
+  To-Do
+
+<h2 id="4">Memory map seeker.</h2>
+
+  Provide driver memory map seeker to let you know:
+
+  1. What driver actually execute on your platform.
+  2. The driver actual memory address and size on your platform.
+  3. The function address offset in driver & where it reference.
+  4. What protocol will actual install in dirver and it's memory address.
+  5. Provide button that you can use "String"(name or GUID .etc) to search driver or 
+     use "Address" to find it's located at which driver.
+  6. Provide button that you can fase copy Address, GUID or driver/function/protocol name.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+* Need to install [Python](https://www.python.org/)
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+All setting have illustrate with item !!
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+ 1. First time use "Build with single module" neet to click twice time.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+Please reference [Here!!](./Task.md)
 
-### 1.0.0
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
+## END OF NOTES
 -----------------------------------------------------------------------------------------------------------
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**

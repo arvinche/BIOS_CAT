@@ -65,17 +65,31 @@ function GetEnableSerialport () {
 //  Analyze log file and find all module base address.
 //
 function AnalyzeLogFile ():number {
-    let LogFile    = vscode.workspace.getConfiguration().get("CAT.05_LogFilePath") !== "" ?
-                     vscode.workspace.getConfiguration().get("CAT.05_LogFilePath")+"" :
+    let LogFile    = vscode.workspace.getConfiguration().get("CAT.02_LogFilePath") !== "" ?
+                     vscode.workspace.getConfiguration().get("CAT.02_LogFilePath")+"" :
                      CatLogFile;
     //
     //  Check log file exists or not.
     //
     if (!FileSys.existsSync (LogFile)) {
         if (CatLogFile === LogFile) {
-            vscode.window.showInformationMessage (" ❗️❗️ Cannot open log with default path, please set your log path in setting.");
+            vscode.window.showInformationMessage (
+                " ❗️❗️ Cannot open log with default path. Do you want to gave your one path?",
+                'Yes I do !!',
+                'No Thanks ~')
+            .then (function (Select) { if (Select === 'Yes I do !!') {
+                vscode.window.showInputBox({
+                    ignoreFocusOut:true,
+                    placeHolder:' 👀 Please input your log file path for BIOS-CAT to analyze.'})
+                .then (function (Message) {
+                    if (Message) {
+                        vscode.workspace.getConfiguration().update('CAT.02_LogFilePath', Message, true);
+                        AnalyzeAndGenTreeMap();
+                    }
+                });
+            }});
         } else {
-            vscode.window.showInformationMessage (" ❗️❗️ Cannot open log file ["+LogFile+"].");
+            vscode.window.showInformationMessage (" ❗️❗️ Cannot open log file with path ["+LogFile+"] please modify in extension setting.");
         } return 1;
     }
     let Line       = FileSys.readFileSync (LogFile, 'utf-8').split ("\n");
@@ -83,7 +97,7 @@ function AnalyzeLogFile ():number {
     for (let i=0, i2=0, Step=0, TmpStr=""; i<Line.length; i++) {
         //
         // Step 0 : find driver have been load or not.
-        // Step 1 : get base address form log file.
+        // Step 1 : get base address from log file.
         //
         if (Step) {
             if (Line[i].indexOf (GetPEIAddress) !== NOT_FOUND || Line[i].indexOf (GetDxeAddress) !== NOT_FOUND) {
@@ -222,6 +236,7 @@ async function AnalyzeAndGenTreeMap () {
         vscode.window.showInformationMessage (' ❗️❗️ You don\' have Moduleinfo please build once time to gen mep file.');
         return;
     }
+    await Delay(1000);
     //
     //  Analyze Log file to get module base address.
     //
@@ -384,7 +399,7 @@ export class MemoryDependency extends vscode.TreeItem {
                              (this.driverSize !== ""? // No Size mean it may be a binary file.
                                "✅ Driver Size: "+ this.driverSize:
                                "🔒 This may be a binary ~"):
-                             "❌Can't Get Addr form log."):
+                             "❌Can't Get Addr from log."):
                            (this.tagName.indexOf("🧬") !== NOT_FOUND?
                             "Install at : "+this.baseAddr:
                             "Offset : "+this.baseAddr);
@@ -410,6 +425,10 @@ export class MemoryDependency extends vscode.TreeItem {
 //       1 : Even ModuleInfoPath exsts, still scan work space and gen it.
 //
 export async function RecordAllModuleGuidAndName (Flag:number) {
+    //
+    // If user turn off the feature, retunr at entry.
+    //
+    if (!vscode.workspace.getConfiguration().get("CAT.02_AnalyzeMemoryFunction")){ return; }
     //
     // Check if we have already have info then read it, if not create one.
     //
@@ -459,7 +478,7 @@ export async function RecordAllModuleGuidAndName (Flag:number) {
         // Real entry of this function to call recursive.
         //
         if ( !FileSys.existsSync (BuildFolder) ) {
-            vscode.window.showInformationMessage (" 💢 Can't find Build folder to gen memory map tree.");
+            vscode.window.showInformationMessage (" 💦 Can't find Build folder to gen memory map tree.");
             return;
         }
         ModuleInfo = [];
@@ -475,7 +494,7 @@ export async function RecordAllModuleGuidAndName (Flag:number) {
     } else {
         ModuleInfo = FileSys.readFileSync (ModuleInfoPath, 'utf-8').split(",");
         GuidInfo   = FileSys.readFileSync (GuidInfoPath, 'utf-8').split(",");
-        vscode.window.showInformationMessage (" 👍 Get Module info form existing database success.");
+        vscode.window.showInformationMessage (" 👍 Get Module info from [Previous Existing] database success.");
     }
     //
     // Create data tree and wait for update.
@@ -484,22 +503,26 @@ export async function RecordAllModuleGuidAndName (Flag:number) {
     TreeL02      = new MemoryDependenciesProvider(WorkSpace);
     vscode.window.registerTreeDataProvider ('L02-2', TreeL02);
     await AnalyzeAndGenTreeMap();
-    await TreeL02.Refresh();
+    await Delay(1000);
+    TreeL02.Refresh();
 }
 
 //
 // Show input box to let user can search module or address.
 //
 export function SearchModuleOrAddr () {
+    //
+    // If user turn off the feature, do nothing.
+    //
+    if (!vscode.workspace.getConfiguration().get("CAT.02_AnalyzeMemoryFunction")){ return; }
+    //
+    // Show in put box and let user enter.
+    //
     vscode.window.showInputBox({
         ignoreFocusOut:true,
         placeHolder:' 🔍 Please input string to search Driver / Function / Memory address 🔍'})
     .then (function (Message) {
-        if (Message) {
-            Filterof_X   = true;
-            SearchString = Message;
-            TreeL02.Refresh();
-        }
+        if (Message) { Filterof_X = true; SearchString = Message; TreeL02.Refresh(); }
     });
 }
 
@@ -515,6 +538,9 @@ export function ReflashL02_2 () { SearchString = ""; TreeL02.Refresh(); }
 
 //
 // Let user can copy message that they need.
+//  1 => Get name of select item.
+//  2 => Get guid of select item.
+//  3 => Get Address of select item.
 //
 export function GetAndCopyModuleInfo (Item: MemoryDependency, Type:number) {
     var Info = "";
@@ -528,7 +554,7 @@ export function GetAndCopyModuleInfo (Item: MemoryDependency, Type:number) {
         require("child_process").exec('clip').stdin.end (Item.baseAddr.valueOf().replace(/ ▻ /g,":"));
         Info = "Address";
     }
-    vscode.window.showInformationMessage (" 😊 Copy [ "+Info+" ] Success~ Use Ctrl+P to use it.");
+    vscode.window.showInformationMessage (" ✔ Copy [ "+Info+" ] Success~ Use Ctrl+P to use it.");
 }
 
 //

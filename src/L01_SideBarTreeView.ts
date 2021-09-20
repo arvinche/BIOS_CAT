@@ -347,7 +347,7 @@ export function JumpInToBookMark (Item: Dependency) {
 //  Get the file path.
 //  1 => Get full path work (space + folder + file name)
 //  2 => Get full path work (space + folder)
-//  2 => Get full path work (file name only)
+//  3 => Get full path work (file name only)
 //
 export function GetCurrentPath (Type:number) {
     var FilePath = vscode.window.activeTextEditor?.document.fileName.replace(/\\/g,"/");
@@ -358,9 +358,11 @@ export function GetCurrentPath (Type:number) {
     } else if  (Type === 2) {
         require("child_process").exec('clip').stdin.end (FilePath?.replace(FileName, ""));
         FileName = "Folder path";
-    } else {
+    } else if  (Type === 3) {
         require("child_process").exec('clip').stdin.end (FileName);
         FileName = "File name";
+    } else {
+        FileName = "Nothing";
     }
-    vscode.window.showInformationMessage (" 😊 Copy [ "+FileName+" ] Success~ Use Ctrl+P to use it.");
+    vscode.window.showInformationMessage (" 👍 Copy [ "+FileName+" ] Success~ Use Ctrl+P to use it.");
 }
