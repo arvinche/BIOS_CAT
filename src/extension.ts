@@ -37,7 +37,7 @@ import {
 
 import {
     CreateFspEditorView
-} from './L03_FspEditor'
+} from './L03_FspEditor';
 
 //
 //  Function Entry ~
@@ -57,23 +57,11 @@ export function activate (context: vscode.ExtensionContext) {
     context.subscriptions.push (CreateFspEditorView ());
 
     //
-    // Start to build code
+    // M01 build Series function.
     //
     vscode.commands.registerCommand ('BIOS-CAT.CMD01', ()=> { CreatEnvAndBuildCode (); });
-
-    //
-    //  Clean up work space
-    //
     vscode.commands.registerCommand ('BIOS-CAT.CMD02', ()=>{ CleanUpWorkSpace (); });
-
-    //
-    // Check build log & show build error (if it have)
-    //
     vscode.commands.registerCommand ('BIOS-CAT.CMD03', ()=>{ CheckBuildLogAndJump2Error (); });
-
-    //
-    //  Build individual module
-    //
     vscode.commands.registerCommand ('BIOS-CAT.CMD04', ()=>{ BuildSingleModule (); });
 
     //

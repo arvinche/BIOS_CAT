@@ -11,7 +11,7 @@ export function CreateFspEditorView () {
         enableScripts: true            // Set this to true if you want to enable Javascript.
       }
     );
-    panel.webview.html = `<html><body>你好，我是FSP Editor</body></html>`
-  })
+    panel.webview.html = `<html><body>你好，我是FSP Editor</body></html>`;
+  });
   return openWebview;
 }
