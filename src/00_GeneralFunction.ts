@@ -14,12 +14,17 @@ export const WorkSpace   = (vscode.workspace.rootPath + "/").replace(/\\/g,"/");
 export const BuildFolder = WorkSpace + "Build";
 export const EnvCheck    = WorkSpace + ".vscode/CatEnvCheck.bcat";
 export const StatusFile  = WorkSpace + ".vscode/CatStatus.bcat";
+export const GitFile     = WorkSpace + ".vscode/CatGit.bcat";
 //
 // 1. Microsoft - visual studio.
 // 2. GNU Collection - GCC.
 // 3. LLVM(Low Level Virtual Machine) - Clang.
 //
 export const CompileIS   = (vscode.workspace.getConfiguration().get("CAT.00_Compile")+"")[0];
+//
+// Reserved this variable to support multiple work space.
+//
+export let   WsIndex     = 0;
 
 //=============== Delay function area ===============
 //
@@ -146,9 +151,9 @@ function GenRunCommand (WorkSpace:string) {
 }
 
 //
-// The entry of send command with python.
+// The entry of send "Build related" command with python.
 //
-export async function SendCommand2PY (
+export async function SendBuildCommand2PY (
   Terminal   :vscode.Terminal,
   Command    :string,  // The command that we need pass through python to execution.
   WorkSpace  :string,  // Current work space path.
@@ -165,7 +170,7 @@ export async function SendCommand2PY (
   //  Change encode into 437 :: cmd /C to compatible between MS cmd and MS Powershell.
   await Delay(1000);
   Terminal.sendText ("cmd /C chcp 437");
-  var   GlobalCmd_S  =  "cd " + BuildPath + " & ";
+  let   GlobalCmd_S  =  "cd " + BuildPath + " & ";
   const GlobalCmd_E  =  "& ("+RemovePY+" & echo 0 > "+StatusFile+")";
   let   PythonCmd    =  GenRunCommand (WorkSpace);
   if (PythonCmd === "") {
@@ -183,6 +188,37 @@ export async function SendCommand2PY (
   //
   // Send command into Terminal.
   //
-  console.log(PythonCmd+GlobalCmd_E);
   Terminal.sendText (PythonCmd + GlobalCmd_E);
+}
+
+//
+// The entry of send command with python.
+//
+export async function SendCommand2PY (
+  Terminal   :vscode.Terminal,
+  Command    :string,  // The command that we need pass through python to execution.
+  IsStdout   :boolean, // Can out put to vscode internal terminal or not.
+  OutputPath :string,  // The path that can be out put.
+) {
+
+  //  Change encode into 437 :: cmd /C to compatible between MS cmd and MS Powershell.
+  await Delay(1000);
+  Terminal.sendText ("cmd /C chcp 437");
+  let PythonCmd = GenRunCommand (WorkSpace);
+  if (PythonCmd === "") {
+    vscode.window.showInformationMessage (" ❗️❗️ Please install python 3.X in your system.");
+    return;
+  }
+
+  //
+  // Add delay to make sure command can get indeed and marge into "PythonCmd".
+  //
+  await Delay(1000);
+  PythonCmd = "(py -3 \"" + PythonCmd + "\" " + "-C \"" + Command + "\" ";
+  PythonCmd += IsStdout? "-S " : "";
+  PythonCmd += (OutputPath !== '') ? "-O \"" + OutputPath + "\")" : ")";
+  //
+  // Send command into Terminal.
+  //
+  Terminal.sendText (PythonCmd);
 }

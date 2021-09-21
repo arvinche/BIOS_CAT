@@ -4,9 +4,9 @@
 [![Downloads](https://vsmarketplacebadge.apphb.com/downloads-short/Cat-Master-Arvin.BIOS-CAT.svg)](https://vsmarketplacebadge.apphb.com/downloads-short/Cat-Master-Arvin.BIOS-CAT.svg)
 [![Rating](https://vsmarketplacebadge.apphb.com/rating-short/Cat-Master-Arvin.BIOS-CAT.svg)](https://vsmarketplacebadge.apphb.com/rating-short/Cat-Master-Arvin.BIOS-CAT.svg)
 
-This is a extension Can make BIOS engineer more convenient.
+    This is a extension Can make BIOS engineer more convenient.
 
-Of course, some of function also good to use even you are not BIOS engineer.🤪
+    Of course, some of function also good to use even you are not BIOS engineer.🤪
 
 ## Features
 <h2 id="0" style="color:#c96b00;">Hot-Key.</h2>
@@ -40,7 +40,7 @@ Of course, some of function also good to use even you are not BIOS engineer.🤪
 
 <h2 id="3" style="color:#c96b00;">Embedded putty.</h2>
 
-  To-Do
+  * To-Do
 
 <h2 id="4" style="color:#c96b00;">Memory map seeker.</h2>
 
@@ -64,12 +64,12 @@ Of course, some of function also good to use even you are not BIOS engineer.🤪
 ## Requirements
 
 * Need to install [Python](https://www.python.org/)
+* Need to install [Git](https://git-scm.com/)
 
 ## Extension Settings
 
-  All setting have illustrate in extension settings !!
-
-  Please click `the icon [⚙️] in top area` to see them.
+    All setting have illustrate in extension settings !!
+    Please click `the icon [⚙️] in top area` to see them.
 
 ## Known Issues
 

@@ -11,7 +11,7 @@ import {
     BuildFolder,
     NOT_FOUND,
   //== Function ==
-    SendCommand2PY,
+    SendBuildCommand2PY,
     Delay,
     DelEnvCheck
 } from './00_GeneralFunction';
@@ -195,7 +195,7 @@ export async function CreatEnvAndBuildCode () {
         let BuildStatus = FileSys.readFileSync (StatusFile, 'utf-8');
         if (BuildStatus.indexOf("0") !== NOT_FOUND) {
             FileSys.writeFileSync (StatusFile, "Building");
-            SendCommand2PY (Terminal, Build, WorkSpace, true, BuildLog);
+            SendBuildCommand2PY (Terminal, Build, WorkSpace, true, BuildLog);
             vscode.window.showInformationMessage (" 🐾 Start to build code.");
         } else {
             vscode.window.showInformationMessage (" 💢 BIOS-CAT is now  ["+BuildStatus+"] !!.");
@@ -223,7 +223,7 @@ export async function CleanUpWorkSpace () {
     //
     FileSys.writeFileSync (StatusFile, "Cleaning");
     FileSys.unlink (BuildLog, (_err)=>{});
-    SendCommand2PY (Terminal, PreBuildCmd + CleanCommand, WorkSpace, true, "");
+    SendBuildCommand2PY (Terminal, PreBuildCmd + CleanCommand, WorkSpace, true, "");
     Terminal.show (true);
 }
 
@@ -295,7 +295,7 @@ export async function BuildSingleModule () {
     if (!FileSys.existsSync(EnvCheck)) {
         FileSys.writeFileSync (StatusFile, "Checking environment");
         vscode.window.showInformationMessage (' 🔬 Check pre-build command can work or not.... ');
-        SendCommand2PY (Terminal, "("+ PreBuildCmd +"nmake -x)", WorkSpace, true, EnvCheck);
+        SendBuildCommand2PY (Terminal, "("+ PreBuildCmd +"nmake -x)", WorkSpace, true, EnvCheck);
         //
         // Wait 5 sec to make sure the python command can indeed marge, and wait for "EnvCheck" file generate.
         // (If pre-build can do successful this part will only run once time.)
@@ -348,5 +348,5 @@ export async function BuildSingleModule () {
     }
     Terminal.show (true);
     FileSys.writeFileSync (StatusFile, "Building module");
-    SendCommand2PY (Terminal, ModuleBuildCmd, WorkSpace, true, "");
+    SendBuildCommand2PY (Terminal, ModuleBuildCmd, WorkSpace, true, "");
 }

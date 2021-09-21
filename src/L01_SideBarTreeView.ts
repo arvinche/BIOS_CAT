@@ -2,10 +2,16 @@
 import * as vscode  from 'vscode';
 import * as FileSys from 'fs';
 import * as Path    from 'path';
-import {WorkSpace}  from './00_GeneralFunction';
+import {
+    //== Variable ==
+      WorkSpace,
+      GitFile,
+      WsIndex,
+    //== Function ==
+      Delay
+}  from './00_GeneralFunction';
 
 const BookmarkPath  = WorkSpace + ".vscode/Bookmark.bcat";
-var   WsIndex       = 0;
 var   NeedToShowTip = 1;
 
 export class NodeDependenciesProvider implements vscode.TreeDataProvider<Dependency> {
@@ -365,4 +371,37 @@ export function GetCurrentPath (Type:number) {
         FileName = "Nothing";
     }
     vscode.window.showInformationMessage (" 👍 Copy [ "+FileName+" ] Success~ Use Ctrl+P to use it.");
+}
+
+//
+// The function let user can select line in file and use git to get Org/Mod patch.
+//
+export async function GetGitThisLinePatch () {
+    //
+    // Check work space have git repository ot not.
+    //
+    if (!FileSys.existsSync (WorkSpace+".git")) {
+        vscode.window.showInformationMessage (" 😣 You don't have git repository.");
+    }
+    const Editor   = vscode.window.activeTextEditor;
+    let   Terminal = (vscode.window.activeTerminal?.name !== "Cat Build code ENV !!") ?
+                      vscode.window.createTerminal ({name: "Cat Build code ENV !!"}) :
+                      vscode.window.activeTerminal;
+    let   File     = vscode.window.activeTextEditor?.document.fileName.replace(/\\/g,"/");
+    let   FileLine = parseInt(Editor?.selection.anchor.line+"");
+    //
+    // Send a lot of git command to done it.
+    //
+    Terminal.sendText ("cmd");
+    await Delay(1000);
+    Terminal.sendText("cmd /C \"chcp 437 & git blame "+File+" >> "+GitFile+"\"");
+    await Delay(1000);
+    let   Target   = FileSys.readFileSync (GitFile, 'utf-8').split("\n")[FileLine].split(" ")[0];
+
+    console.log (Target); // to-do : use this sid to get patch.
+
+    //Terminal?.sendText("(git blame "+File+") >> "+GitFile);
+    await Delay(1000);
+    FileSys.unlink (GitFile,(_err)=>{});
+    vscode.window.showInformationMessage (" 🧐 Patch have create at ["+WorkSpace+"Cat_Patch].");
 }

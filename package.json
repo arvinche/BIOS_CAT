@@ -93,11 +93,11 @@
 			}
 		},
 		"commands": [
-			{"command": "BIOS-CAT.CMD01"               , "title": "01_Build code"},
-			{"command": "BIOS-CAT.CMD02"               , "title": "02_Clean"},
-			{"command": "BIOS-CAT.CMD03"               , "title": "03_Jump to Build log / error"},
-			{"command": "BIOS-CAT.CMD04"               , "title": "04_BuildThisModule (With Makefile)"},
-			{"command": "BIOS-CAT.L01AddMark"          , "title": "Add BookMark 📒"    , "icon": "./Images/L01_Add.png"},
+			{"command": "BIOS-CAT.CMD01"               , "title": "🐈1_Build code"},
+			{"command": "BIOS-CAT.CMD02"               , "title": "🐈2_Clean"},
+			{"command": "BIOS-CAT.CMD03"               , "title": "🐈3_Jump to Build log / error"},
+			{"command": "BIOS-CAT.CMD04"               , "title": "🐈4_BuildThisModule (With Makefile)"},
+			{"command": "BIOS-CAT.L01AddMark"          , "title": "🐈 Add BookMark 📒"    , "icon": "./Images/L01_Add.png"},
 			{"command": "BIOS-CAT.L01Refresh"          , "title": "Refresh BookMark 📒", "icon": "./Images/L01_Refresh.png"},
 			{"command": "BIOS-CAT.L01Edit"             , "title": "Edit BookMark 📒"   , "icon": "./Images/L01_Edit.png"},
 			{"command": "BIOS-CAT.L01Delete"           , "title": "Delete BookMark 📒" , "icon": "./Images/L01_Delete.png"},
@@ -105,6 +105,7 @@
 			{"command": "BIOS-CAT.L01CopyFullPath"     , "title": "Copy Full Path"},
 			{"command": "BIOS-CAT.L01CopyFolderPath"   , "title": "Copy Folder Path"},
 			{"command": "BIOS-CAT.L01CopyFileName"     , "title": "Copy File Name"},
+			{"command": "BIOS-CAT.L01GetGitPatch_Line" , "title": "🐈5_Get this line patch"},
 			{"command": "BIOS-CAT.L02StartRecord"      , "title": "Start/Stop record log", "icon": "./Images/L01_Jump.png"},
 			{"command": "BIOS-CAT.L02FullRefresh"      , "title": "Rescan all file then generate map table.", "icon": "./Images/L02_FullRefresh.png"},
 			{"command": "BIOS-CAT.L02Reflash"          , "title": "Reflash map table", "icon": "./Images/L02_Refresh.png"},
@@ -149,7 +150,9 @@
 				{ "when": "editorFocus", "command": "BIOS-CAT.CMD02", "group": "navigation" },
 				{ "when": "editorFocus", "command": "BIOS-CAT.CMD03", "group": "navigation" },
 				{ "when": "editorFocus", "command": "BIOS-CAT.CMD04", "group": "navigation" },
-				{ "when": "editorFocus", "command": "BIOS-CAT.L01AddMark", "group": "navigation" }
+				{ "when": "editorFocus", "command": "BIOS-CAT.L01AddMark", "group": "navigation" },
+				{ "when": "editorFocus", "command": "BIOS-CAT.L01GetGitPatch_Line", "group": "navigation" }
+				
 			]
 		},
 		"viewsContainers": {"activitybar": [{ "id": "CatMaster", "title": "BIOS-CAT", "icon": "./Images/00_CatIcon.png" }]},
