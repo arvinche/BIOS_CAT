@@ -66,6 +66,72 @@ FileSys.writeFile (StatusFile, "0", 'utf-8', (_err) =>{});
 FileSys.unlink (EnvCheck,(_err)=>{});
 
 
+//=============== Batch file area ===============
+//
+// This area will define bat file to get patch form git.
+//
+export const OurGitBATPath  = IsWindows?
+             WorkSpace + ".vscode/RunBat.bat":
+             WorkSpace + ".vscode/RunBat";
+export const GetGitPatchBAT = IsWindows?`
+::######        ###        ######
+::##           ## ##         ##
+::#      Get patch bat file  ##
+::##         ##     ##       ##
+::######    ##       ##      ##
+
+@echo off
+::
+:: Define area
+::
+setlocal enabledelayedexpansion
+SET CAT_SID=%1
+SET CAT_WS=%CD%
+IF NOT "%2"=="" SET CAT_WS=%2
+SET CAT_PATCH=z_CatPatch
+IF NOT "%3"=="" SET CAT_PATCH=%3
+SET CAT_FULL_PATH=%CAT_WS%%CAT_PATCH%/
+::
+:: Remove origin patch, if we have it.
+::
+::rd /S/Q "%CAT_FULL_PATH%"
+::
+:: Start get patch, and gen it into ORG / MOD formate.
+::
+for /f "delims=" %%X in ('git diff-tree -r --no-commit-id --name-only --diff-filter=ACMRTD %CAT_SID%') do (
+    md "%CAT_FULL_PATH%MOD/%%X"
+    rd "%CAT_FULL_PATH%MOD/%%X"
+    md "%CAT_FULL_PATH%ORG/%%X"
+    rd "%CAT_FULL_PATH%ORG/%%X"
+    git show %CAT_SID%:%%X>%CAT_FULL_PATH%MOD/%%X
+    git show %CAT_SID%^^:%%X>%CAT_FULL_PATH%ORG/%%X
+)
+git log %CAT_SID% -1 > %CAT_FULL_PATH%PatchInfo.txt`:`
+######        ###        ######
+##           ## ##         ##
+#     Get patch bash file  ##
+##         ##     ##       ##
+######    ##       ##      ##
+
+function git-export-diff() {
+  if [ $# -ne 1 ] ; then
+      echo "git-export-diff <version number>"
+      return
+  fi
+  files=\`git diff-tree -r --no-commit-id --name-only --diff-filter=ACMRTD $1 | xargs -0\`
+  for i in $files
+  do
+      mkdir -p \`dirname "Diff-$1/ORG/$i"\`
+      mkdir -p \`dirname "Diff-$1/MOD/$i"\`
+      echo "Diff-$1/ORG/$i"
+      echo "Diff-$1/MOD/$i"
+      git show $1:$i > Diff-$1/MOD/$i
+      git show $1^:$i > Diff-$1/ORG/$i
+  done
+  git log $1 -1 > Diff-$1/PatchInfo.txt
+}`;
+
+
 //=============== Send command to python area ===============
 //
 // This area will use python to send command line.
@@ -147,7 +213,7 @@ function GenRunCommand (WorkSpace:string) {
   if (!FileSys.existsSync (OurPythonPath)) {
     FileSys.writeFile (OurPythonPath, RunCommandPython, (err) => {});
   }
-  return WorkSpace + ".vscode/RunCommand.py";
+  return OurPythonPath;
 }
 
 //
@@ -167,9 +233,17 @@ export async function SendBuildCommand2PY (
     vscode.window.showInformationMessage (" ❗️❗️ File path  ["+BuildPath+"]  seems not exist.");
     return;
   }
-  //  Change encode into 437 :: cmd /C to compatible between MS cmd and MS Powershell.
-  await Delay(1000);
-  Terminal.sendText ("cmd /C chcp 437");
+  if (IsWindows) {
+    //
+    //  Delay 1s to make sure the cmd command can go well.
+    //  Change encode into 437 :: cmd /C to compatible between MS cmd and MS Powershell.
+    //  And send "setlocal enabledelayedexpansion" to make sure variable is correct.(if need)
+    //
+    await Delay(1000);
+    Terminal.sendText ("cmd /C chcp 437");
+    //await Delay(1000);
+    //Terminal.sendText ("setlocal enabledelayedexpansion");
+  }
   let   GlobalCmd_S  =  "cd " + BuildPath + " & ";
   const GlobalCmd_E  =  "& ("+RemovePY+" & echo 0 > "+StatusFile+")";
   let   PythonCmd    =  GenRunCommand (WorkSpace);
@@ -200,10 +274,17 @@ export async function SendCommand2PY (
   IsStdout   :boolean, // Can out put to vscode internal terminal or not.
   OutputPath :string,  // The path that can be out put.
 ) {
-
-  //  Change encode into 437 :: cmd /C to compatible between MS cmd and MS Powershell.
-  await Delay(1000);
-  Terminal.sendText ("cmd /C chcp 437");
+  if (IsWindows) {
+    //
+    //  Delay 1s to make sure the cmd command can go well.
+    //  Change encode into 437 :: cmd /C to compatible between MS cmd and MS Powershell.
+    //  And send "setlocal enabledelayedexpansion" to make sure variable is correct.(if need)
+    //
+    await Delay(1000);
+    Terminal.sendText ("cmd /C chcp 437");
+    //await Delay(1000);
+    //Terminal.sendText ("setlocal enabledelayedexpansion");
+  }
   let PythonCmd = GenRunCommand (WorkSpace);
   if (PythonCmd === "") {
     vscode.window.showInformationMessage (" ❗️❗️ Please install python 3.X in your system.");
