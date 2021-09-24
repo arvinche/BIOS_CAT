@@ -76,7 +76,8 @@ export function activate (context: vscode.ExtensionContext) {
     vscode.commands.registerCommand ('BIOS-CAT.L01CopyFullPath', () => { GetCurrentPath (1); });
     vscode.commands.registerCommand ('BIOS-CAT.L01CopyFolderPath', () => { GetCurrentPath (2); });
     vscode.commands.registerCommand ('BIOS-CAT.L01CopyFileName', () => { GetCurrentPath (3); });
-    vscode.commands.registerCommand ('BIOS-CAT.L01GetGitPatch_Row', () => { GetGitThisRowPatch (); });
+    vscode.commands.registerCommand ('BIOS-CAT.L01GetGitPatch_Row', () => { GetGitThisRowPatch (0); });
+    vscode.commands.registerCommand ('BIOS-CAT.L01GetGitPatch_Key', () => { GetGitThisRowPatch (1); });
 
     //
     //  Sidebar L02 (Record log) command area.

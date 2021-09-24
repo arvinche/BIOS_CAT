@@ -17,8 +17,9 @@
   2. `ALT+[`        : Copy current file folder path.
   3. `ALT+]`        : Copy current file name.
   4. `ALT+m`        : Add [Bookmark](#1).
-  5. `ALT+r`        : Start [Record log](#3). (not yet😛.)
-  6. `CTRL+SHIFT+d` : Search with [Memory map seeker](#4).
+  5. `ALT+q`        : Generate patch[By Input SID](#1).
+  6. `ALT+r`        : Start [Record log](#3). (not yet😛.)
+  7. `CTRL+SHIFT+d` : Search with [Memory map seeker](#4).
 
 <h2 id="1" style="color:#c96b00;">Bookmark.</h2>
 
@@ -29,7 +30,7 @@
   3. BIOS-CAT will also record time when you create book mark.
   4. Of course you can user book mark jump to the please that you record.
   5. If you use git to manage your code, now you can get the change patch of
-     the row that you select.
+     the row that you select or push ALT+Q to input SID to get it.
 
 <h2 id="2" style="color:#c96b00;">Build code button.</h2>
 
@@ -44,7 +45,7 @@
 
   * To-Do
 
-  ![image](./Images/OnGoing.gif)
+  ![image](/Images/OnGoing.gif)
 
 <h2 id="4" style="color:#c96b00;">Memory map seeker.</h2>
 

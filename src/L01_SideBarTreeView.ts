@@ -7,7 +7,6 @@ import {
       WorkSpace,
       GitFile,
       WsIndex,
-      OurGitBATPath,
       GetGitPatchBAT,
     //== Function ==
       Delay
@@ -378,20 +377,11 @@ export function GetCurrentPath (Type:number) {
 //
 // The function let user can select line in file and use git to get Org/Mod patch.
 //
-export async function GetGitThisRowPatch () {
-    //
-    // Check work space have git repository ot not.
-    //
-    if (!FileSys.existsSync (WorkSpace+".git")) {
-        vscode.window.showInformationMessage (" 😣 You don't have git repository.");
-        return;
-    }
+export async function GetGitThisRowPatch (Type:number) {
     const Editor    = vscode.window.activeTextEditor;
-    let   Terminal  = (vscode.window.activeTerminal?.name !== "Cat Build code ENV !!") ?
+    const Terminal  = (vscode.window.activeTerminal?.name !== "Cat Build code ENV !!") ?
                        vscode.window.createTerminal ({name: "Cat Build code ENV !!"}) :
                        vscode.window.activeTerminal;
-    let   File      = vscode.window.activeTextEditor?.document.fileName.replace(/\\/g,"/");
-    let   FileLine  = parseInt(Editor?.selection.anchor.line+"");
     let   PatchName = vscode.workspace.getConfiguration().get("CAT.00_GitPatch") === ""?
                       "z_CatPatch":
                       vscode.workspace.getConfiguration().get("CAT.00_GitPatch");
@@ -401,19 +391,32 @@ export async function GetGitThisRowPatch () {
     //
     Terminal.sendText ("cmd");
     await Delay(1000);
-    Terminal.sendText("cmd /C \"chcp 437 & git blame "+File+" >> "+GitFile+"\"");
-    try {
-        await Delay(1000);
-        Target = FileSys.readFileSync (GitFile, 'utf-8').split("\n")[FileLine].split(" ")[0];
-    } catch {
-        vscode.window.showInformationMessage (" 😣 This file may not been commit in your git repository.");
-        return;
+    if (Type) {
+        Terminal.sendText("cmd /C \"chcp 437\"");
+        await vscode.window.showInputBox({
+            ignoreFocusOut:true,
+            placeHolder:' 👀 Please input your SID to generate patch.'})
+        .then (function (Message) { if (Message) {Target = Message;} });
+        if (Target === "") { return; }
+    } else {
+        let   File      = vscode.window.activeTextEditor?.document.fileName.replace(/\\/g,"/");
+        let   FileLine  = parseInt(Editor?.selection.anchor.line+"");
+        Terminal.sendText("cmd /C \"chcp 437 && git blame "+File+" >> "+GitFile+"\"");
+        try {
+            await Delay(500);
+            Target = FileSys.readFileSync (GitFile, 'utf-8').split("\n")[FileLine].split(" ")[0];
+            FileSys.unlink (GitFile,(_err)=>{});
+        } catch {
+            vscode.window.showInformationMessage (" 😣 This file may not been commit in your git repository.");
+            return;
+        }
     }
-    if (!FileSys.existsSync (OurGitBATPath)) { FileSys.writeFile (OurGitBATPath, GetGitPatchBAT, (err) => {}); }
+    vscode.window.showInformationMessage (" 🧐 Start get SID ["+Target+"].");
+    Terminal.sendText(GetGitPatchBAT.replace(/%X/g,"X").replace("=%1","="+Target).replace("=%2","="+WorkSpace).replace("=%3","="+PatchName));
     await Delay(1000);
-    Terminal.sendText(OurGitBATPath+" "+Target+" "+WorkSpace+" "+PatchName);
-    vscode.window.showInformationMessage (" 🧐 Patch create at ["+WorkSpace+PatchName+"].");
-    await Delay(1000);
-    FileSys.unlink (GitFile,(_err)=>{});
-    FileSys.unlink (OurGitBATPath,(_err)=>{});
+    if (FileSys.existsSync (WorkSpace+PatchName)) {
+        vscode.window.showInformationMessage (" 🧐 Patch create at ["+WorkSpace+PatchName+"].");
+    } else {
+        vscode.window.showInformationMessage (" 😣 Can not gen patch. (If ["+Target+"] is your first change, Won't get it)");
+    }
 }

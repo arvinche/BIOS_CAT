@@ -70,9 +70,6 @@ FileSys.unlink (EnvCheck,(_err)=>{});
 //
 // This area will define bat file to get patch form git.
 //
-export const OurGitBATPath  = IsWindows?
-             WorkSpace + ".vscode/RunBat.bat":
-             WorkSpace + ".vscode/RunBat";
 export const GetGitPatchBAT = IsWindows?`
 ::######        ###        ######
 ::##           ## ##         ##
@@ -94,19 +91,20 @@ SET CAT_FULL_PATH=%CAT_WS%%CAT_PATCH%/
 ::
 :: Remove origin patch, if we have it.
 ::
-::rd /S/Q "%CAT_FULL_PATH%"
+rd /S/Q "%CAT_FULL_PATH%"
 ::
 :: Start get patch, and gen it into ORG / MOD formate.
 ::
-for /f "delims=" %%X in ('git diff-tree -r --no-commit-id --name-only --diff-filter=ACMRTD %CAT_SID%') do (
-    md "%CAT_FULL_PATH%MOD/%%X"
-    rd "%CAT_FULL_PATH%MOD/%%X"
-    md "%CAT_FULL_PATH%ORG/%%X"
-    rd "%CAT_FULL_PATH%ORG/%%X"
-    git show %CAT_SID%:%%X>%CAT_FULL_PATH%MOD/%%X
-    git show %CAT_SID%^^:%%X>%CAT_FULL_PATH%ORG/%%X
+for /f "delims=" %%X in ('git diff-tree -r --no-commit-id --name-only --diff-filter=ACMRTD %CAT_SID%') do (\
+  md "%CAT_FULL_PATH%MOD/%%X"\
+  &rd "%CAT_FULL_PATH%MOD/%%X"\
+  &md "%CAT_FULL_PATH%ORG/%%X"\
+  &rd "%CAT_FULL_PATH%ORG/%%X"\
+  &git show %CAT_SID%:%%X>%CAT_FULL_PATH%MOD/%%X\
+  &git show %CAT_SID%^^:%%X>%CAT_FULL_PATH%ORG/%%X\
 )
-git log %CAT_SID% -1 > %CAT_FULL_PATH%PatchInfo.txt`:`
+git log %CAT_SID% -1 > %CAT_FULL_PATH%PatchInfo.txt
+endlocal`:`
 ######        ###        ######
 ##           ## ##         ##
 #     Get patch bash file  ##

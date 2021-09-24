@@ -20,6 +20,7 @@
 |            15 | Copy current select file path hotkey          | Done              | Arvin         | Feature   |
 |            16 | Build Multiple Parameter Support              | Done              | Gua/Arvin     | Feature   |
 |            17 | Binary UEFI FSP Parser                        | On-Going          | Gua           | Feature   |
+|            18 | Get Git repository patch (ORG/MOD) by Row or SID | Done           | Arvin         | Feature   |
 
 ## Bug/Enhance List
 | Index | Feature Index | Task                                          | Status            | Author        | Attribute |
@@ -39,4 +40,3 @@
 |    13 |             4 | Get driver install protocol address function  | Done              | Arvin         | Enhance   |
 |    14 |             4 | Let user can copy info form L02               | Done              | Arvin         | Enhance   |
 |    15 |             4 | Add decoder for system file so that it won’t be searched all the time|Done| Arvin | Enhance   |
-
