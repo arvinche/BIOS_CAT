@@ -16,28 +16,33 @@ import {
 
 //=============  Left Area  =============//
 import {
-    NodeDependenciesProvider,
-    Dependency,
-    AddBookMarkElement,
-    EditBookMarkElement,
-    DelBookMarkElement,
-    JumpInToBookMark,
-    GetCurrentPath,
-    GetGitThisRowPatch
+    //==   Class  ==
+      Dependency,
+      NodeDependenciesProvider,
+    //== Function ==
+      AddBookMarkElement,
+      EditBookMarkElement,
+      DelBookMarkElement,
+      JumpInToBookMark,
+      GetCurrentPath,
+      GetGitThisRowPatch
 } from './L01_SideBarTreeView';
 
 import {
-    MemoryDependency,
-    RecordAllModuleGuidAndName,
-    SearchModuleOrAddr,
-    AvailableFilter,
-    ReflashL02_2,
-    StarOrStoptRecordLog,
-    GetAndCopyModuleInfo
-} from './L02_SideBarRecordLog';
+    //==   Class  ==
+      MemoryDependency,
+    //== Function ==
+      RecordAllModuleGuidAndName,
+      AvailableFilter,
+      SearchModuleOrAddr,
+      ReflashL02_2,
+      GetAndCopyModuleInfo,
+      StarOrStoptRecordLog
+} from './L02_SideBarLogAnalyze';
 
 import {
-    CreateFspEditorView
+    //== Function ==
+      CreateFspEditorView
 } from './L03_FspEditor';
 
 //
