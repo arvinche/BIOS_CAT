@@ -140,7 +140,7 @@
 			{"command": "BIOS-CAT.CMD02",              "key": "alt+;",   "when": "editorTextFocus"},
 			{"command": "BIOS-CAT.CMD03",              "key": "alt+/",   "when": "editorTextFocus"},
 			{"command": "BIOS-CAT.CMD04",              "key": "alt+.",   "when": "editorTextFocus"},
-			{"command": "BIOS-CAT.L01AddMark",         "key": "ctrl+m",  "when": "editorTextFocus", "mac": "cmd+m"},
+			{"command": "BIOS-CAT.L01AddMark",         "key": "alt+m",   "when": "editorTextFocus", "mac": "cmd+m"},
 			{"command": "BIOS-CAT.L01CopyFullPath",    "key": "alt+p",   "when": "editorTextFocus", "mac": "cmd+p"},
 			{"command": "BIOS-CAT.L01CopyFolderPath",  "key": "alt+[",   "when": "editorTextFocus"},
 			{"command": "BIOS-CAT.L01CopyFileName",    "key": "alt+]",   "when": "editorTextFocus"},
