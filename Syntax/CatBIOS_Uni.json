@@ -1,23 +1,23 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-  "name": "source.edk2_uni",
+  "name": "source.CatBIOS_Uni",
   "patterns": [
     {
-      "include": "#edk2_uni_color"
+      "include": "#CatBIOS_Uni_color"
     },
     {
       "include": "source.c"
     }
   ],
   "repository": {
-    "edk2_uni_color": {
+    "CatBIOS_Uni_color": {
       "patterns": [
         {
-          "name": "variable.language.edk2_uni",
+          "name": "variable.language.CatBIOS_Uni",
           "match": "(?<=\\#)(string|language)"
         }
       ]
     }
   },
-  "scopeName": "source.edk2_uni"
+  "scopeName": "source.CatBIOS_Uni"
 }

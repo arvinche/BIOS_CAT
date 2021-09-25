@@ -1,44 +1,44 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-  "name": "source.edk2_fdf",
+  "name": "source.CatBIOS_Fdf",
   "patterns": [
     {
-      "include": "#edk2_fdf_color"
+      "include": "#CatBIOS_Fdf_color"
     }
   ],
   "repository": {
-    "edk2_fdf_color": {
+    "CatBIOS_Fdf_color": {
       "patterns": [
         {
-          "name": "variable.language.edk2_fdf",
+          "name": "variable.language.CatBIOS_Fdf",
           "match": "((?<!\\w)(BaseAddress|Size|ErasePolarity|BlockSize|NumBlocks|FV|FD|FvAlignment|FvNameGuid))(?!\\w)"
         },
         {
-          "name": "variable.language.edk2_fdf",
+          "name": "variable.language.CatBIOS_Fdf",
           "match": "((?<!\\w)(ERASE_POLARITY|MEMORY_MAPPED|STICKY_WRITE|LOCK_CAP|LOCK_STATUS|WRITE_DISABLED_CAP|WRITE_ENABLED_CAP|WRITE_STATUS|WRITE_LOCK_CAP|WRITE_LOCK_STATUS|READ_DISABLED_CAP|READ_ENABLED_CAP|READ_STATUS|READ_LOCK_CAP|READ_LOCK_STATUS))(?!\\w)"
         },
         {
-          "name": "variable.parameter.edk2_fdf",
+          "name": "variable.parameter.CatBIOS_Fdf",
           "match": "[\\w/-]+\\.[a-zA-Z]+"
         },
         {
-          "name": "keyword.control.edk2_fdf",
+          "name": "keyword.control.CatBIOS_Fdf",
           "match": "((?<!\\w)DEFINE)(?!\\w)|(?<=!)(if|endif|ifdef|ifndef|include|else)"
         },
         {
-          "name": "constant.numeric.edk2_fdf",
+          "name": "constant.numeric.CatBIOS_Fdf",
           "match": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
         },
         {
-          "name": "constant.numeric.edk2_fdf",
+          "name": "constant.numeric.CatBIOS_Fdf",
           "match": "(?<!\\w)\\.?\\d(?:(?:[0-9a-zA-Z_\\.]|')|(?<=[eEpP])[+-])*"
         },
         {
-          "name": "constant.language.edk2_fdf",
+          "name": "constant.language.CatBIOS_Fdf",
           "match": "((?<!\\w)TRUE|FALSE|NULL)(?!\\w)"
         },
         {
-          "name": "string.quoted.double.edk2_fdf",
+          "name": "string.quoted.double.CatBIOS_Fdf",
           "begin": "L\"|\"",
           "end": "\""
         },
@@ -47,7 +47,7 @@
           "end": "\\]",
           "patterns": [
             {
-              "name": "string.quoted.double.edk2_fdf",
+              "name": "string.quoted.double.CatBIOS_Fdf",
               "match": "[a-zA-Z0-9.]+"
             }
           ]
@@ -57,7 +57,7 @@
           "end": "\\>",
           "patterns": [
             {
-              "name": "string.quoted.double.edk2_fdf",
+              "name": "string.quoted.double.CatBIOS_Fdf",
               "match": "[a-zA-Z0-9.]+"
             }
           ]
@@ -67,18 +67,18 @@
           "end": "\\)",
           "patterns": [
             {
-              "name": "support.function.edk2_fdf",
+              "name": "support.function.CatBIOS_Fdf",
               "match": "[a-zA-Z0-9_]+"
             }
           ]
         },
         {
-          "name": "comment.line.number-sign.edk2_fdf",
+          "name": "comment.line.number-sign.CatBIOS_Fdf",
           "begin": "#|\/\/",
           "end": "\n"
         }
       ]
     }
   },
-  "scopeName": "source.edk2_fdf"
+  "scopeName": "source.CatBIOS_Fdf"
 }

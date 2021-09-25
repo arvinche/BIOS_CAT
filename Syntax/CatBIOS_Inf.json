@@ -1,36 +1,36 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-  "name": "source.edk2_inf",
+  "name": "source.CatBIOS_Inf",
   "patterns": [
     {
-      "include": "#edk2_inf_color"
+      "include": "#CatBIOS_Inf_color"
     }
   ],
   "repository": {
-    "edk2_inf_color": {
+    "CatBIOS_Inf_color": {
       "patterns": [
         {
-          "name": "variable.language.edk2_inf",
+          "name": "variable.language.CatBIOS_Inf",
           "match": "((?<!\\w)(INF_VERSION|BASE_NAME|EDK_RELEASE_VERSION|PI_SPECIFICATION_VERSION|UEFI_SPECIFICATION_VERSION|FILE_GUID|MODULE_TYPE|BUILD_NUMBER|VERSION_STRING|MODULE_UNI_FILE|LIBRARY_CLASS|PCD_IS_DRIVER|ENTRY_POINT|UNLOAD_IMAGE|CONSTRUCTOR|DESTRUCTOR|SHADOW|PCI_DEVICE_ID|PCI_VENDOR_ID|PCI_CLASS_CODE|PCI_COMPRESS|UEFI_HII_RESOURCE_SECTION|DEFINE|SPEC|CUSTOM_MAKEFILE|DPX_SOURCE))(?!\\w)"
         },
         {
-          "name": "variable.language.edk2_inf",
+          "name": "variable.language.CatBIOS_Inf",
           "match": "((?<!\\w)(DXE_CORE|PEIM|PEI_CORE|SEC|DXE_DRIVER|DXE_RUNTIME_DRIVER|DXE_SAL_DRIVER|DXE_SMM_DRIVER|SMM_CORE|UEFI_APPLICATION|UEFI_DRIVER|USER_DEFINED|HOST_APPLICATION|MM_CORE_STANDALONE|MM_STANDALONE))(?!\\w)"
         },
         {
-          "name": "variable.parameter.edk2_inf",
+          "name": "variable.parameter.CatBIOS_Inf",
           "match": "[\\w/-]+\\.(dec|c|uni|h|vfr|Vfr|hfr|asm|nasm|S|asl|aslc)"
         },
         {
-          "name": "constant.numeric.edk2_inf",
+          "name": "constant.numeric.CatBIOS_Inf",
           "match": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
         },
         {
-          "name": "constant.language.edk2_inf",
+          "name": "constant.language.CatBIOS_Inf",
           "match": "((?<!\\w)TRUE|FALSE|NULL)(?!\\w)"
         },
         {
-          "name": "string.quoted.double.edk2_inf",
+          "name": "string.quoted.double.CatBIOS_Inf",
           "begin": "L\"|\"",
           "end": "\""
         },
@@ -39,7 +39,7 @@
           "end": "\\]",
           "patterns": [
             {
-              "name": "string.quoted.double.edk2_inf",
+              "name": "string.quoted.double.CatBIOS_Inf",
               "match": "[a-zA-Z0-9.]+"
             }
           ]
@@ -49,7 +49,7 @@
           "end": "\\>",
           "patterns": [
             {
-              "name": "string.quoted.double.edk2_inf",
+              "name": "string.quoted.double.CatBIOS_Inf",
               "match": "[a-zA-Z0-9.]+"
             }
           ]
@@ -59,18 +59,18 @@
           "end": "\\)",
           "patterns": [
             {
-              "name": "support.function.edk2_inf",
+              "name": "support.function.CatBIOS_Inf",
               "match": "[a-zA-Z0-9_]+"
             }
           ]
         },
         {
-          "name": "comment.line.number-sign.edk2_inf",
+          "name": "comment.line.number-sign.CatBIOS_Inf",
           "begin": "#",
           "end": "\n"
         }
       ]
     }
   },
-  "scopeName": "source.edk2_inf"
+  "scopeName": "source.CatBIOS_Inf"
 }

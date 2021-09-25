@@ -1,48 +1,44 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-  "name": "source.edk2_dsc",
+  "name": "source.CatBIOS_Dec",
   "patterns": [
     {
-      "include": "#edk2_dsc_color"
+      "include": "#CatBIOS_Dec_color"
     }
   ],
   "repository": {
-    "edk2_dsc_color": {
+    "CatBIOS_Dec_color": {
       "patterns": [
         {
-          "name": "variable.language.edk2_dsc",
-          "match": "((?<!\\w)(DSC_SPECIFICATION|PLATFORM_GUID|PLATFORM_VERSION|PLATFORM_NAME|SKUID_IDENTIFIER|SUPPORTED_ARCHITECTURES|BUILD_TARGETS))(?!\\w)"
+          "name": "variable.language.CatBIOS_Dec",
+          "match": "((?<!\\w)(PACKAGE_NAME|PACKAGE_GUID|PACKAGE_VERSION|PACKAGE_UNI_FILE|DEC_SPECIFICATION))(?!\\w)"
         },
         {
-          "name": "variable.language.edk2_dsc",
-          "match": "((?<!\\w)(OUTPUT_DIRECTORY|FLASH_DEFINITION|BUILD_NUMBER|FIX_LOAD_TOP_MEMORY_ADDRESS|TIME_STAMP_FILE|DEFINE|RFC_LANGUAGES|ISO_LANGUAGES|VPD_TOOL_GUID|PCD_INFO_GENERATION|PREBUILD|POSTBUILD))(?!\\w)"
+          "name": "variable.parameter.CatBIOS_Dec",
+          "match": "[\\w/-]+\\.h"
         },
         {
-          "name": "variable.parameter.edk2_dsc",
-          "match": "[\\w/-]+\\.inf"
+          "name": "keyword.control.CatBIOS_Dec",
+          "match": "((?<!\\w)DEFINE)(?!\\w)|(?<=!)(ifdef|ifndef|if|endif|include|else)"
         },
         {
-          "name": "keyword.control.edk2_dsc",
-          "match": "(?<=!)(ifdef|ifndef|if|endif|include|else)"
-        },
-        {
-          "name": "constant.numeric.edk2_dsc",
+          "name": "constant.numeric.CatBIOS_Dec",
           "match": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
         },
         {
-          "name": "constant.numeric.edk2_dsc",
+          "name": "constant.numeric.CatBIOS_Dec",
           "match": "(?<!\\w)\\.?\\d(?:(?:[0-9a-zA-Z_\\.]|')|(?<=[eEpP])[+-])*"
         },
         {
-          "name": "entity.name.type.edk2_dsc",
+          "name": "entity.name.type.CatBIOS_Dec",
           "match": "((?<!\\w)(UINT64|UINT32|UINT16|UINT8|UINTN|BOOLEAN|VOID))(?!\\w)"
         },
         {
-          "name": "constant.language.edk2_dsc",
+          "name": "constant.language.CatBIOS_Dec",
           "match": "((?<!\\w)TRUE|FALSE|NULL)(?!\\w)"
         },
         {
-          "name": "string.quoted.double.edk2_dsc",
+          "name": "string.quoted.double.CatBIOS_Dec",
           "begin": "L\"|\"",
           "end": "\""
         },
@@ -51,7 +47,7 @@
           "end": "\\]",
           "patterns": [
             {
-              "name": "string.quoted.double.edk2_dsc",
+              "name": "string.quoted.double.CatBIOS_Dec",
               "match": "[a-zA-Z0-9.]+"
             }
           ]
@@ -61,7 +57,7 @@
           "end": "\\>",
           "patterns": [
             {
-              "name": "string.quoted.double.edk2_dsc",
+              "name": "string.quoted.double.CatBIOS_Dec",
               "match": "[a-zA-Z0-9.]+"
             }
           ]
@@ -71,18 +67,18 @@
           "end": "\\)",
           "patterns": [
             {
-              "name": "support.function.edk2_dsc",
+              "name": "support.function.CatBIOS_Dec",
               "match": "[a-zA-Z0-9_]+"
             }
           ]
         },
         {
-          "name": "comment.line.number-sign.edk2_dsc",
+          "name": "comment.line.number-sign.CatBIOS_Dec",
           "begin": "#",
           "end": "\n"
         }
       ]
     }
   },
-  "scopeName": "source.edk2_dsc"
+  "scopeName": "source.CatBIOS_Dec"
 }
