@@ -31,12 +31,12 @@
   3. BIOS-CAT will also record time when you create book mark.
   4. Of course you can user book mark jump to the please that you record.
 
-    ![BoomarkImage]("")
+    ![BoomarkImage](https://lh3.googleusercontent.com/aYJZDj_QSv04XeLEer611szDf8gwzEeGU8skNGmDAbqn8jMeQO0VnkMfq_5IxzVUEPrOt5vJSV-wO-ycxVZFg6SxwMuAs_NvyZXDsE3Pl1z8WRnJGe9JwDF8YB-dAhMbCvidvnZpxQ=w400)
 
   5. If you use git to manage your code, now you can get the change patch of
      the row that you select or push ALT+Q to input SID to get it.
 
-     ![GitPackageImage]("")
+     ![GitPackageImage](https://lh3.googleusercontent.com/u6OAxTcfdoPgdtYnkp2w503tOTzYKW4EbYu4pyBwXSAZMww9k1F_YfW8jfYxY2HU65znW6QTlYNvnicILP70kWeYOGC8VLtO74SqscIo9Z6BpH7gFttS2GMuU3bova4V9Ji5kChgdA=w400)
 
 <h2 id="2" style="color:#c96b00;">Build code button.</h2>
 
