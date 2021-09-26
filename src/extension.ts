@@ -95,7 +95,6 @@ export function activate (context: vscode.ExtensionContext) {
     vscode.commands.registerCommand ('BIOS-CAT.L02CopyName', (Item: MemoryDependency) => { GetAndCopyModuleInfo (Item, 1); });
     vscode.commands.registerCommand ('BIOS-CAT.L02CopyGuid', (Item: MemoryDependency) => { GetAndCopyModuleInfo (Item, 2); });
     vscode.commands.registerCommand ('BIOS-CAT.L02CopyAddress', (Item: MemoryDependency) => { GetAndCopyModuleInfo (Item, 3); });
-    //vscode.workspace.getConfiguration().update('', true);
 }
 
 // this method is called when your extension is deactivated

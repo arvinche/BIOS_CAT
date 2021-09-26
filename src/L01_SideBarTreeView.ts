@@ -376,6 +376,8 @@ export function GetCurrentPath (Type:number) {
 
 //
 // The function let user can select line in file and use git to get Org/Mod patch.
+// Type 0 : Get SID by row.
+// Type 1 : Get SID by SID.
 //
 export async function GetGitThisRowPatch (Type:number) {
     const Editor    = vscode.window.activeTextEditor;
