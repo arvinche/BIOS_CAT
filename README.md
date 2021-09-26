@@ -31,8 +31,7 @@
   3. BIOS-CAT will also record time when you create book mark.
   4. Of course you can user book mark jump to the please that you record.
 
-    ![BoomarkImage](https://lh3.googleusercontent.com/aYJZDj_QSv04XeLEer611szDf8gwzEeGU8skNGmDAbqn8jMeQO0VnkMfq_5IxzVUEPrOt5vJSV-wO-ycxVZFg6SxwMuAs_NvyZXDsE3Pl1z8WRnJGe9JwDF8YB-dAhMbCvidvnZpxQ=w400)
-
+     ![BoomarkImage](https://lh3.googleusercontent.com/aYJZDj_QSv04XeLEer611szDf8gwzEeGU8skNGmDAbqn8jMeQO0VnkMfq_5IxzVUEPrOt5vJSV-wO-ycxVZFg6SxwMuAs_NvyZXDsE3Pl1z8WRnJGe9JwDF8YB-dAhMbCvidvnZpxQ=w400)
   5. If you use git to manage your code, now you can get the change patch of
      the row that you select or push ALT+Q to input SID to get it.
 
@@ -47,13 +46,13 @@
   3. Provide button that can click to jump to build error.
   4. Build single module that can reduce time spend with build error debug.
 
-    ![BuildImage]("")
+     ![BuildImage]("")
 
 <h2 id="3" style="color:#c96b00;">Embedded putty.</h2>
 
   * To-Do
 
-    ![ToDoImage](https://lh3.googleusercontent.com/xeHF3nSsFNZouoBa20RARnZIhCLE6BKjEQzPH5E43Q_9DCB8xy-JILacauBf2sOKBt_jeUp0gfFJcsmpOstS7f4-Mcoy3rqlUEWyyBP8zQfY_azRsFhrCiSv0QoSAms2RHejPCj-zg=w600)
+     ![ToDoImage](https://lh3.googleusercontent.com/xeHF3nSsFNZouoBa20RARnZIhCLE6BKjEQzPH5E43Q_9DCB8xy-JILacauBf2sOKBt_jeUp0gfFJcsmpOstS7f4-Mcoy3rqlUEWyyBP8zQfY_azRsFhrCiSv0QoSAms2RHejPCj-zg=w600)
 
 <h2 id="4" style="color:#c96b00;">Memory map seeker.</h2>
 
@@ -64,13 +63,12 @@
   3. The function address offset in driver & where it reference.
   4. What protocol will actual install in dirver and it's memory address (Support with newest EDK2).
 
-    ![MMapImage01]("")
-
+     ![MMapImage01]("")
   5. Provide button that you can use "String"(name or GUID .etc) to search driver or 
      use "Address" to find it's located at which driver.
   6. Provide button that you can fase copy Address, GUID or driver/function/protocol name.
 
-    ![MMapImage02]("")
+     ![MMapImage02]("")
 
 <h2 id="5" style="color:#c96b00;">[Ported from other side]</h2>
 
