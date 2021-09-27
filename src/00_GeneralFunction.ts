@@ -71,6 +71,7 @@ FileSys.unlink (EnvCheck,(_err)=>{});
 // This area will define bat file to get patch form git.
 //
 export const GetGitPatchBAT = IsWindows?`
+
 ::######        ###        ######
 ::##           ## ##         ##
 ::#      Get patch bat file  ##
@@ -105,6 +106,7 @@ for /f "delims=" %%X in ('git diff-tree -r --no-commit-id --name-only --diff-fil
 )
 git log %CAT_SID% -1 > %CAT_FULL_PATH%PatchInfo.txt
 endlocal`:`
+
 ######        ###        ######
 ##           ## ##         ##
 #     Get patch bash file  ##

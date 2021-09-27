@@ -376,6 +376,8 @@ export function GetCurrentPath (Type:number) {
 
 //
 // The function let user can select line in file and use git to get Org/Mod patch.
+// Type 0 : Get SID by row.
+// Type 1 : Get SID by SID.
 //
 export async function GetGitThisRowPatch (Type:number) {
     const Editor    = vscode.window.activeTextEditor;
@@ -387,7 +389,7 @@ export async function GetGitThisRowPatch (Type:number) {
                       vscode.workspace.getConfiguration().get("CAT.00_GitPatch");
     let   Target    = "";
     //
-    // Send a lot of git command to done it.
+    // Get SID to gen patch.
     //
     Terminal.sendText ("cmd");
     await Delay(1000);
@@ -412,8 +414,11 @@ export async function GetGitThisRowPatch (Type:number) {
         }
     }
     vscode.window.showInformationMessage (" 🧐 Start get SID ["+Target+"].");
+    //
+    // Send a lot of git command to done it.
+    //
     Terminal.sendText(GetGitPatchBAT.replace(/%X/g,"X").replace("=%1","="+Target).replace("=%2","="+WorkSpace).replace("=%3","="+PatchName));
-    await Delay(1000);
+    await Delay(1500);
     if (FileSys.existsSync (WorkSpace+PatchName)) {
         vscode.window.showInformationMessage (" 🧐 Patch create at ["+WorkSpace+PatchName+"].");
     } else {

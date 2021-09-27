@@ -37,7 +37,7 @@
 			"properties": {
 				"CAT.00_BuildPath": {
 					"type": "string",
-					"default" : "Intel/AlderLakeBoardPkg",
+					"default" : "",
 					"description": "This field is for your command bat path, you can gave two way : \n  1. Absolute path. ex: c://User//Workspace/CommandFolder \n  2. Relative path. ex: Workspace/CommandFolder"
 				},
 				"CAT.00_Compile": {
@@ -58,17 +58,17 @@
 				},
 				"CAT.01_BuildCmdPreload": {
 					"type": "string",
-					"default" : "prep",
+					"default" : "",
 					"description": "Here is for pre build command or bat file that you can establish your environment."
 				},
 				"CAT.01_BuildCmdStart": {
 					"type": "string",
-					"default" : "bld",
+					"default" : "",
 					"description": "Here is for build command or bat file that you can build your code.\nex: nmake XXX or Build.bat ...."
 				},
 				"CAT.01_CleanCmd": {
 					"type": "string",
-					"default" : "cln",
+					"default" : "",
 					"description": "The command that can clean your workspace."
 				},
 				"CAT.01_ParameterGoWith": {
@@ -140,7 +140,7 @@
 			{"command": "BIOS-CAT.CMD02",              "key": "alt+;",   "when": "editorTextFocus"},
 			{"command": "BIOS-CAT.CMD03",              "key": "alt+/",   "when": "editorTextFocus"},
 			{"command": "BIOS-CAT.CMD04",              "key": "alt+.",   "when": "editorTextFocus"},
-			{"command": "BIOS-CAT.L01AddMark",         "key": "ctrl+m",  "when": "editorTextFocus", "mac": "cmd+m"},
+			{"command": "BIOS-CAT.L01AddMark",         "key": "alt+m",   "when": "editorTextFocus", "mac": "cmd+m"},
 			{"command": "BIOS-CAT.L01CopyFullPath",    "key": "alt+p",   "when": "editorTextFocus", "mac": "cmd+p"},
 			{"command": "BIOS-CAT.L01CopyFolderPath",  "key": "alt+[",   "when": "editorTextFocus"},
 			{"command": "BIOS-CAT.L01CopyFileName",    "key": "alt+]",   "when": "editorTextFocus"},
