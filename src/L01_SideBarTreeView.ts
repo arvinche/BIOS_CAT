@@ -1,16 +1,19 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import { dirname, sep } from "path";
 import * as vscode  from 'vscode';
 import * as FileSys from 'fs';
 import * as Path    from 'path';
 import {
     //== Variable ==
       WorkSpace,
-      GitFile,
       WsIndex,
-      GetGitPatchBAT,
     //== Function ==
-      Delay
+      RunGit
 }  from './00_GeneralFunction';
+
+import {
+    GitExtension,
+} from './GitApi/git';
 
 const BookmarkPath  = WorkSpace + ".vscode/Bookmark.bcat";
 var   NeedToShowTip = 1;
@@ -380,48 +383,89 @@ export function GetCurrentPath (Type:number) {
 // Type 1 : Get SID by SID.
 //
 export async function GetGitThisRowPatch (Type:number) {
-    const Editor    = vscode.window.activeTextEditor;
-    const Terminal  = (vscode.window.activeTerminal?.name !== "Cat Build code ENV !!") ?
-                       vscode.window.createTerminal ({name: "Cat Build code ENV !!"}) :
-                       vscode.window.activeTerminal;
-    let   PatchName = vscode.workspace.getConfiguration().get("CAT.00_GitPatch") === ""?
-                      "z_CatPatch":
-                      vscode.workspace.getConfiguration().get("CAT.00_GitPatch");
-    let   Target    = "";
+    const Editor       = vscode.window.activeTextEditor;
+    const gitExtension = vscode.extensions.getExtension<GitExtension>('vscode.git')?.exports;
+    const GitApi       = gitExtension !== undefined ? gitExtension.getAPI(1): undefined;
+    const Repos        = GitApi !== undefined ? GitApi.repositories: undefined;
+    let   PatchName    = vscode.workspace.getConfiguration().get("CAT.00_GitPatch");
+
     //
     // Get SID to gen patch.
     //
-    Terminal.sendText ("cmd");
-    await Delay(1000);
+    var   CurrentRepo  = undefined;
+    var   Target       = undefined;
     if (Type) {
-        Terminal.sendText("cmd /C \"chcp 437\"");
         await vscode.window.showInputBox({
             ignoreFocusOut:true,
             placeHolder:' 👀 Please input your SID to generate patch.'})
         .then (function (Message) { if (Message) {Target = Message;} });
-        if (Target === "") { return; }
+        if (Repos !== undefined && Target !== undefined) {
+            for (var Repo of Repos) {
+                var RepoPath = Repo.rootUri.fsPath + sep + "Test";
+                var TargetType = await RunGit (RepoPath, 'cat-file', '-t', Target) + "";
+                if (TargetType === "commit") {
+                    CurrentRepo = Repo;
+                }
+            }
+        }
     } else {
-        let   File      = vscode.window.activeTextEditor?.document.fileName.replace(/\\/g,"/");
-        let   FileLine  = parseInt(Editor?.selection.anchor.line+"");
-        Terminal.sendText("cmd /C \"chcp 437 && git blame "+File+" >> "+GitFile+"\"");
-        try {
-            await Delay(500);
-            Target = FileSys.readFileSync (GitFile, 'utf-8').split("\n")[FileLine].split(" ")[0];
-            FileSys.unlink (GitFile,(_err)=>{});
-        } catch {
-            vscode.window.showInformationMessage (" 😣 This file may not been commit in your git repository.");
-            return;
+        if (Repos !== undefined) {
+            var FilePath = "" + Editor?.document.fileName;
+            var FileLine = parseInt (Editor?.selection.anchor.line + "");
+            for (var Repo of Repos) {
+                var RepoPath = Repo.rootUri.fsPath + sep;
+                if (FilePath.indexOf (RepoPath) !== -1) {
+                  CurrentRepo = Repo;
+                }
+            }
+            if (CurrentRepo !== undefined) {
+                var BlameData = await CurrentRepo.blame (FilePath);
+                Target = BlameData.split("\n")[FileLine].split(" ")[0].replace ("^", "");
+            }
         }
     }
-    vscode.window.showInformationMessage (" 🧐 Start get SID ["+Target+"].");
-    //
-    // Send a lot of git command to done it.
-    //
-    Terminal.sendText(GetGitPatchBAT.replace(/%X/g,"X").replace("=%1","="+Target).replace("=%2","="+WorkSpace).replace("=%3","="+PatchName));
-    await Delay(1500);
-    if (FileSys.existsSync (WorkSpace+PatchName)) {
-        vscode.window.showInformationMessage (" 🧐 Patch create at ["+WorkSpace+PatchName+"].");
+    if (CurrentRepo !== undefined && Target !== undefined) {
+        vscode.window.showInformationMessage (" 🧐 Start get sha-id [" + Target + "].");
+        var FilePath = CurrentRepo.rootUri.fsPath + sep + "Test";
+        var FileList = (await RunGit (
+                                FilePath,
+                                'diff-tree',
+                                '-r',
+                                '--no-commit-id',
+                                '--name-only',
+                                '--diff-filter=ACMRTD',
+                                Target
+                                ) + "")
+                                .split("\n");
+        var CommitMessage = await RunGit (FilePath, 'log', '-1', Target);
+        var TargetFileName;
+        TargetFileName = WorkSpace + PatchName + '/' + Target + '/' + "PatchInfo.txt"
+        await FileSys.mkdirSync (dirname (TargetFileName) , {recursive: true});
+        await FileSys.writeFile (
+            TargetFileName,
+            CommitMessage,
+            'utf-8', (_err)=>{}
+            );
+        for (var File of FileList) {
+          var BeforeFile = await CurrentRepo.show (Target + "^", CurrentRepo.rootUri.fsPath + sep + File);
+          TargetFileName = WorkSpace + PatchName + '/' + Target + '/ORG/' + File;
+          await FileSys.mkdirSync (dirname (TargetFileName) , {recursive: true});
+          await FileSys.writeFile (
+            TargetFileName,
+            BeforeFile,
+            'utf-8', (_err)=>{}
+            );
+          var AfterFile = await CurrentRepo.show (Target, CurrentRepo.rootUri.fsPath + sep + File);
+          TargetFileName = WorkSpace + PatchName + '/' + Target + '/MOD/' + File;
+          await FileSys.mkdirSync (dirname (TargetFileName) , {recursive: true});
+          await FileSys.writeFile (
+            TargetFileName,
+            AfterFile,
+            'utf-8', (_err)=>{}
+            );
+        }
+        vscode.window.showInformationMessage (" 🧐 Patch create at [" + WorkSpace + PatchName + "/" + Target + "].");
     } else {
-        vscode.window.showInformationMessage (" 😣 Can not gen patch. (If ["+Target+"] is your first change, Won't get it)");
+        vscode.window.showInformationMessage (" 😣 This file may not been commit in your git repository.");
     }
 }

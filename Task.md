@@ -41,3 +41,4 @@
 |    14 |             4 | Let user can copy info form L02               | Done              | Arvin         | Enhance   |
 |    15 |             4 | Add decoder for system file so that it won’t be searched all the time|Done| Arvin | Enhance   |
 |    16 |             1 | Rename Syntax naming style                    | Done              | Gua           | Enhance   |
+|    17 |            18 | Remove terminal dependency                    | Done              | Gua           | Enhance   |

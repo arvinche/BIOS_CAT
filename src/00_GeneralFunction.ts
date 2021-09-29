@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as FileSys from 'fs';
 import * as vscode  from 'vscode';
+import { dirname } from "path";
+import { GitExtension} from './GitApi/git';
+
 
 //=============== Global variable area ===============
 //
@@ -303,3 +306,37 @@ export async function SendCommand2PY (
   //
   Terminal.sendText (PythonCmd);
 }
+
+import { ChildProcess, execFile, ExecOptions } from "child_process";
+
+
+export const execute = async (
+    args: string[],
+    options: ExecOptions = {},
+): Promise<string> => {
+    var command = vscode.extensions.getExtension<GitExtension>('vscode.git')?.exports.getAPI(1).git.path + "";
+    console.log ("command", `${command} ${args.join(" ")}`);
+
+    let execution: ChildProcess;
+
+    try {
+        execution = execFile(command, args, { ...options, encoding: "utf8" });
+    } catch (err) {
+        console.log (err);
+        return "";
+    }
+
+    let data = "";
+
+    for await (const chunk of execution?.stdout ?? []) {
+        data += chunk;
+    }
+
+    return data.trim();
+}
+
+
+export const RunGit = (
+  cwd: string,
+  ...args: string[]
+): Promise<string> => execute(args, { cwd: dirname(cwd) });

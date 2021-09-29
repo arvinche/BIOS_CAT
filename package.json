@@ -2,7 +2,7 @@
 	"name": "bios-cat",
 	"publisher": "CatMaster",
 	"icon": "Images/01_CatIcon.png",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"engines": { "vscode": "^1.59.0" },
 	"displayName": "BIOS-CAT",
 	"description": "A coding cat can support you development BIOS code!",
@@ -53,7 +53,7 @@
 				},
 				"CAT.00_GitPatch": {
 					"type": "string",
-					"default": "",
+					"default": ".vscode/Patch",
 					"description": "Assign a relative path with your workspace let BIOS-CAT can generate patch.\nP.S. Default folder will call [z_CatPatch]"
 				},
 				"CAT.01_BuildCmdPreload": {
@@ -124,7 +124,7 @@
 			{"command": "BIOS-CAT.L01CopyFolderPath"   , "title": "Copy Folder Path"},
 			{"command": "BIOS-CAT.L01CopyFileName"     , "title": "Copy File Name"},
 			{"command": "BIOS-CAT.L01GetGitPatch_Row"  , "title": "🐈5_Get this row change"},
-			{"command": "BIOS-CAT.L01GetGitPatch_key"  , "title": "Get Change by keyin SID"},
+			{"command": "BIOS-CAT.L01GetGitPatch_Key"  , "title": "Get Change by keyin SID"},
 			{"command": "BIOS-CAT.L02StartRecord"      , "title": "Start/Stop record log", "icon": "./Images/L01_Jump.png"},
 			{"command": "BIOS-CAT.L02FullRefresh"      , "title": "Rescan all file then generate map table.", "icon": "./Images/L02_FullRefresh.png"},
 			{"command": "BIOS-CAT.L02Reflash"          , "title": "Reflash map table", "icon": "./Images/L02_Refresh.png"},
@@ -207,5 +207,8 @@
 		"mocha": "^8.4.0",
 		"typescript": "^4.3.2",
 		"vscode-test": "^1.5.2"
-	}
+	},
+	"extensionDependencies": [
+		"vscode.git"
+	]
 }
