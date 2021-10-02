@@ -54,7 +54,7 @@
 				"CAT.00_GitPatch": {
 					"type": "string",
 					"default": ".vscode/Patch",
-					"description": "Assign a relative path with your workspace let BIOS-CAT can generate patch.\nP.S. Default folder will call [z_CatPatch]"
+					"description": "Assign a relative path with your workspace let BIOS-CAT can store generate patch."
 				},
 				"CAT.01_BuildCmdPreload": {
 					"type": "string",

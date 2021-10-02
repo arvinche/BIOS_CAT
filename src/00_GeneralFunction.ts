@@ -312,28 +312,17 @@ export async function SendCommand2PY (
 // Execute command to run git.
 //
 const Execute = async (
-  args: string[],
-  options: ExecOptions = {},
+  Args: string[],
+  Options: ExecOptions = {},
 ): Promise<string> => {
-  var command = vscode.extensions.getExtension<GitExtension>('vscode.git')?.exports.getAPI(1).git.path + "";
-  console.log ("command", `${command} ${args.join(" ")}`);
-
-  let execution: ChildProcess;
-
-  try {
-      execution = execFile(command, args, { ...options, encoding: "utf8" });
-  } catch (err) {
-      console.log (err);
-      return "";
+  var Command = vscode.extensions.getExtension<GitExtension>('vscode.git')?.exports.getAPI(1).git.path + "";
+  //console.log ("command", `${Command} ${Args.join(" ")}`);
+  let Execution: ChildProcess = execFile(Command, Args, { ...Options, encoding: "utf8" });
+  let Data = "";
+  for await (const chunk of Execution?.stdout ?? []) {
+      Data += chunk;
   }
-
-  let data = "";
-
-  for await (const chunk of execution?.stdout ?? []) {
-      data += chunk;
-  }
-
-  return data.trim();
+  return Data.trim();
 };
 
 //

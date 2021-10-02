@@ -157,8 +157,8 @@ export function AddBookMarkElement (TreeL01: NodeDependenciesProvider) {
         //
         if (!SelectMsg) { return; }
 
-        var Now = new Date();
-        var Time = (Now.getMonth()+1)+'/'+ Now.getDate()+'-'+Now.getHours()+':'+Now.getMinutes();
+        let Now = new Date();
+        let Time = (Now.getMonth()+1)+'/'+ Now.getDate()+'-'+Now.getHours()+':'+Now.getMinutes();
         if (SelectMsg === "Create New One. ✒️" || SelectMsg === "") {
             vscode.window.showInputBox({
                 ignoreFocusOut:true,
@@ -426,6 +426,8 @@ export async function GetGitThisRowPatch (Type:number) {
     }
     if (CurrentRepo !== undefined && Target !== undefined) {
         vscode.window.showInformationMessage (" 🧐 Start get sha-id [" + Target + "].");
+        let Now = new Date();
+        let Time = Now.getFullYear().toString() +"_"+ (Now.getMonth()+1) + Now.getDate()+'_'+Now.getHours()+Now.getMinutes();
         let FilePath = CurrentRepo.rootUri.fsPath + sep + "Test";
         let FileList = (await RunGit (
                                 FilePath,
@@ -437,26 +439,27 @@ export async function GetGitThisRowPatch (Type:number) {
                                 Target
                                 ) + "")
                                 .split("\n");
-        let CommitMessage  = await RunGit (FilePath, 'log', '-1', Target);
-        let TargetFileName = WorkSpace + PatchName + '/' + Target + '/' + "PatchInfo.txt";
-        FileSys.mkdirSync (dirname (TargetFileName) , {recursive: true});
+        let CommitMessage    = await RunGit (FilePath, 'log', '-1', Target);
+        let TargetFolderName = WorkSpace + PatchName + '/CatPatch__' + Target + '__' + Time;
+        let TargetCommitName = TargetFolderName + "/PatchInfo.txt";
+        FileSys.mkdirSync (dirname (TargetCommitName) , {recursive: true});
         FileSys.writeFile (
-            TargetFileName,
+            TargetCommitName,
             CommitMessage,
             'utf-8', (_err)=>{}
         );
         for (let File of FileList) {
             let BeforeFile:string = "";
             try {
-                BeforeFile = CurrentRepo.show (Target + "^", CurrentRepo.rootUri.fsPath + sep + File)+"";
+                BeforeFile = await CurrentRepo.show (Target + "^", CurrentRepo.rootUri.fsPath + sep + File)+"";
             } catch {
                 BeforeFile = "";
             }
-            TargetFileName = WorkSpace + PatchName + '/' + Target + '/ORG/' + File;
-            FileSys.mkdirSync (dirname (TargetFileName) , {recursive: true});
-            if (BeforeFile === "") {
+            TargetCommitName = TargetFolderName + '/ORG/' + File;
+            FileSys.mkdirSync (dirname (TargetCommitName) , {recursive: true});
+            if (BeforeFile !== "") {
                 FileSys.writeFile (
-                    TargetFileName,
+                    TargetCommitName,
                     BeforeFile,
                     'utf-8', (_err)=>{}
                 );
@@ -467,17 +470,17 @@ export async function GetGitThisRowPatch (Type:number) {
             } catch {
                 AfterFile = "";
             }
-            TargetFileName = WorkSpace + PatchName + '/' + Target + '/MOD/' + File;
-            FileSys.mkdirSync (dirname (TargetFileName) , {recursive: true});
-            if (AfterFile === "") {
+            TargetCommitName = TargetFolderName + '/MOD/' + File;
+            FileSys.mkdirSync (dirname (TargetCommitName) , {recursive: true});
+            if (AfterFile !== "") {
                 FileSys.writeFile (
-                    TargetFileName,
+                    TargetCommitName,
                     AfterFile,
                     'utf-8', (_err)=>{}
                 );
             }
         }
-        vscode.window.showInformationMessage (" 🧐 Patch create at [" + WorkSpace + PatchName + "/" + Target + "].");
+        vscode.window.showInformationMessage (" 🧐 Patch create at [" + TargetFolderName + "].");
     } else {
         vscode.window.showInformationMessage (" 😣 This file may not been commit in your git repository.");
     }
