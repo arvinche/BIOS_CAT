@@ -83,10 +83,10 @@
 				"CAT.01_ParameterSettingDetail": {
 					"type": "object",
 					"default": {
-						"Release": "r",
+						"Release": "",
 						"Debug": "",
-						"FSP-API Release": "fspapi r",
-						"FSP-API Debug": "fspapi"
+						"FSP-API Release": "",
+						"FSP-API Debug": ""
 					},
 					"additionalProperties": {
 						"type": "string"
@@ -96,12 +96,12 @@
 				"CAT.02_AnalyzeMemoryFunction": {
 					"type": "boolean",
 					"default": true,
-					"description": "Trun On / Off memory analyze function."
+					"description": "Turn On / Off memory analyze function."
 				},
 				"CAT.02_LogFilePath": {
 					"type": "string",
 					"default" : "",
-					"description": "The path of the log that you need BIOS-CAT to analyze.\nP.S. If it's not input, use default path => {workspace}/.vscode/CatRecort.log"
+					"description": "The path of the log that you need BIOS-CAT to analyze.\nP.S. If it's not input, use default path => {workspace}/.vscode/CatRecord.log"
 				},
 				"X.ShowTip": {
 					"type": "boolean",
@@ -124,10 +124,10 @@
 			{"command": "BIOS-CAT.L01CopyFolderPath"   , "title": "Copy Folder Path"},
 			{"command": "BIOS-CAT.L01CopyFileName"     , "title": "Copy File Name"},
 			{"command": "BIOS-CAT.L01GetGitPatch_Row"  , "title": "🐈5_Get this row change"},
-			{"command": "BIOS-CAT.L01GetGitPatch_Key"  , "title": "Get Change by keyin SID"},
+			{"command": "BIOS-CAT.L01GetGitPatch_Key"  , "title": "Get Change by key in SID"},
 			{"command": "BIOS-CAT.L02StartRecord"      , "title": "Start/Stop record log", "icon": "./Images/L01_Jump.png"},
-			{"command": "BIOS-CAT.L02FullRefresh"      , "title": "Rescan all file then generate map table.", "icon": "./Images/L02_FullRefresh.png"},
-			{"command": "BIOS-CAT.L02Reflash"          , "title": "Reflash map table", "icon": "./Images/L02_Refresh.png"},
+			{"command": "BIOS-CAT.L02FullRefresh"      , "title": "Re-scan all file then generate map table.", "icon": "./Images/L02_FullRefresh.png"},
+			{"command": "BIOS-CAT.L02Refresh"          , "title": "Refresh map table", "icon": "./Images/L02_Refresh.png"},
 			{"command": "BIOS-CAT.L02FilterAvailable"  , "title": "Show All / Only available", "icon": "./Images/L02_Analyze.png"},
 			{"command": "BIOS-CAT.L02SearchModule"     , "title": "Search Address or Module", "icon": "./Images/L02_Search.png"},
 			{"command": "BIOS-CAT.L02CopyName"         , "title": "Copy name", "icon": "./Images/L02_1Name.png"},
@@ -153,7 +153,7 @@
 				{ "command": "BIOS-CAT.L01AddMark",        "when": "view == L01", "group": "navigation" },
 				{ "command": "BIOS-CAT.L01Refresh",        "when": "view == L01", "group": "navigation" },
 				{ "command": "BIOS-CAT.L02FullRefresh",    "when": "view == L02-2", "group": "navigation" },
-				{ "command": "BIOS-CAT.L02Reflash",        "when": "view == L02-2", "group": "navigation" },
+				{ "command": "BIOS-CAT.L02Refresh",        "when": "view == L02-2", "group": "navigation" },
 				{ "command": "BIOS-CAT.L02FilterAvailable","when": "view == L02-2", "group": "navigation" },
 				{ "command": "BIOS-CAT.L02SearchModule",   "when": "view == L02-2", "group": "navigation" }
 			],
@@ -179,7 +179,7 @@
 			"CatMaster": [
 				{"id": "L01", "name": "　📒 Bookmark ~"},
 				{"id": "L02-1", "name": "　💻 Record Log"},
-				{"id": "L02-2", "name": "　🧭 Driver Memroy Map Seeker"}
+				{"id": "L02-2", "name": "　🧭 Driver Memory Map Seeker"}
 			]
 		}
 	},

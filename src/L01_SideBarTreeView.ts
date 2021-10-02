@@ -390,7 +390,7 @@ export async function GetGitThisRowPatch (Type:number) {
     let   PatchName    = vscode.workspace.getConfiguration().get("CAT.00_GitPatch");
 
     //
-    // Get SID to gen patch.
+    // Get Sha-ID to generate patch.
     //
     var   CurrentRepo  = undefined;
     var   Target       = undefined;
@@ -426,8 +426,8 @@ export async function GetGitThisRowPatch (Type:number) {
     }
     if (CurrentRepo !== undefined && Target !== undefined) {
         vscode.window.showInformationMessage (" 🧐 Start get sha-id [" + Target + "].");
-        var FilePath = CurrentRepo.rootUri.fsPath + sep + "Test";
-        var FileList = (await RunGit (
+        let FilePath = CurrentRepo.rootUri.fsPath + sep + "Test";
+        let FileList = (await RunGit (
                                 FilePath,
                                 'diff-tree',
                                 '-r',
@@ -437,32 +437,45 @@ export async function GetGitThisRowPatch (Type:number) {
                                 Target
                                 ) + "")
                                 .split("\n");
-        var CommitMessage = await RunGit (FilePath, 'log', '-1', Target);
-        var TargetFileName;
-        TargetFileName = WorkSpace + PatchName + '/' + Target + '/' + "PatchInfo.txt"
-        await FileSys.mkdirSync (dirname (TargetFileName) , {recursive: true});
-        await FileSys.writeFile (
+        let CommitMessage  = await RunGit (FilePath, 'log', '-1', Target);
+        let TargetFileName = WorkSpace + PatchName + '/' + Target + '/' + "PatchInfo.txt";
+        FileSys.mkdirSync (dirname (TargetFileName) , {recursive: true});
+        FileSys.writeFile (
             TargetFileName,
             CommitMessage,
             'utf-8', (_err)=>{}
-            );
-        for (var File of FileList) {
-          var BeforeFile = await CurrentRepo.show (Target + "^", CurrentRepo.rootUri.fsPath + sep + File);
-          TargetFileName = WorkSpace + PatchName + '/' + Target + '/ORG/' + File;
-          await FileSys.mkdirSync (dirname (TargetFileName) , {recursive: true});
-          await FileSys.writeFile (
-            TargetFileName,
-            BeforeFile,
-            'utf-8', (_err)=>{}
-            );
-          var AfterFile = await CurrentRepo.show (Target, CurrentRepo.rootUri.fsPath + sep + File);
-          TargetFileName = WorkSpace + PatchName + '/' + Target + '/MOD/' + File;
-          await FileSys.mkdirSync (dirname (TargetFileName) , {recursive: true});
-          await FileSys.writeFile (
-            TargetFileName,
-            AfterFile,
-            'utf-8', (_err)=>{}
-            );
+        );
+        for (let File of FileList) {
+            let BeforeFile:string = "";
+            try {
+                BeforeFile = CurrentRepo.show (Target + "^", CurrentRepo.rootUri.fsPath + sep + File)+"";
+            } catch {
+                BeforeFile = "";
+            }
+            TargetFileName = WorkSpace + PatchName + '/' + Target + '/ORG/' + File;
+            FileSys.mkdirSync (dirname (TargetFileName) , {recursive: true});
+            if (BeforeFile === "") {
+                FileSys.writeFile (
+                    TargetFileName,
+                    BeforeFile,
+                    'utf-8', (_err)=>{}
+                );
+            }
+            let AfterFile:string = "";
+            try {
+                AfterFile = await CurrentRepo.show (Target, CurrentRepo.rootUri.fsPath + sep + File);
+            } catch {
+                AfterFile = "";
+            }
+            TargetFileName = WorkSpace + PatchName + '/' + Target + '/MOD/' + File;
+            FileSys.mkdirSync (dirname (TargetFileName) , {recursive: true});
+            if (AfterFile === "") {
+                FileSys.writeFile (
+                    TargetFileName,
+                    AfterFile,
+                    'utf-8', (_err)=>{}
+                );
+            }
         }
         vscode.window.showInformationMessage (" 🧐 Patch create at [" + WorkSpace + PatchName + "/" + Target + "].");
     } else {

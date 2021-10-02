@@ -3,13 +3,13 @@ import * as FileSys from 'fs';
 import * as vscode  from 'vscode';
 import { dirname } from "path";
 import { GitExtension} from './GitApi/git';
-
+import { ChildProcess, execFile, ExecOptions } from "child_process";
 
 //=============== Global variable area ===============
 //
 export const NOT_FOUND   = -1;
 //
-// True  : Os environment is Mocrosoft windows.
+// True  : Os environment is Microsoft windows.
 // False : Os environment is Linux system.
 //
 export const IsWindows   = true;
@@ -97,7 +97,7 @@ SET CAT_FULL_PATH=%CAT_WS%%CAT_PATCH%/
 ::
 rd /S/Q "%CAT_FULL_PATH%"
 ::
-:: Start get patch, and gen it into ORG / MOD formate.
+:: Start get patch, and generate it into ORG / MOD formate.
 ::
 for /f "delims=" %%X in ('git diff-tree -r --no-commit-id --name-only --diff-filter=ACMRTD %CAT_SID%') do (\
   md "%CAT_FULL_PATH%MOD/%%X"\
@@ -307,36 +307,39 @@ export async function SendCommand2PY (
   Terminal.sendText (PythonCmd);
 }
 
-import { ChildProcess, execFile, ExecOptions } from "child_process";
-
-
-export const execute = async (
-    args: string[],
-    options: ExecOptions = {},
+//=============== Git command area ===============
+//
+// Execute command to run git.
+//
+const Execute = async (
+  args: string[],
+  options: ExecOptions = {},
 ): Promise<string> => {
-    var command = vscode.extensions.getExtension<GitExtension>('vscode.git')?.exports.getAPI(1).git.path + "";
-    console.log ("command", `${command} ${args.join(" ")}`);
+  var command = vscode.extensions.getExtension<GitExtension>('vscode.git')?.exports.getAPI(1).git.path + "";
+  console.log ("command", `${command} ${args.join(" ")}`);
 
-    let execution: ChildProcess;
+  let execution: ChildProcess;
 
-    try {
-        execution = execFile(command, args, { ...options, encoding: "utf8" });
-    } catch (err) {
-        console.log (err);
-        return "";
-    }
+  try {
+      execution = execFile(command, args, { ...options, encoding: "utf8" });
+  } catch (err) {
+      console.log (err);
+      return "";
+  }
 
-    let data = "";
+  let data = "";
 
-    for await (const chunk of execution?.stdout ?? []) {
-        data += chunk;
-    }
+  for await (const chunk of execution?.stdout ?? []) {
+      data += chunk;
+  }
 
-    return data.trim();
-}
+  return data.trim();
+};
 
-
+//
+// Export function for use.
+//
 export const RunGit = (
   cwd: string,
   ...args: string[]
-): Promise<string> => execute(args, { cwd: dirname(cwd) });
+): Promise<string> => Execute(args, { cwd: dirname(cwd) });

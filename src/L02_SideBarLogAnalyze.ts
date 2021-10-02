@@ -15,7 +15,7 @@ import {
 
 const ModuleInfoPath      = WorkSpace + ".vscode/CatModuleInfo.bcat";
 const GuidInfoPath        = WorkSpace + ".vscode/CatGuidInfo.bcat";
-const CatLogFile          = WorkSpace + ".vscode/CatRecort.log";
+const CatLogFile          = WorkSpace + ".vscode/CatRecord.log";
 const PeiDriver           = "Loading PEIM ";
 const DxeDriver           = "Loading driver ";
 const GetPEIAddress       = "Loading PEIM at ";
@@ -26,7 +26,7 @@ const FunctionAddrTag     = " f ";
 const GuidDataBase        = "Guid.xref";
 const Decoder             = 'base64';
 var   SearchString        = "";
-var   Filterof_X          = true;
+var   Filter_X            = true;
 var   TreeL02:any         = null;
 var   ModuleInfo:string[] = [];
 var   GuidInfo:string[]   = [];
@@ -242,7 +242,7 @@ async function AnalyzeAndGenTreeMap () {
     // Check all need file exists or not.
     //
     if (!FileSys.existsSync (ModuleInfoPath)) {
-        vscode.window.showInformationMessage (' ❗️❗️ You don\' have Moduleinfo please build once time to gen mep file.');
+        vscode.window.showInformationMessage (' ❗️❗️ You don\' have Module info please build once time to gen mep file.');
         return;
     }
     await Delay(1000);
@@ -253,7 +253,7 @@ async function AnalyzeAndGenTreeMap () {
     //
     //  Analyze Map file and try to find code position.
     //
-    vscode.window.showInformationMessage (" 🔍 Scan work space to gen Memroy map Info.");
+    vscode.window.showInformationMessage (" 🔍 Scan work space to gen Memory map Info.");
     switch (CompileIS) {
         case "1":
             await AnalyzeMapFile_VS (); break;
@@ -306,7 +306,7 @@ export class MemoryDependenciesProvider implements vscode.TreeDataProvider<Memor
         if (this.PathExists (ModuleInfoPath)) {
             return Promise.resolve (this.getMemoryInfoTree (Element));
         } else {
-            vscode.window.showInformationMessage (' ❗️❗️ You don\' have Moduleinfo please build once time to gen mep file.');
+            vscode.window.showInformationMessage (' ❗️❗️ You don\' have Module info please build once time to gen mep file.');
             return Promise.resolve ([]);
         }
     }
@@ -320,7 +320,7 @@ export class MemoryDependenciesProvider implements vscode.TreeDataProvider<Memor
             //
             if (GetModuleInfo[i].indexOf("/L") !== NOT_FOUND) { continue; }
             //
-            // It's a driver, gen into tree.
+            // It's a driver, generate into tree.
             //
             let ModuleElement = GetModuleInfo[i].split("/");
             if (SearchString !== "") {
@@ -388,7 +388,7 @@ export class MemoryDependenciesProvider implements vscode.TreeDataProvider<Memor
                         MSize = ModuleElement[i2].replace("4","");
                     } 
                 }
-                if ( MBaseAddr.length !== 0 || !Filterof_X) {
+                if ( MBaseAddr.length !== 0 || !Filter_X) {
                     Content.push(new MemoryDependency (
                         i, MName, MGuid,
                         (MBaseAddr.length!==0)?"    "+MBaseAddr.toString().replace(/,/g,"\n    "):"",
@@ -406,16 +406,16 @@ export class MemoryDependency extends vscode.TreeItem {
     constructor (
         public driverIndex: Number,
         public readonly tagName: string,
-        public driverGuil: string,
+        public driverGuid: string,
         public baseAddr: string,
         public driverSize: string,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState
     ) {
         super (tagName, collapsibleState);
         this.tooltip = collapsibleState ? 
-                       "Guid : 🔰"+`${this.driverGuil}`+"\n💠BaseAddress :\n"+this.baseAddr :
-                       driverGuil !== ""?
-                       "♻ Reference : "+driverGuil.replace(":"," : "):
+                       "Guid : 🔰"+`${this.driverGuid}`+"\n💠BaseAddress :\n"+this.baseAddr :
+                       driverGuid !== ""?
+                       "♻ Reference : "+driverGuid.replace(":"," : "):
                        "📍 It's a local function" ;
         this.description = collapsibleState ?
                            (this.baseAddr !== "" ?    // No Address mean not been build.
@@ -444,12 +444,12 @@ export class MemoryDependency extends vscode.TreeItem {
 //
 //  Search all inf file and record GUID and Module name.
 //
-//  Flag 0 : If ModuleInfoPath exsts, use it otherwise scan work space then gen it.
-//       1 : Even ModuleInfoPath exsts, still scan work space and gen it.
+//  Flag 0 : If ModuleInfoPath exist, use it otherwise scan work space then generate it.
+//       1 : Even ModuleInfoPath exist, still scan work space and generate it.
 //
 export async function RecordAllModuleGuidAndName (Flag:number) {
     //
-    // If user turn off the feature, retunr at entry.
+    // If user turn off the feature, return at entry.
     //
     if (!vscode.workspace.getConfiguration().get("CAT.02_AnalyzeMemoryFunction")){ return; }
     TreeL02 = (TreeL02 === null)?new MemoryDependenciesProvider(WorkSpace) : TreeL02;
@@ -514,7 +514,7 @@ export async function RecordAllModuleGuidAndName (Flag:number) {
         DeepFind (WorkSpace);
         FileSys.writeFile (ModuleInfoPath, Buffer.from(ModuleInfo.toString()).toString(Decoder), (err) => {});
         FileSys.writeFile (GuidInfoPath, Buffer.from(GuidInfo.toString().replace(/\r/g,"")).toString(Decoder), (err) => {});
-        vscode.window.showInformationMessage (" 👍 Gen Infomation Done.");
+        vscode.window.showInformationMessage (" 👍 Gen Information Done.");
     } else {
         ModuleInfo = Buffer.from(FileSys.readFileSync (ModuleInfoPath, 'utf-8'),Decoder).toString().split(",");
         GuidInfo   = Buffer.from(FileSys.readFileSync (GuidInfoPath, 'utf-8'),Decoder).toString().split(",");
@@ -544,19 +544,19 @@ export function SearchModuleOrAddr () {
         ignoreFocusOut:true,
         placeHolder:' 🔍 Please input string to search Driver / Function / Memory address 🔍'})
     .then (function (Message) {
-        if (Message) { Filterof_X = true; SearchString = Message; TreeL02.Refresh(); }
+        if (Message) { Filter_X = true; SearchString = Message; TreeL02.Refresh(); }
     });
 }
 
 //
 // Available filter or not.
 //
-export function AvailableFilter () { Filterof_X = !Filterof_X; TreeL02.Refresh(); }
+export function AvailableFilter () { Filter_X = !Filter_X; TreeL02.Refresh(); }
 
 //
-// Reflahs L02-2 block area.
+// Refresh L02-2 block area.
 //
-export function ReflashL02_2 () { SearchString = ""; TreeL02.Refresh(); }
+export function RefreshL02_2 () { SearchString = ""; TreeL02.Refresh(); }
 
 //
 // Let user can copy message that they need.
@@ -570,7 +570,7 @@ export function GetAndCopyModuleInfo (Item: MemoryDependency, Type:number) {
         require("child_process").exec('clip').stdin.end (Item.tagName.valueOf().replace("🧬 ",""));
         Info = "Name";
     } else if  (Type === 2) {
-        require("child_process").exec('clip').stdin.end (Item.driverGuil.valueOf());
+        require("child_process").exec('clip').stdin.end (Item.driverGuid.valueOf());
         Info = "Guid";
     } else {
         require("child_process").exec('clip').stdin.end (Item.baseAddr.valueOf().replace(/ ▻ /g,":"));

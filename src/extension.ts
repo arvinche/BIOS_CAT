@@ -35,7 +35,7 @@ import {
       RecordAllModuleGuidAndName,
       AvailableFilter,
       SearchModuleOrAddr,
-      ReflashL02_2,
+      RefreshL02_2,
       GetAndCopyModuleInfo,
       StarOrStoptRecordLog
 } from './L02_SideBarLogAnalyze';
@@ -89,7 +89,7 @@ export function activate (context: vscode.ExtensionContext) {
     //
     vscode.commands.registerCommand ('BIOS-CAT.L02StartRecord', function () { StarOrStoptRecordLog (); });
     vscode.commands.registerCommand ('BIOS-CAT.L02FullRefresh', function () { RecordAllModuleGuidAndName(1); });
-    vscode.commands.registerCommand ('BIOS-CAT.L02Reflash', function () { ReflashL02_2 (); });
+    vscode.commands.registerCommand ('BIOS-CAT.L02Refresh', function () { RefreshL02_2 (); });
     vscode.commands.registerCommand ('BIOS-CAT.L02FilterAvailable', function () { AvailableFilter (); });
     vscode.commands.registerCommand ('BIOS-CAT.L02SearchModule', function () { SearchModuleOrAddr (); });
     vscode.commands.registerCommand ('BIOS-CAT.L02CopyName', (Item: MemoryDependency) => { GetAndCopyModuleInfo (Item, 1); });
