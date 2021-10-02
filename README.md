@@ -31,7 +31,7 @@
   3. BIOS-CAT will also record time when you create book mark.
   4. Of course you can user book mark jump to the please that you record.
 
-     ![BoomarkImage](https://lh3.googleusercontent.com/aYJZDj_QSv04XeLEer611szDf8gwzEeGU8skNGmDAbqn8jMeQO0VnkMfq_5IxzVUEPrOt5vJSV-wO-ycxVZFg6SxwMuAs_NvyZXDsE3Pl1z8WRnJGe9JwDF8YB-dAhMbCvidvnZpxQ=w400)
+     ![BookmarkImage](https://lh3.googleusercontent.com/aYJZDj_QSv04XeLEer611szDf8gwzEeGU8skNGmDAbqn8jMeQO0VnkMfq_5IxzVUEPrOt5vJSV-wO-ycxVZFg6SxwMuAs_NvyZXDsE3Pl1z8WRnJGe9JwDF8YB-dAhMbCvidvnZpxQ=w400)
   5. If you use git to manage your code, now you can get the change patch of
      the row that you select or push ALT+Q to input SID to get it.
 
@@ -42,7 +42,7 @@
   * `Provide space that can let user save build command, convenient to use ~`
 
   1. Build code as Release / Debug / FSP-API release /FSP-API debug.
-  2. Clean up workspacce.
+  2. Clean up workspace.
   3. Provide button that can click to jump to build error.
   4. Build single module that can reduce time spend with build error debug.
 
@@ -61,12 +61,12 @@
   1. What driver actually execute on your platform.
   2. The driver actual memory address and size on your platform.
   3. The function address offset in driver & where it reference.
-  4. What protocol will actual install in dirver and it's memory address (Support with newest EDK2).
+  4. What protocol will actual install in driver and it's memory address (Support with newest EDK2).
 
      ![MMapImage01]("")
-  5. Provide button that you can use "String"(name or GUID .etc) to search driver or 
+  5. Provide button that you can use "String"(name or GUID .etc) to search driver or
      use "Address" to find it's located at which driver.
-  6. Provide button that you can fase copy Address, GUID or driver/function/protocol name.
+  6. Provide button that you can fast copy Address, GUID or driver/function/protocol name.
 
      ![MMapImage02]("")
 
@@ -87,11 +87,7 @@
 
 ## Known Issues
 
-  1. First time use "Build with single module" neet to click twice time.
-
-## Release Notes
-
-  * Please reference [Here!!](Task.md)
+  1. First time use "Build with single module" need to click twice time.
 
 
 ## END OF NOTES
