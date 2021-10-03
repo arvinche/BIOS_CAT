@@ -14,6 +14,11 @@ import {
     BuildSingleModule
 } from './M01_MainEditorFunction';
 
+import {
+  GetEDK2SCTFromGitHub,
+  GenBuildSCTEnv
+} from './M02_SctToolFunction';
+
 //=============  Left Area  =============//
 import {
     //==   Class  ==
@@ -26,7 +31,7 @@ import {
       JumpInToBookMark,
       GetCurrentPath,
       GetGitThisRowPatch
-} from './L01_SideBarTreeView';
+} from './L01_SideBarBookmark';
 
 import {
     //==   Class  ==
@@ -69,6 +74,12 @@ export function activate (context: vscode.ExtensionContext) {
     vscode.commands.registerCommand ('BIOS-CAT.CMD02', ()=>{ CleanUpWorkSpace (); });
     vscode.commands.registerCommand ('BIOS-CAT.CMD03', ()=>{ CheckBuildLogAndJump2Error (); });
     vscode.commands.registerCommand ('BIOS-CAT.CMD04', ()=>{ BuildSingleModule (); });
+
+    //
+    // M02 Self-Certification Test related functions.
+    //
+    vscode.commands.registerCommand ('BIOS-CAT.M02GetSct', ()=>{ GetEDK2SCTFromGitHub(); });
+    vscode.commands.registerCommand ('BIOS-CAT.M02BuildSct', ()=>{ GenBuildSCTEnv(); });
 
     //
     //  Sidebar L01 (Bookmark) command area.

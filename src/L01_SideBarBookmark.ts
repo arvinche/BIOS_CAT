@@ -3,6 +3,7 @@ import { dirname, sep } from "path";
 import * as vscode  from 'vscode';
 import * as FileSys from 'fs';
 import * as Path    from 'path';
+import { GitExtension } from './GitApi/git';
 import {
     //== Variable ==
       WorkSpace,
@@ -10,10 +11,6 @@ import {
     //== Function ==
       RunGit
 }  from './00_GeneralFunction';
-
-import {
-    GitExtension,
-} from './GitApi/git';
 
 const BookmarkPath  = WorkSpace + ".vscode/Bookmark.bcat";
 var   NeedToShowTip = 1;
@@ -437,8 +434,7 @@ export async function GetGitThisRowPatch (Type:number) {
                                 '--name-only',
                                 '--diff-filter=ACMRTD',
                                 Target
-                                ) + "")
-                                .split("\n");
+                                ) + "").split("\n");
         let CommitMessage    = await RunGit (FilePath, 'log', '-1', Target);
         let TargetFolderName = WorkSpace + PatchName + '/CatPatch__' + Target + '__' + Time;
         let TargetCommitName = TargetFolderName + "/PatchInfo.txt";
@@ -458,11 +454,7 @@ export async function GetGitThisRowPatch (Type:number) {
             TargetCommitName = TargetFolderName + '/ORG/' + File;
             FileSys.mkdirSync (dirname (TargetCommitName) , {recursive: true});
             if (BeforeFile !== "") {
-                FileSys.writeFile (
-                    TargetCommitName,
-                    BeforeFile,
-                    'utf-8', (_err)=>{}
-                );
+                FileSys.writeFile (TargetCommitName, BeforeFile, 'utf-8', (_err)=>{});
             }
             let AfterFile:string = "";
             try {
@@ -473,11 +465,7 @@ export async function GetGitThisRowPatch (Type:number) {
             TargetCommitName = TargetFolderName + '/MOD/' + File;
             FileSys.mkdirSync (dirname (TargetCommitName) , {recursive: true});
             if (AfterFile !== "") {
-                FileSys.writeFile (
-                    TargetCommitName,
-                    AfterFile,
-                    'utf-8', (_err)=>{}
-                );
+                FileSys.writeFile (TargetCommitName, AfterFile, 'utf-8', (_err)=>{});
             }
         }
         vscode.window.showInformationMessage (" 🧐 Patch create at [" + TargetFolderName + "].");

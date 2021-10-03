@@ -1,6 +1,6 @@
 # Task for Extension
 
-## Feature List
+## **Feature List**
 | Feature Index | Task                                             | Status            | Author        | Attribute |
 | ------------- | ------------------------------------------------ | ----------------- | ------------- | --------- |
 |             1 | FDF/DEC/INF/VFR/HFR Parser                       | Done              | Gua           | Feature   |
@@ -21,9 +21,10 @@
 |            16 | Build Multiple Parameter Support                 | Done              | Gua/Arvin     | Feature   |
 |            17 | Binary UEFI FSP Parser                           | On-Going          | Gua           | Feature   |
 |            18 | Get Git repository patch (ORG/MOD) by Row or SID | Done              | Arvin/Gua     | Feature   |
-|            19 | SCT auto build                                   | On-Going          | Arvin         | Feature   |
+|            19 | SCT build                                        | Done              | Arvin         | Feature   |
+|            19 | SCT log analyze                                  | On-Going          | Arvin         | Feature   |
 
-## Bug/Enhance List
+## **Bug/Enhance List**
 | Index | Feature Index | Task                                          | Status            | Author        | Attribute |
 | ----- | ------------- | --------------------------------------------- | ----------------- | ------------- | --------- |
 |     1 |             8 | Need click twice time to executive function.  | Done              | Arvin         | Bug       |

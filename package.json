@@ -95,7 +95,7 @@
 				},
 				"CAT.02_AnalyzeMemoryFunction": {
 					"type": "boolean",
-					"default": true,
+					"default": false,
 					"description": "Turn On / Off memory analyze function."
 				},
 				"CAT.02_LogFilePath": {
@@ -115,7 +115,7 @@
 			{"command": "BIOS-CAT.CMD02"               , "title": "🐈2_Clean"},
 			{"command": "BIOS-CAT.CMD03"               , "title": "🐈3_Jump to Build log / error"},
 			{"command": "BIOS-CAT.CMD04"               , "title": "🐈4_BuildThisModule (With Makefile)"},
-			{"command": "BIOS-CAT.L01AddMark"          , "title": "🐈 Add BookMark 📒"    , "icon": "./Images/L01_Add.png"},
+			{"command": "BIOS-CAT.L01AddMark"          , "title": "🐈 Add BookMark 📒" , "icon": "./Images/L01_Add.png"},
 			{"command": "BIOS-CAT.L01Refresh"          , "title": "Refresh BookMark 📒", "icon": "./Images/L01_Refresh.png"},
 			{"command": "BIOS-CAT.L01Edit"             , "title": "Edit BookMark 📒"   , "icon": "./Images/L01_Edit.png"},
 			{"command": "BIOS-CAT.L01Delete"           , "title": "Delete BookMark 📒" , "icon": "./Images/L01_Delete.png"},
@@ -133,6 +133,8 @@
 			{"command": "BIOS-CAT.L02CopyName"         , "title": "Copy name", "icon": "./Images/L02_1Name.png"},
 			{"command": "BIOS-CAT.L02CopyGuid"         , "title": "Copy guid", "icon": "./Images/L02_2Guid.png"},
 			{"command": "BIOS-CAT.L02CopyAddress"      , "title": "Copy address", "icon": "./Images/L02_3Address.png"},
+			{"command": "BIOS-CAT.M02GetSct"           , "title": "🔧 Clone EDK2 & SCT from github", "icon": "./Images/M02_Clone.png"},
+			{"command": "BIOS-CAT.M02BuildSct"         , "title": "🔧 Build SCT", "icon": "./Images/M02_Build.png"},
 			{"command": "BIOS-CAT.L03OpenFspEditor"    , "title": "FSP Editor"}
 		],
 		"keybindings": [
@@ -155,7 +157,9 @@
 				{ "command": "BIOS-CAT.L02FullRefresh",    "when": "view == L02-2", "group": "navigation" },
 				{ "command": "BIOS-CAT.L02Refresh",        "when": "view == L02-2", "group": "navigation" },
 				{ "command": "BIOS-CAT.L02FilterAvailable","when": "view == L02-2", "group": "navigation" },
-				{ "command": "BIOS-CAT.L02SearchModule",   "when": "view == L02-2", "group": "navigation" }
+				{ "command": "BIOS-CAT.L02SearchModule",   "when": "view == L02-2", "group": "navigation" },
+				{ "command": "BIOS-CAT.M02GetSct",         "when": "view == M02", "group": "navigation" },
+				{ "command": "BIOS-CAT.M02BuildSct",       "when": "view == M02", "group": "navigation" }
 			],
 			"view/item/context": [
 				{ "command": "BIOS-CAT.L01Edit", "when": "view == L01", "group": "inline" },
@@ -179,7 +183,8 @@
 			"CatMaster": [
 				{"id": "L01", "name": "　📒 Bookmark ~"},
 				{"id": "L02-1", "name": "　💻 Record Log"},
-				{"id": "L02-2", "name": "　🧭 Driver Memory Map Seeker"}
+				{"id": "L02-2", "name": "　🧭 Driver Memory Map Seeker"},
+				{"id": "M02", "name": "　🔧 SCT tool viewer"}
 			]
 		}
 	},

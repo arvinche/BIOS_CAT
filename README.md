@@ -31,11 +31,13 @@
   3. BIOS-CAT will also record time when you create book mark.
   4. Of course you can user book mark jump to the please that you record.
 
-     ![BookmarkImage](https://lh3.googleusercontent.com/aYJZDj_QSv04XeLEer611szDf8gwzEeGU8skNGmDAbqn8jMeQO0VnkMfq_5IxzVUEPrOt5vJSV-wO-ycxVZFg6SxwMuAs_NvyZXDsE3Pl1z8WRnJGe9JwDF8YB-dAhMbCvidvnZpxQ=w400)
+     ![BookmarkImage](https://lh3.googleusercontent.com/gYVYDso4aZWPBjOy8QfpT1hNgqbaBhcZSw6w-Nxook9ZPXxRuf0FmA3RQowMYm1k2mWCM0z3ImPpKwtMrOIxZdC1GvYznbUjx30KVVFs2cZ6AK0_MuI__ucX62F8gGGmCf3ilPesJw=w800)
   5. If you use git to manage your code, now you can get the change patch of
-     the row that you select or push ALT+Q to input SID to get it.
+     the row that you select(click right mouse button then select "🐈5_Get this row change")
+     or use ALT+Q to input SID to get it.
+     (Patch will generate at "{Workspace}/.vscode/Patch". Can change path in extension setting)
 
-     ![GitPackageImage](https://lh3.googleusercontent.com/u6OAxTcfdoPgdtYnkp2w503tOTzYKW4EbYu4pyBwXSAZMww9k1F_YfW8jfYxY2HU65znW6QTlYNvnicILP70kWeYOGC8VLtO74SqscIo9Z6BpH7gFttS2GMuU3bova4V9Ji5kChgdA=w400)
+     ![GitPackageImage](https://lh3.googleusercontent.com/077OLhzFZrnNQ75BsA-VA-r-uAwMsQP-v-M-w0N7jmXRafs0MIpVV1igYWPfAinDTp73rySoU2R7weQkritdIMuxfKoQy--4MVrlCYVf36JIOqy7OE1m9_s7CoUxjVcd2ug2IrPJrw=w800)
 
 <h2 id="2" style="color:#c96b00;">Build code button.</h2>
 
@@ -63,14 +65,19 @@
   3. The function address offset in driver & where it reference.
   4. What protocol will actual install in driver and it's memory address (Support with newest EDK2).
 
-     ![MMapImage01]("")
+     ![MapImage01]("")
   5. Provide button that you can use "String"(name or GUID .etc) to search driver or
      use "Address" to find it's located at which driver.
   6. Provide button that you can fast copy Address, GUID or driver/function/protocol name.
 
-     ![MMapImage02]("")
+     ![MapImage02]("")
 
-<h2 id="5" style="color:#c96b00;">[Ported from other side]</h2>
+<h2 id="5" style="color:#c96b00;">[Self-Certification Test(SCT) tool ]</h2>
+
+  * `Clone SCT & EDK from github:` Help user can auto clone code from github.
+  * `One click build SCT:` Let user can build SCT more easy.
+
+<h2 id="6" style="color:#c96b00;">[Ported from other side]</h2>
 
   * `Reference from EDK2-vscode:` FDF/DEC/INF/VFR/HFR Parser.
 
@@ -84,6 +91,11 @@
 
     All setting have illustrate in extension settings !!
     Please click `the icon [⚙️] in top area` to see them.
+
+## Bug fix
+
+  1. Fix git can not generate patch at multi workspace.
+  2. Deleted files now will be generated into patch.
 
 ## Known Issues
 

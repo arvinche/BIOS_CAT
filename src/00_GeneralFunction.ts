@@ -134,6 +134,112 @@ function git-export-diff() {
   git log $1 -1 > Diff-$1/PatchInfo.txt
 }`;
 
+//
+// This area will define bat file to build sct tool.
+//
+export const BuildSctBAT = IsWindows?`
+
+::######        ###        ######
+::##           ## ##         ##
+::#      Build SCT bat file  ##
+::##         ##     ##       ##
+::######    ##       ##      ##
+echo off
+chcp 437
+set CatInput=0
+set CatSpace=%1
+set SCT_WORKSPACE=%CatSpace%\\EDK2
+set CatSctX64=%SCT_WORKSPACE%\\Build\\UefiSct\\DEBUG_VS2015x86\\SctPackageX64
+if not defined PYTHON_HOME ( set PYTHON_HOME=C:\\Python27 )
+
+:CatSelect
+cd %CatSpace%
+set /p CatInput=Please choose your cmd: 1 build, 2 clean, 3 clean build, 0 exit :
+if not exist Edk2 (
+  echo.
+  echo "Please make sure you have EDK2 folder"
+  echo.
+  goto EndOfSCT
+)
+if not exist SctRoot (
+  echo.
+  echo "Please make sure you have SctRoot folder"
+  echo.
+  goto EndOfSCT
+)
+if %CatInput% GEQ 4 goto CatSelect
+if %CatInput% GEQ 2 (
+  echo.
+  echo "------> Clean SCT build pkg .... <------"
+  rd /s /q %SCT_WORKSPACE%\\Build %SCT_WORKSPACE%\\SctPkg %CatSpace%\\_CatSct
+  echo "------>       Clean done.        <------"
+  echo.
+  if %CatInput% EQU 3 ( set CatInput=1 )
+)
+if %CatInput% == 1 (
+  if not exist "Edk2\\SctPkg" (
+    xcopy %CatSpace%\\SctRoot\\uefi-sct\\SctPkg %CatSpace%\\Edk2\\SctPkg /Q/E/S/I/Y > NUL
+  )
+  if not defined CAT_FLAG (
+    set CAT_FLAG
+    echo Call edksetup first!!!
+    call %SCT_WORKSPACE%\\edksetup.bat VS2015
+    call nmake -f %SCT_WORKSPACE%\\BaseTools\\Makefile
+    copy %SCT_WORKSPACE%\\SctPkg\\Tools\\Bin\\GenBin.exe %SCT_WORKSPACE%\\BaseTools\\Bin\\Win32\\
+  )
+  if exist %SCT_WORKSPACE%\\BaseTools\\Bin\\Win32\\GenBin.exe (
+    echo.
+    echo "||------ GenBin.exe is exist! ------||"
+    echo.
+  ) else (
+    echo.
+    echo "||------ Build GenBin.exe.. ------||"
+    echo.
+    xcopy "%SCT_WORKSPACE%\\SctPkg\\Tools\\Source\\GenBin" "%SCT_WORKSPACE%\\BaseTools\\Source\\C\\GenBin" /Q/E/S/I/Y
+    call %SCT_WORKSPACE%\\BaseTools\\toolsetup.bat
+    cd %SCT_WORKSPACE%\\BaseTools\\Source\\C\\Common && nmake
+    cd %SCT_WORKSPACE%\\BaseTools\\Source\\C\\GenBin && nmake
+    cd %SCT_WORKSPACE%
+  )
+  call build -p SctPkg\\UEFI\\UEFI_SCT.dsc -a X64 -t VS2015x86 1>NUL
+
+  if %errorlevel% EQU 0 (
+    cd %SCT_WORKSPACE%\\Build\\UefiSct\\DEBUG_VS2015x86
+    echo.
+    echo Ready to gen SCT
+    echo.
+    call ..\\..\\..\\SctPkg\\CommonGenFramework.bat uefi_sct X64 InstallX64.efi
+    echo.
+    echo Gen Finish.
+    echo.
+  ) else (
+    echo.
+    echo Some build error is occur.
+    echo.
+  )
+  cd %SCT_WORKSPACE%
+  if exist %CatSctX64% (
+    xcopy %CatSctX64% "%CatSpace%\\_CatSct" /Q/E/S/I/Y
+  ) else (
+    echo Can not find SctPackageX64, please check %CatSctX64%.
+  )
+)
+if %CatInput% NEQ 0 goto CatSelect
+echo.
+echo "||------ Exit build SCT.. ------||"
+echo.
+:EndOfSCT
+pause
+`:`
+
+######        ###        ######
+##           ## ##         ##
+#     Build SCT bash file  ##
+##         ##     ##       ##
+######    ##       ##      ##
+
+`;
+
 
 //=============== Send command to python area ===============
 //
