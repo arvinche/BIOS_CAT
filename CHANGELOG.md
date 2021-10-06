@@ -22,7 +22,7 @@
 |            17 | Binary UEFI FSP Parser                           | On-Going          | Gua           | Feature   |
 |            18 | Get Git repository patch (ORG/MOD) by Row or SID | Done              | Arvin/Gua     | Feature   |
 |            19 | SCT build                                        | Done              | Arvin         | Feature   |
-|            19 | SCT log analyze                                  | On-Going          | Arvin         | Feature   |
+|            20 | SCT log analyze                                  | On-Going          | Arvin         | Feature   |
 
 ## **Bug/Enhance List**
 | Index | Feature Index | Task                                          | Status            | Author        | Attribute |

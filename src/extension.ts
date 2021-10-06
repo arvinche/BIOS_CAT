@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-
 import * as vscode  from 'vscode';
-
 //
 // Local define class file.
 //
 import {WorkSpace}  from './00_GeneralFunction';
+
 //============= Middle Area =============//
 import {
     CreatEnvAndBuildCode,
@@ -13,11 +12,6 @@ import {
     CleanUpWorkSpace,
     BuildSingleModule
 } from './M01_MainEditorFunction';
-
-import {
-  GetEDK2SCTFromGitHub,
-  GenBuildSCTEnv
-} from './M02_SctToolFunction';
 
 //=============  Left Area  =============//
 import {
@@ -50,8 +44,14 @@ import {
       CreateFspEditorView
 } from './L03_FspEditor';
 
-//
-//  Function Entry ~
+import {
+  GetEDK2SCTFromGitHub,
+  GenBuildSCTEnv
+} from './L04_SctToolFunction';
+
+
+//=======================================
+//          Function Entry ~
 //
 export function activate (context: vscode.ExtensionContext) {
     //

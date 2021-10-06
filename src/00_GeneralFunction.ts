@@ -29,6 +29,7 @@ export const CompileIS   = (vscode.workspace.getConfiguration().get("CAT.00_Comp
 //
 export let   WsIndex     = 0;
 
+
 //=============== Delay function area ===============
 //
 // Delay function used to ensure execute order.
@@ -231,13 +232,11 @@ echo.
 :EndOfSCT
 pause
 `:`
-
 ######        ###        ######
 ##           ## ##         ##
 #     Build SCT bash file  ##
 ##         ##     ##       ##
 ######    ##       ##      ##
-
 `;
 
 
@@ -412,6 +411,7 @@ export async function SendCommand2PY (
   //
   Terminal.sendText (PythonCmd);
 }
+
 
 //=============== Git command area ===============
 //

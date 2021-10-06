@@ -18,9 +18,9 @@
   **2. `ALT+[`**        | Copy current file folder path.
   **3. `ALT+]`**        | Copy current file name.
   **4. `ALT+m`**        | Add [Bookmark](#1).
-  **5. `ALT+q`**        | Generate patch [By Input SID](#1).
+  **5. `ALT+q`**        | Generate `ORG/MOD` format patch [By Input SID](#1).
   **6. `ALT+r`**        | Start [Record log](#3). (not yet😛.)
-  **7. `CTRL+SHIFT+d`** | Search with [Memory map seeker](#4).
+  **7. `CTRL+SHIFT+d`** | Search key word with [Memory map seeker](#4).
 
 <h2 id="1" style="color:#c96b00;">Bookmark.</h2>
 
@@ -32,10 +32,10 @@
   4. Of course you can user book mark jump to the please that you record.
 
      ![BookmarkImage](https://lh3.googleusercontent.com/gYVYDso4aZWPBjOy8QfpT1hNgqbaBhcZSw6w-Nxook9ZPXxRuf0FmA3RQowMYm1k2mWCM0z3ImPpKwtMrOIxZdC1GvYznbUjx30KVVFs2cZ6AK0_MuI__ucX62F8gGGmCf3ilPesJw=w800)
-  5. If you use git to manage your code, now you can get the change patch of
-     the row that you select(click right mouse button then select "🐈5_Get this row change")
-     or use ALT+Q to input SID to get it.
-     (Patch will generate at "{Workspace}/.vscode/Patch". Can change path in extension setting)
+  5. If you use git to manage your code, now you can get the `ORG/MOD` format change patch !<br>
+     * Select the row that you want then click right mouse button then select `🐈5_Get this row change` ~<br>
+     * You can also use `ALT+Q` to input SID then get patch.<br>
+     * Patch will generate at "{Workspace}/.vscode/Patch". Can change it in extension setting<br>
 
      ![GitPackageImage](https://lh3.googleusercontent.com/077OLhzFZrnNQ75BsA-VA-r-uAwMsQP-v-M-w0N7jmXRafs0MIpVV1igYWPfAinDTp73rySoU2R7weQkritdIMuxfKoQy--4MVrlCYVf36JIOqy7OE1m9_s7CoUxjVcd2ug2IrPJrw=w800)
 
@@ -48,7 +48,7 @@
   3. Provide button that can click to jump to build error.
   4. Build single module that can reduce time spend with build error debug.
 
-     ![BuildImage]("")
+     ![BuildImage](https://lh3.googleusercontent.com/xeHF3nSsFNZouoBa20RARnZIhCLE6BKjEQzPH5E43Q_9DCB8xy-JILacauBf2sOKBt_jeUp0gfFJcsmpOstS7f4-Mcoy3rqlUEWyyBP8zQfY_azRsFhrCiSv0QoSAms2RHejPCj-zg=w600)
 
 <h2 id="3" style="color:#c96b00;">Embedded putty.</h2>
 
@@ -65,12 +65,12 @@
   3. The function address offset in driver & where it reference.
   4. What protocol will actual install in driver and it's memory address (Support with newest EDK2).
 
-     ![MapImage01]("")
+     ![MapImage01](https://lh3.googleusercontent.com/xeHF3nSsFNZouoBa20RARnZIhCLE6BKjEQzPH5E43Q_9DCB8xy-JILacauBf2sOKBt_jeUp0gfFJcsmpOstS7f4-Mcoy3rqlUEWyyBP8zQfY_azRsFhrCiSv0QoSAms2RHejPCj-zg=w600)
   5. Provide button that you can use "String"(name or GUID .etc) to search driver or
      use "Address" to find it's located at which driver.
   6. Provide button that you can fast copy Address, GUID or driver/function/protocol name.
 
-     ![MapImage02]("")
+     ![MapImage02](https://lh3.googleusercontent.com/xeHF3nSsFNZouoBa20RARnZIhCLE6BKjEQzPH5E43Q_9DCB8xy-JILacauBf2sOKBt_jeUp0gfFJcsmpOstS7f4-Mcoy3rqlUEWyyBP8zQfY_azRsFhrCiSv0QoSAms2RHejPCj-zg=w600)
 
 <h2 id="5" style="color:#c96b00;">[Self-Certification Test(SCT) tool ]</h2>
 
