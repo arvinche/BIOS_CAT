@@ -2,11 +2,12 @@
 	"name": "bios-cat",
 	"publisher": "CatMaster",
 	"icon": "Images/01_CatIcon.png",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"engines": { "vscode": "^1.59.0" },
 	"displayName": "BIOS-CAT",
 	"description": "A coding cat can support you development BIOS code!",
-	"categories": ["Other"],
+	"categories": ["Programming Languages", "Debuggers", "Formatters", "Other"],
+	"keywords": ["UEFI", "EDK2", "BIOS", "ACPI", "SCT", "Memory", "bookmark"],
 	"activationEvents": ["*"],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -102,6 +103,12 @@
 					"type": "string",
 					"default" : "",
 					"description": "The path of the log that you need BIOS-CAT to analyze.\nP.S. If it's not input, use default path => {workspace}/.vscode/CatRecord.log"
+				},
+				"CAT.04_SctBuildWith": {
+					"type": "string",
+					"default" : "VS2015",
+					"enum": ["VS2012", "VS2013", "VS2015", "VS2017", "VS2019"],
+					"description": "Select the SCT compile that you like to build with."
 				},
 				"X.ShowTip": {
 					"type": "boolean",
@@ -215,5 +222,11 @@
 	},
 	"extensionDependencies": [
 		"vscode.git"
+	],
+	"extensionPack": [
+		"ms-vscode.cpptools",
+		"eamodio.gitlens",
+		"donjayamanne.githistory",
+		"streetsidesoftware.code-spell-checker"
 	]
 }

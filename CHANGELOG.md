@@ -44,3 +44,4 @@
 |    15 |             4 | Add decoder for system file so that it won’t be searched all the time|Done| Arvin | Enhance   |
 |    16 |             1 | Rename Syntax naming style                    | Done              | Gua           | Enhance   |
 |    17 |            18 | Remove terminal dependency                    | Done              | Gua           | Enhance   |
+|    19 |            18 | Let SCT can not build normally                | Done              | Arvin         | Bug       |

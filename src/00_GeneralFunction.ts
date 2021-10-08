@@ -149,8 +149,9 @@ echo off
 chcp 437
 set CatInput=0
 set CatSpace=%1
+set CatCompile=%2
 set SCT_WORKSPACE=%CatSpace%\\EDK2
-set CatSctX64=%SCT_WORKSPACE%\\Build\\UefiSct\\DEBUG_VS2015x86\\SctPackageX64
+set CatSctX64=%SCT_WORKSPACE%\\Build\\UefiSct\\DEBUG_%CatCompile%\\SctPackageX64
 if not defined PYTHON_HOME ( set PYTHON_HOME=C:\\Python27 )
 
 :CatSelect
@@ -172,21 +173,21 @@ if %CatInput% GEQ 4 goto CatSelect
 if %CatInput% GEQ 2 (
   echo.
   echo "------> Clean SCT build pkg .... <------"
-  rd /s /q %SCT_WORKSPACE%\\Build %SCT_WORKSPACE%\\SctPkg %CatSpace%\\_CatSct
+  rd /s /q "%SCT_WORKSPACE%\\Build" "%SCT_WORKSPACE%\\SctPkg" "%CatSpace%\\_CatSct"
   echo "------>       Clean done.        <------"
   echo.
   if %CatInput% EQU 3 ( set CatInput=1 )
 )
 if %CatInput% == 1 (
-  if not exist "Edk2\\SctPkg" (
-    xcopy %CatSpace%\\SctRoot\\uefi-sct\\SctPkg %CatSpace%\\Edk2\\SctPkg /Q/E/S/I/Y > NUL
+  if not exist %SCT_WORKSPACE%\\SctPkg (
+    xcopy "%CatSpace%\\SctRoot\\uefi-sct\\SctPkg" "%SCT_WORKSPACE%\\SctPkg" /Q/E/S/I/Y > NUL
   )
   if not defined CAT_FLAG (
     set CAT_FLAG
     echo Call edksetup first!!!
-    call %SCT_WORKSPACE%\\edksetup.bat VS2015
-    call nmake -f %SCT_WORKSPACE%\\BaseTools\\Makefile
-    copy %SCT_WORKSPACE%\\SctPkg\\Tools\\Bin\\GenBin.exe %SCT_WORKSPACE%\\BaseTools\\Bin\\Win32\\
+    call %SCT_WORKSPACE%\\edksetup.bat %CatCompile%
+    call nmake -f "%SCT_WORKSPACE%\\BaseTools\\Makefile"
+    copy "%SCT_WORKSPACE%\\SctPkg\\Tools\\Bin\\GenBin.exe" "%SCT_WORKSPACE%\\BaseTools\\Bin\\Win32\\"
   )
   if exist %SCT_WORKSPACE%\\BaseTools\\Bin\\Win32\\GenBin.exe (
     echo.
@@ -197,32 +198,30 @@ if %CatInput% == 1 (
     echo "||------ Build GenBin.exe.. ------||"
     echo.
     xcopy "%SCT_WORKSPACE%\\SctPkg\\Tools\\Source\\GenBin" "%SCT_WORKSPACE%\\BaseTools\\Source\\C\\GenBin" /Q/E/S/I/Y
-    call %SCT_WORKSPACE%\\BaseTools\\toolsetup.bat
-    cd %SCT_WORKSPACE%\\BaseTools\\Source\\C\\Common && nmake
-    cd %SCT_WORKSPACE%\\BaseTools\\Source\\C\\GenBin && nmake
-    cd %SCT_WORKSPACE%
+    call "%SCT_WORKSPACE%\\BaseTools\\toolsetup.bat"
+    cd "%SCT_WORKSPACE%\\BaseTools\\Source\\C\\Common" && nmake
+    cd "%SCT_WORKSPACE%\\BaseTools\\Source\\C\\GenBin" && nmake
   )
-  call build -p SctPkg\\UEFI\\UEFI_SCT.dsc -a X64 -t VS2015x86 1>NUL
-
-  if %errorlevel% EQU 0 (
-    cd %SCT_WORKSPACE%\\Build\\UefiSct\\DEBUG_VS2015x86
+  call build -p %SCT_WORKSPACE%\\SctPkg\\UEFI\\UEFI_SCT.dsc -a X64 -t %CatCompile% 1>NUL
+  echo ERRORLEVEL=%ERRORLEVEL%
+  if %ERRORLEVEL% EQU 0 (
+    cd %SCT_WORKSPACE%\\Build\\UefiSct\\DEBUG_%CatCompile%
     echo.
-    echo Ready to gen SCT
+    echo Ready to gen SCT InstallX64.efi
     echo.
-    call ..\\..\\..\\SctPkg\\CommonGenFramework.bat uefi_sct X64 InstallX64.efi
-    echo.
-    echo Gen Finish.
-    echo.
+    call %SCT_WORKSPACE%\\SctPkg\\CommonGenFramework.bat uefi_sct X64 InstallX64.efi
+    if exist %CatSctX64%\\InstallX64.efi (
+      echo.
+      echo Gen Finish & copy to _CatSct.
+      echo.
+      xcopy "%CatSctX64%" "%CatSpace%\\_CatSct" /Q/E/S/I/Y
+    ) else (
+      echo Can not find InstallX64.efi, please check with [%CatSctX64%].
+    )
   ) else (
     echo.
     echo Some build error is occur.
     echo.
-  )
-  cd %SCT_WORKSPACE%
-  if exist %CatSctX64% (
-    xcopy %CatSctX64% "%CatSpace%\\_CatSct" /Q/E/S/I/Y
-  ) else (
-    echo Can not find SctPackageX64, please check %CatSctX64%.
   )
 )
 if %CatInput% NEQ 0 goto CatSelect

@@ -21,6 +21,7 @@
   **5. `ALT+q`**        | Generate `ORG/MOD` format patch [By Input SID](#1).
   **6. `ALT+r`**        | Start [Record log](#3). (not yet😛.)
   **7. `CTRL+SHIFT+d`** | Search key word with [Memory map seeker](#4).
+  **8. `ALT+d`**        | Open File locate folder.
 
 <h2 id="1" style="color:#c96b00;">Bookmark.</h2>
 
@@ -74,8 +75,9 @@
 
 <h2 id="5" style="color:#c96b00;">[Self-Certification Test(SCT) tool ]</h2>
 
-  * `Clone SCT & EDK from github:` Help user can auto clone code from github.
-  * `One click build SCT:` Let user can build SCT more easy.
+  * `Clone SCT & EDK from github:` Help user can check SCT build environment and auto clone code from github.
+   ![SctImage01](https://lh3.googleusercontent.com/d49oivBgXC84dpzZOxVetwz1u6IdVQtMn7ehasTbwN6WgZ3mAAKL5xZXn6iA8rvrdysfbsVCpFbJ1Ww2xgVKPiOHgn41C-AmI6huL1Ov9PljfMr2tR8p4yc3dtugYSM9HIUUfqg5dA=w600)
+  * `One click build SCT:` Let user can build SCT more easy, SCT tool will build at "{Workspace}/_CatSct" (Please select compile in setting before use).
 
 <h2 id="6" style="color:#c96b00;">[Ported from other side]</h2>
 
