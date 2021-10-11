@@ -77,7 +77,9 @@
 
   * `Clone SCT & EDK from github:` Help user can check SCT build environment and auto clone code from github.
    ![SctImage01](https://lh3.googleusercontent.com/d49oivBgXC84dpzZOxVetwz1u6IdVQtMn7ehasTbwN6WgZ3mAAKL5xZXn6iA8rvrdysfbsVCpFbJ1Ww2xgVKPiOHgn41C-AmI6huL1Ov9PljfMr2tR8p4yc3dtugYSM9HIUUfqg5dA=w600)
-  * `One click build SCT:` Let user can build SCT more easy, SCT tool will build at "{Workspace}/_CatSct" (Please select compile in setting before use).
+  * `One click build SCT:` Let user can build SCT more easy, SCT tool will build at "{Workspace}/_CatSct" (Default compile will use vs2015).
+  * `Failed list tree:` User now can input path to let vscode generate tree to clearly view the fail and jump to error line too debug it.
+   ![SctImage02](https://lh3.googleusercontent.com/ytn93472bEtDge_0_LuZtaDO_X5lrLMEXHJsb_4mnBxNIASyKXOWhNaeLLPrVNnabR2sUVjAmCcq4puHSPq1GxTLSE7v8RIDwgbSjOJxFyhDikZgBOccgrXCdf6vKsX-9UGylAPMdA=w600)
 
 <h2 id="6" style="color:#c96b00;">[Ported from other side]</h2>
 
@@ -95,9 +97,6 @@
     Please click `the icon [⚙️] in top area` to see them.
 
 ## Bug fix
-
-  1. Fix git can not generate patch at multi workspace.
-  2. Deleted files now will be generated into patch.
 
 ## Known Issues
 

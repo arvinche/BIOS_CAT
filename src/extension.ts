@@ -45,8 +45,14 @@ import {
 } from './L03_FspEditor';
 
 import {
+  //==   Class  ==
+  SctDependency,
+  SctDependenciesProvider,
+  //== Function ==
+  AddOrRefreshSCTTree,
   GetEDK2SCTFromGitHub,
-  GenBuildSCTEnv
+  GenBuildSCTEnv,
+  Jump2SctErrorLine
 } from './L04_SctToolFunction';
 
 
@@ -59,6 +65,8 @@ export function activate (context: vscode.ExtensionContext) {
     //
     const TreeL01 = new NodeDependenciesProvider(WorkSpace);
     vscode.window.registerTreeDataProvider ('L01', TreeL01);
+    const TreeM02 = new SctDependenciesProvider(WorkSpace);
+    vscode.window.registerTreeDataProvider ('M02', TreeM02);
     RecordAllModuleGuidAndName (0);
     console.log ('Great~ "BIOS-CAT" is now active!');
 
@@ -78,8 +86,10 @@ export function activate (context: vscode.ExtensionContext) {
     //
     // M02 Self-Certification Test related functions.
     //
+    vscode.commands.registerCommand ('BIOS-CAT.M02AddLog', ()=>{ AddOrRefreshSCTTree(TreeM02); });
     vscode.commands.registerCommand ('BIOS-CAT.M02GetSct', ()=>{ GetEDK2SCTFromGitHub(); });
     vscode.commands.registerCommand ('BIOS-CAT.M02BuildSct', ()=>{ GenBuildSCTEnv(); });
+    vscode.commands.registerCommand ('BIOS-CAT.M02Jump2SctError', (Item: SctDependency)=>{ Jump2SctErrorLine(Item); });
 
     //
     //  Sidebar L01 (Bookmark) command area.

@@ -142,7 +142,7 @@ function AnalyzeLogFile ():number {
 
 //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 //
-//  Below 3 function is function to analyze Map file for each compile 
+//  Below 3 function is function to analyze Map file for each compile
 //  in build folder and try to get actual memory location.
 //
 
@@ -301,7 +301,7 @@ export class MemoryDependenciesProvider implements vscode.TreeDataProvider<Memor
             return Promise.resolve([]);
         }
         //
-        // Check book mark file.
+        // Check Module information file.
         //
         if (this.PathExists (ModuleInfoPath)) {
             return Promise.resolve (this.getMemoryInfoTree (Element));
@@ -386,7 +386,7 @@ export class MemoryDependenciesProvider implements vscode.TreeDataProvider<Memor
                         MBaseAddr.push(++i3+" ▻ "+ModuleElement[i2].replace("3","").toUpperCase());
                     } else if (ModuleElement[i2][0] === "4") {
                         MSize = ModuleElement[i2].replace("4","");
-                    } 
+                    }
                 }
                 if ( MBaseAddr.length !== 0 || !Filter_X) {
                     Content.push(new MemoryDependency (
@@ -412,7 +412,7 @@ export class MemoryDependency extends vscode.TreeItem {
         public readonly collapsibleState: vscode.TreeItemCollapsibleState
     ) {
         super (tagName, collapsibleState);
-        this.tooltip = collapsibleState ? 
+        this.tooltip = collapsibleState ?
                        "Guid : 🔰"+`${this.driverGuid}`+"\n💠BaseAddress :\n"+this.baseAddr :
                        driverGuid !== ""?
                        "♻ Reference : "+driverGuid.replace(":"," : "):
@@ -580,6 +580,6 @@ export function GetAndCopyModuleInfo (Item: MemoryDependency, Type:number) {
 }
 
 //
-// To-do 
+// To-do
 //
 export function StarOrStoptRecordLog () { }

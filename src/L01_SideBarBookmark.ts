@@ -15,6 +15,10 @@ import {
 const BookmarkPath  = WorkSpace + ".vscode/Bookmark.bcat";
 var   NeedToShowTip = 1;
 
+//============= External Function =============//
+//
+// Class for bookmark user interface.
+//
 export class NodeDependenciesProvider implements vscode.TreeDataProvider<Dependency> {
 
     constructor (private WorkspaceRoot: string) {
