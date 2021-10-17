@@ -451,7 +451,16 @@ export async function RecordAllModuleGuidAndName (Flag:number) {
     //
     // If user turn off the feature, return at entry.
     //
-    if (!vscode.workspace.getConfiguration().get("CAT.02_AnalyzeMemoryFunction")){ return; }
+    if (!vscode.workspace.getConfiguration().get("CAT.02_AnalyzeMemoryFunction")){
+        vscode.window.showInformationMessage (
+            " 💡 Now analyze memory series function have been disable.",
+            "Turn on now!",
+            "Do nothing"
+        ).then (function (Select) { if (Select === 'Turn on now!') {
+            vscode.workspace.getConfiguration().update('CAT.02_AnalyzeMemoryFunction', true, true);
+        }});
+        return;
+    }
     TreeL02 = (TreeL02 === null)?new MemoryDependenciesProvider(WorkSpace) : TreeL02;
     //
     // Check if we have already have info then read it, if not create one.
@@ -536,7 +545,16 @@ export function SearchModuleOrAddr () {
     //
     // If user turn off the feature, do nothing.
     //
-    if (!vscode.workspace.getConfiguration().get("CAT.02_AnalyzeMemoryFunction")){ return; }
+    if (!vscode.workspace.getConfiguration().get("CAT.02_AnalyzeMemoryFunction")){
+        vscode.window.showInformationMessage (
+            " 💡 Now analyze memory series function have been disable.",
+            "Turn on now!",
+            "Do nothing"
+        ).then (function (Select) { if (Select === 'Turn on now!') {
+            vscode.workspace.getConfiguration().update('CAT.02_AnalyzeMemoryFunction', true, true);
+        }});
+        return;
+    }
     //
     // Show in put box and let user enter.
     //

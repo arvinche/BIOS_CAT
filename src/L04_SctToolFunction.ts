@@ -263,6 +263,16 @@ export async function AddOrRefreshSCTTree (TreeM02: SctDependenciesProvider) {
 //  Jump to SCT error line.
 //
 export function Jump2SctErrorLine (Item: SctDependency) {
+    if ( !FileSys.existsSync(WorkSpace+"SctRoot") ) {
+        vscode.window.showInformationMessage (
+            " 🤔 Can't jump to error, make sure SctRoot have been clone into your work space",
+            "Clone one now!",
+            "Do nothing"
+        ).then (function (Select) { if (Select === 'Clone one now!') {
+            GetEDK2SCTFromGitHub();
+        }});
+        return;
+    }
     const options = {
         selection: new vscode.Range (
             new vscode.Position (Item.line-1, 0),
