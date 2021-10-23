@@ -46,3 +46,4 @@
 |    16 |             1 | Rename Syntax naming style                    | Done              | Gua           | Enhance   |
 |    17 |            18 | Remove terminal dependency                    | Done              | Gua           | Enhance   |
 |    19 |            18 | Let SCT can not build normally                | Done              | Arvin         | Bug       |
+|    20 |            18 | Add error handel let user can use more clearly| Done              | Arvin         | Enhance   |

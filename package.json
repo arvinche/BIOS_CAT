@@ -2,7 +2,7 @@
 	"name": "bios-cat",
 	"publisher": "CatMaster",
 	"icon": "Images/01_CatIcon.png",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"engines": { "vscode": "^1.59.0" },
 	"displayName": "BIOS-CAT",
 	"description": "A coding cat can support you development BIOS code!",

@@ -59,9 +59,13 @@ export class SctDependenciesProvider implements vscode.TreeDataProvider<SctDepen
         if (!this.PathExists(SctLogPath)) {
             SctLogPath = WorkSpace+SctLogPath;
             if (this.PathExists(SctLogPath)) {
+                if (!SctLogPath.endsWith (".csv")) {
+                    vscode.window.showInformationMessage (" 🤔 Sct report need to be a [.csv] file.");
+                    return Promise.resolve ([]);
+                }
                 return Promise.resolve (this.getSctInfoTree (SctLogPath, Element));
             } else {
-                vscode.window.showInformationMessage (" 🤔 Sct log path can not open, please check again.");
+                vscode.window.showInformationMessage (" 🤔 Sct report path can not open, please check again.");
                 return Promise.resolve ([]);
             }
         }
@@ -248,9 +252,17 @@ export async function AddOrRefreshSCTTree (TreeM02: SctDependenciesProvider) {
         if (SelectMsg?.indexOf(" 👉 1.") !== NOT_FOUND) {
             await vscode.window.showInputBox({
                 ignoreFocusOut:true,
-                placeHolder:' 🔖 Please gave BIOS-CAT your SCT log path.'})
+                placeHolder:' 🔖 Please gave BIOS-CAT your SCT report path. (.csv)'})
             .then (async function (Msg2) {
+                if (!(Msg2+"").endsWith (".csv")) {
+                    vscode.window.showInformationMessage (" 🤔 Sct report need to be a [.csv] file.");
+                    return;
+                } else if (!FileSys.existsSync (Msg2+"")) {
+                    vscode.window.showInformationMessage (" 🤔 Sct report path can not found.");
+                    return;
+                }
                 await vscode.workspace.getConfiguration().update('CAT.04_SctResultPath', Msg2, true);
+                vscode.window.showInformationMessage (" 🧐 Sct report path update successful.");
                 TreeM02.Refresh();
             });
         } else if (SelectMsg?.indexOf(" 👉 2.") !== NOT_FOUND) {
