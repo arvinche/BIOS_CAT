@@ -39,7 +39,7 @@
      * You can also use `ALT+Q` to input SID then get patch.<br>
      * Patch will generate at "{Workspace}/.vscode/Patch". Can change it in extension setting<br>
 
-     ![GitPackageImage](https://lh3.googleusercontent.com/077OLhzFZrnNQ75BsA-VA-r-uAwMsQP-v-M-w0N7jmXRafs0MIpVV1igYWPfAinDTp73rySoU2R7weQkritdIMuxfKoQy--4MVrlCYVf36JIOqy7OE1m9_s7CoUxjVcd2ug2IrPJrw=w800)
+     ![GitPackageImage](https://lh3.googleusercontent.com/-1-HmQdHmEMjfY49nZx9VCymzLbtMmsHf5hhju0aGKxcNTpH4CrFQMQOh3Rb5GSQ1g7SVqOMq7k3DQfjXUmXierQd47kh71XYjFu2Dsxl3L5vAC2-JgP4dxFjKgEfvWYgoHn5jj9-g=w800)
 
 <h2 id="2" style="color:#c96b00;">Build code button.</h2>
 
@@ -82,7 +82,13 @@
   * `Failed list tree:` User now can input path to let vscode generate tree to clearly view the fail and jump to error line too debug it.
    ![SctImage02](https://lh3.googleusercontent.com/ytn93472bEtDge_0_LuZtaDO_X5lrLMEXHJsb_4mnBxNIASyKXOWhNaeLLPrVNnabR2sUVjAmCcq4puHSPq1GxTLSE7v8RIDwgbSjOJxFyhDikZgBOccgrXCdf6vKsX-9UGylAPMdA=w600)
 
-<h2 id="6" style="color:#c96b00;">[Ported from other side]</h2>
+<h2 id="6" style="color:#c96b00;">[List function and jump to it]</h2>
+
+  * `List tag and function` List all the tag that make you can select and jump to it.
+   ![JumpTag01](https://lh3.googleusercontent.com/Qcp60GO9bcwWGsEFr25A6C_EFzN9tqZmlAYMj8ngT8LFmWNq4k3bOtnevQOP9BJt31KAf2jUV6uYfkrs4UZ2AGJrEVOsykZ27XnPrvrqIM7UYHMUAAOJV6PQNNxonxhpFco13HDQRQ=w800)
+  * `Support file type:` C, fdf, dsc, dec asl.
+
+<h2 id="99" style="color:#c96b00;">[Ported from other side]</h2>
 
   * `Reference from EDK2-vscode:` FDF/DEC/INF/VFR/HFR Parser.
 
