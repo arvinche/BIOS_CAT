@@ -23,6 +23,7 @@
 |            18 | Get Git repository patch (ORG/MOD) by Row or SID | Done              | Arvin/Gua     | Feature   |
 |            19 | SCT build                                        | Done              | Arvin         | Feature   |
 |            20 | SCT log analyze                                  | Done              | Arvin         | Feature   |
+|            21 | Hot key list tag/function and jump to it         | Done              | Arvin         | Feature   |
 
 ## **Bug/Enhance List**
 | Index | Feature Index | Task                                          | Status            | Author        | Attribute |

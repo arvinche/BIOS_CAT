@@ -145,6 +145,7 @@
 			{"command": "BIOS-CAT.L02CopyName"         , "title": "Copy name", "icon": "./Images/L02_1Name.png"},
 			{"command": "BIOS-CAT.L02CopyGuid"         , "title": "Copy guid", "icon": "./Images/L02_2Guid.png"},
 			{"command": "BIOS-CAT.L02CopyAddress"      , "title": "Copy address", "icon": "./Images/L02_3Address.png"},
+			{"command": "BIOS-CAT.M01ListTag"          , "title": "List tag line"},
 			{"command": "BIOS-CAT.M02AddLog"           , "title": "🔧 Add SCT log path or refresh tree view.", "icon": "./Images/M02_Edit.png"},
 			{"command": "BIOS-CAT.M02GetSct"           , "title": "🔧 Clone EDK2 & SCT from github", "icon": "./Images/M02_Clone.png"},
 			{"command": "BIOS-CAT.M02BuildSct"         , "title": "🔧 Build SCT", "icon": "./Images/M02_Build.png"},
@@ -163,6 +164,7 @@
 			{"command": "BIOS-CAT.L01GetGitPatch_Key", "key": "alt+q"},
 			{"command": "BIOS-CAT.L02StartRecord",     "key": "alt+r"},
 			{"command": "BIOS-CAT.L02SearchModule",    "key": "ctrl+shift+d"},
+			{"command": "BIOS-CAT.M01ListTag",         "key": "alt+f"},
 			{"command": "revealFileInOS",              "key": "alt+d"}
 		],
 		"menus": {

@@ -350,3 +350,99 @@ export async function BuildSingleModule () {
     FileSys.writeFileSync (StatusFile, "Building module");
     SendBuildCommand2PY (Terminal, ModuleBuildCmd, WorkSpace, true, "");
 }
+
+//
+//  List tag or function in file, then jump to it.
+//
+export async function ListFunctionTag () {
+    const Editor   = vscode.window.activeTextEditor;
+    const FileName = Editor?.document.fileName.replace(/\\/g,"/")+"";
+    let   TagArray:string[] = [];
+
+    if (FileName.endsWith(".fdf") || FileName.endsWith(".dec") || FileName.endsWith(".dsc") ||
+        FileName.endsWith(".inf")) {
+        let Line = FileSys.readFileSync (FileName, 'utf-8').split ("\n");
+        for (let i=0; i<Line.length; i++) {
+            if ( Line[i].indexOf("[") !== NOT_FOUND &&
+                 Line[i].indexOf("]") !== NOT_FOUND &&
+                (Line[i].indexOf("#") === NOT_FOUND || Line[i].indexOf("#")>Line[i].indexOf("["))
+            ){
+                TagArray.push("Line:"+i+": "+Line[i].split("#")[0]);
+            }
+        }
+    } else if (FileName.endsWith(".c") || FileName.endsWith(".asl") || FileName.endsWith(".ASL") || FileName.endsWith(".asi")) {
+        let Line         = FileSys.readFileSync (FileName, 'utf-8').split ("\n");
+        let FunctionName = "";
+        let FunctionLine = 0;
+        for (let i=0, Step=0, A=0, B=0; i<Line.length; i++) {
+            //
+            //  If there have "/*" in it, skip all of it until "*/".
+            //
+            if (Line[i].indexOf("/*") !== NOT_FOUND && Step < 0xFF) {
+                Step += 0xFF;
+                continue;
+            } else if (Line[i].indexOf("*/") !== NOT_FOUND && Step >= 0xFF) {
+                Step -= 0xFF;
+                continue;
+            } else if (Step >= 0xFF) { continue; }
+            //
+            //  Filter comment & string & character.
+            //
+            if (Line[i].indexOf("//") !== NOT_FOUND) { Line[i] = Line[i].split("//")[0]; }
+            if (Line[i].indexOf('"') !== NOT_FOUND) { Line[i] = Line[i].split('"')[0]+Line[i].split('"')[2]; }
+            if (Line[i].indexOf("'") !== NOT_FOUND) { Line[i] = Line[i].split("'")[0]+Line[i].split("'")[2]; }
+            //
+            //  Start parsing.
+            //
+            if (Line[i].indexOf("(") !== NOT_FOUND) { A++;
+                if (Step !== 2 && !B) {
+                    if (FileName.endsWith(".c")) { FunctionName = Line[i].split("(")[0].replace(/ /g,"") === ""? Line[i-1] : Line[i].split("(")[0]; }
+                    if (FileName.endsWith(".asl") || FileName.endsWith(".ASL") || FileName.endsWith(".asi")) {
+                        FunctionName = Line[i].split("{")[0].replace(/ /g,"") === ""? Line[i-1] : Line[i].split("{")[0];
+                    }
+                    FunctionLine = i;
+                    Step = 1;
+                }
+            }
+            if (Line[i].indexOf(")") !== NOT_FOUND) { A--; }
+            if (Line[i].indexOf("{") !== NOT_FOUND) { B++; Step = (Step===1)?2:Step;}
+            if (Line[i].indexOf("}") !== NOT_FOUND) { B--; }
+            if (Step===2 && !B){ TagArray.push("Line:"+FunctionLine+":  "+FunctionName); Step = 0; }
+        }
+    } else {
+        //
+        // Not support file type.
+        //
+        return;
+    }
+    //
+    // If can not fund any tag, do nothing.
+    //
+    if (TagArray === []) { return; }
+    //
+    // Fund tag and list it all.
+    //
+    TagArray.push(" 🐾 End of search 🐾");
+    vscode.window.showQuickPick (
+        TagArray,
+        {canPickMany:false, placeHolder:' 👇 Jump to the tag :'})
+    .then( async function (SelectMsg) {
+        //
+        // User enter esc or enter other not fund word, return.
+        //
+        if ( TagArray.indexOf(SelectMsg+"") === NOT_FOUND || SelectMsg === " 🐾 End of search 🐾") { return; }
+        //
+        // Get line and jump to it.
+        //
+        let LineIndex = parseInt(SelectMsg?.split(":")[1]+"", 10);
+        const options = {
+            selection: new vscode.Range (
+                new vscode.Position (LineIndex, 0),
+                new vscode.Position (LineIndex+1, 0)
+            ),
+            preview: true,
+            viewColumn: vscode.ViewColumn.One
+        };
+        vscode.window.showTextDocument (vscode.Uri.file (FileName), options);
+    });
+}

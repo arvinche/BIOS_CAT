@@ -10,7 +10,8 @@ import {
     CreatEnvAndBuildCode,
     CheckBuildLogAndJump2Error,
     CleanUpWorkSpace,
-    BuildSingleModule
+    BuildSingleModule,
+    ListFunctionTag
 } from './M01_MainEditorFunction';
 
 //=============  Left Area  =============//
@@ -82,6 +83,7 @@ export function activate (context: vscode.ExtensionContext) {
     vscode.commands.registerCommand ('BIOS-CAT.CMD02', ()=>{ CleanUpWorkSpace (); });
     vscode.commands.registerCommand ('BIOS-CAT.CMD03', ()=>{ CheckBuildLogAndJump2Error (); });
     vscode.commands.registerCommand ('BIOS-CAT.CMD04', ()=>{ BuildSingleModule (); });
+    vscode.commands.registerCommand ('BIOS-CAT.M01ListTag', ()=>{ ListFunctionTag (); });
 
     //
     // M02 Self-Certification Test related functions.

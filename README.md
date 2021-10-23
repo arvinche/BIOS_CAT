@@ -22,6 +22,7 @@
   **6. `ALT+r`**        | Start [Record log](#3). (not yet😛.)
   **7. `CTRL+SHIFT+d`** | Search key word with [Memory map seeker](#4).
   **8. `ALT+d`**        | Open File locate folder.
+  **9. `ALT+f`**        | List function or tag and jump to it.
 
 <h2 id="1" style="color:#c96b00;">Bookmark.</h2>
 
