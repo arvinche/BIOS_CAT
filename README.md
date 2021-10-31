@@ -86,7 +86,7 @@
 
   * `List tag and function` List all the tag that make you can select and jump to it.
    ![JumpTag01](https://lh3.googleusercontent.com/Qcp60GO9bcwWGsEFr25A6C_EFzN9tqZmlAYMj8ngT8LFmWNq4k3bOtnevQOP9BJt31KAf2jUV6uYfkrs4UZ2AGJrEVOsykZ27XnPrvrqIM7UYHMUAAOJV6PQNNxonxhpFco13HDQRQ=w800)
-  * `Support file type:` C, fdf, dsc, dec asl.
+  * `Support file type:` C, js, ts, fdf, dsc, dec asl.
 
 <h2 id="99" style="color:#c96b00;">[Ported from other side]</h2>
 

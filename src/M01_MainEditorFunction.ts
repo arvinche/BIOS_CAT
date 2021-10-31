@@ -370,7 +370,8 @@ export async function ListFunctionTag () {
                 TagArray.push("Line:"+i+": "+Line[i].split("#")[0]);
             }
         }
-    } else if (FileName.endsWith(".c") || FileName.endsWith(".asl") || FileName.endsWith(".ASL") || FileName.endsWith(".asi")) {
+    } else if (FileName.endsWith(".c") || FileName.endsWith(".asl") || FileName.endsWith(".ts") || FileName.endsWith(".js") ||
+               FileName.endsWith(".ASL") || FileName.endsWith(".asi")) {
         let Line         = FileSys.readFileSync (FileName, 'utf-8').split ("\n");
         let FunctionName = "";
         let FunctionLine = 0;
@@ -379,7 +380,7 @@ export async function ListFunctionTag () {
             //  If there have "/*" in it, skip all of it until "*/".
             //
             if (Line[i].indexOf("/*") !== NOT_FOUND && Step < 0xFF) {
-                Step += 0xFF;
+                if (Line[i].indexOf("*/") === NOT_FOUND) { Step += 0xFF; }
                 continue;
             } else if (Line[i].indexOf("*/") !== NOT_FOUND && Step >= 0xFF) {
                 Step -= 0xFF;
@@ -389,24 +390,39 @@ export async function ListFunctionTag () {
             //  Filter comment & string & character.
             //
             if (Line[i].indexOf("//") !== NOT_FOUND) { Line[i] = Line[i].split("//")[0]; }
-            if (Line[i].indexOf('"') !== NOT_FOUND) { Line[i] = Line[i].split('"')[0]+Line[i].split('"')[2]; }
-            if (Line[i].indexOf("'") !== NOT_FOUND) { Line[i] = Line[i].split("'")[0]+Line[i].split("'")[2]; }
+            if (Line[i].indexOf('"') !== NOT_FOUND) {
+                for (let x=0, tmp=Line[i].split('"'); (tmp.length-1)===0, x<tmp.length; x++) {
+                    if (!(x%2)) {
+                        if (!x) { Line[i] = ""; }
+                        Line[i] += tmp[x];
+                    }
+                }
+            }
+            if (Line[i].indexOf("'") !== NOT_FOUND) {
+                for (let x=0, tmp=Line[i].split("'"); (tmp.length-1)===0, x<tmp.length; x++) {
+                    if (!(x%2)) {
+                        if (!x) { Line[i] = ""; }
+                        Line[i] += tmp[x];
+                    }
+                }
+            }
             //
             //  Start parsing.
             //
-            if (Line[i].indexOf("(") !== NOT_FOUND) { A++;
+            if (Line[i].indexOf("(") !== NOT_FOUND) { A += Line[i].split("(").length-1;
                 if (Step !== 2 && !B) {
-                    if (FileName.endsWith(".c")) { FunctionName = Line[i].split("(")[0].replace(/ /g,"") === ""? Line[i-1] : Line[i].split("(")[0]; }
-                    if (FileName.endsWith(".asl") || FileName.endsWith(".ASL") || FileName.endsWith(".asi")) {
+                    if (FileName.endsWith(".c") || FileName.endsWith(".ts") || FileName.endsWith(".js") ) {
+                        FunctionName = Line[i].split("(")[0].replace(/ /g,"") === ""? Line[i-1] : Line[i].split("(")[0];
+                    } else if (FileName.endsWith(".asl") || FileName.endsWith(".ASL") || FileName.endsWith(".asi")) {
                         FunctionName = Line[i].split("{")[0].replace(/ /g,"") === ""? Line[i-1] : Line[i].split("{")[0];
                     }
                     FunctionLine = i;
                     Step = 1;
                 }
             }
-            if (Line[i].indexOf(")") !== NOT_FOUND) { A--; }
-            if (Line[i].indexOf("{") !== NOT_FOUND) { B++; Step = (Step===1)?2:Step;}
-            if (Line[i].indexOf("}") !== NOT_FOUND) { B--; }
+            if (Line[i].indexOf(")") !== NOT_FOUND) { A -= Line[i].split(")").length-1; }
+            if (Line[i].indexOf("{") !== NOT_FOUND) { B += Line[i].split("{").length-1; Step = (Step===1)?2:Step; }
+            if (Line[i].indexOf("}") !== NOT_FOUND) { B -= Line[i].split("}").length-1; }
             if (Step===2 && !B){ TagArray.push("Line:"+FunctionLine+":  "+FunctionName); Step = 0; }
         }
     } else {
