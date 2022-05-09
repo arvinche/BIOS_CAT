@@ -201,7 +201,9 @@ export function AddBookMarkElement (TreeL01: NodeDependenciesProvider) {
                 if (Msg2) {
                     for (let i=0; i<BM.length; i++) {
                         for (let i2=0; i2<BM[i].FileAndPath.length; i2++) {
-                            if (BM[i].FileAndPath[i2].Tag === Msg2) {
+                            if (BM[i].Group !== SelectMsg) {
+                                continue;
+                            } else if (BM[i].FileAndPath[i2].Tag === Msg2) {
                                 vscode.window.showInformationMessage (' ❗️❗️ The bookmark in same group must gave different name ~ ');
                                 return;
                             }
